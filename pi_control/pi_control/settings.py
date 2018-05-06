@@ -21,7 +21,6 @@ def bool_env(name, default):
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
@@ -43,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'social_django',
+    'rest_framework',
 
     'home',
     'pi_control',
@@ -117,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/London'
 
 USE_I18N = True
 
@@ -152,7 +152,7 @@ SOCIAL_AUTH_PIPELINE = (
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('AUTH_KEY', '252833193334-p1smqapcll45s386594smrqld0l2ielj.apps.googleusercontent.com')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('AUTH_SECRET', 'ocvhSjJyjKfMROBh4z8EUTA9')
 
-#Logging
+# Logging
 if not DEBUG:
     LOGGING = {
         'version': 1,
@@ -172,3 +172,10 @@ if not DEBUG:
             },
         },
     }
+
+# Rest framework
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}

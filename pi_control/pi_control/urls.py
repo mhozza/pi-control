@@ -16,13 +16,19 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
+from rest_framework import routers
 
 from home import views as home_views
+from temperature import views as temperature_views
+
+router = routers.DefaultRouter()
 
 urlpatterns = [
     path('', home_views.home, name='home'),
     path('login/', auth_views.login, name='login'),
     path('logout/', auth_views.logout, name='logout'),
     path('oauth/', include('social_django.urls', namespace='social')),
+    path('api/temperature', temperature_views.get_temperature_and_humidity, name='get_temperature_and_humidity'),
+    path('api/', include(router.urls)),
     path('admin/', admin.site.urls),
 ]
