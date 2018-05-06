@@ -1,5 +1,7 @@
 {% extends "pi_control/base.html" %}
 
 {% block content %}
-<h1>Home, sweet home.</h1>
+<div class="row">
+  {% include 'pi_control/temperature/temperature_widgets.html' %}
+</div>
 {% endblock %}
