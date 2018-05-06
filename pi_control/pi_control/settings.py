@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 
     'home',
     'pi_control',
+    'temperature'
 ]
 
 MIDDLEWARE = [
