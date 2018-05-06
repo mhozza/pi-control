@@ -12,6 +12,12 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 
+def env(name, default, type=str):
+    return type(os.environ.get(name, default))
+
+def bool_env(name, default):
+    return env(name, default) == 'True'
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,13 +26,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '@jzqxp^%&b4=(u10%%i-hgz7$8!5ql+vairvmjyru%sj#m9k__'
+SECRET_KEY = env('SECRET', '@jzqxp^%&b4=(u10%%i-hgz7$8!5ql+vairvmjyru%sj#m9k__')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool_env('DEBUG', True)
 
 ALLOWED_HOSTS = [] if DEBUG else ['malina.hozza.eu']
-
 
 # Application definition
 
@@ -143,5 +148,5 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.associate_user',
 )
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '252833193334-p1smqapcll45s386594smrqld0l2ielj.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'ocvhSjJyjKfMROBh4z8EUTA9'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('AUTH_KEY', '252833193334-p1smqapcll45s386594smrqld0l2ielj.apps.googleusercontent.com')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('AUTH_SECRET', 'ocvhSjJyjKfMROBh4z8EUTA9')
