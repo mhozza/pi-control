@@ -3,4 +3,4 @@ from django.shortcuts import render
 
 @login_required()
 def home(request):
-    return render(request, 'home/home.html', dict())
+    return render(request, 'pi_control/home/home.html', dict())
