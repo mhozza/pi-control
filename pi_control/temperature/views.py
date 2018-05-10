@@ -1,13 +1,11 @@
-from django.shortcuts import render
-
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.http import JsonResponse
 from django.conf import settings
 from django.utils import timezone
 
 
 from .measure import measure_temperature_and_humidity
+
 
 @api_view(['GET'])
 def get_temperature_and_humidity(request):

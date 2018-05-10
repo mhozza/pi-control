@@ -4,10 +4,10 @@ const webpack = require('webpack');
 module.exports = {
   context: __dirname,
   devtool: debug ? 'inline-sourcemap' : false,
-  entry: './temperature.jsx',
+  entry: './app.jsx',
   output: {
-    path: __dirname + '/../../temperature/static/temperature/js/',
-    filename: debug ? 'temperature.js' : 'temperarure.min.js'
+    path: __dirname + '/../static/js/',
+    filename: debug ? 'app.js' : 'app.min.js'
   },
   module: {
     rules: [

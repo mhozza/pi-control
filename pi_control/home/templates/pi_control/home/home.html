@@ -1,7 +1,19 @@
 {% extends "pi_control/base.html" %}
+{% load staticfiles sekizai_tags %}
+
 
 {% block content %}
+
+{% addtoblock "css" %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"></link>
+{% endaddtoblock %}
+{% addtoblock "js" %}
+    <script type="text/javascript" src="{% static 'js/app.js' %}"></script>
+{% endaddtoblock %}
+
+
 <div class="row">
-  {% include 'pi_control/temperature/temperature_widgets.html' %}
+    <div class="col-sm-6 col-md-3" id="temperature_widget"></div>
+    <div class="col-sm-6 col-md-3" id="humidity_widget"></div>
 </div>
 {% endblock %}

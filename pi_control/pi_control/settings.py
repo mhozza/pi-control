@@ -33,7 +33,6 @@ DEBUG = bool_env('DEBUG', True)
 ALLOWED_HOSTS = [] if DEBUG else ['malina.hozza.eu']
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,10 +44,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'sekizai',
 
-    'home',
     'pi_control',
+    'home',
     'temperature'
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
