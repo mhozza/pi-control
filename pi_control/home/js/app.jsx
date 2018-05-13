@@ -3,22 +3,17 @@ import ReactDOM from 'react-dom';
 import axios from 'axios';
 
 class TemperatureWidget extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            colorClass: props.value > props.high
-                ? "text-danger"
-                : props.value < props.low
-                    ? "text-primary"
-                    : "text-success"
-        };
-    }
-
     render() {
+        let colorClass = this.props.value > this.props.high
+            ? "text-danger"
+            : this.props.value < this.props.low
+                ? "text-primary"
+                : "text-success";
+
         return (<div className="card">
             <div className="card-header text-center">{this.props.title}</div>
             <div className="card-body">
-                <div className={"card-text text-center temperature-widget-body " + this.state.colorClass}>
+                <div className={"card-text text-center temperature-widget-body " + colorClass}>
                     {this.props.value}<sup>
                     <span>{this.props.unit}</span>
                 </sup>
