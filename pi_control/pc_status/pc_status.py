@@ -4,8 +4,7 @@ import socket
 
 
 def check_ping(host):
-    response = os.system("ping -c 1 " + host)
-    # and then check the response...
+    response = os.system("ping -c 1 -w 1" + host)
     if response == 0:
         return True
     return False
