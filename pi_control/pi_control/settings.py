@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'social_django',
     'rest_framework',
     'sekizai',
+    'django_celery_beat',
+    'django_celery_results',
 
     'pi_control',
     'home',
@@ -181,3 +183,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     )
 }
+
+# Celery
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'django-db'
