@@ -1,6 +1,5 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.conf import settings
 from django.utils import timezone
 
 
@@ -16,7 +15,7 @@ TEMPERATURE_LOW = 22
 @api_view(['GET'])
 def get_temperature_and_humidity(request):
     now = timezone.now()
-    temperature, humidity = measure_temperature_and_humidity(settings.DEBUG)
+    temperature, humidity = measure_temperature_and_humidity()
     return Response({
         'time': now,
         'temperature': {
