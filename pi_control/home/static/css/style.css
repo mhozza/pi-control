@@ -2,7 +2,7 @@
   margin: 0.4em 0;
 }
 
-.temperature-widget-body {
+.temperature-widget-body, .pc_status-widget-primary{
   font-size: 2.5em;
 }
 

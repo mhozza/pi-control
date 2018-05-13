@@ -20,6 +20,7 @@ from rest_framework import routers
 
 from home import views as home_views
 from temperature import views as temperature_views
+from pc_status import views as pc_status_views
 
 router = routers.DefaultRouter()
 
@@ -29,6 +30,7 @@ urlpatterns = [
     path('logout/', auth_views.logout, name='logout'),
     path('oauth/', include('social_django.urls', namespace='social')),
     path('api/temperature', temperature_views.get_temperature_and_humidity, name='get_temperature_and_humidity'),
+    path('api/pc_status', pc_status_views.get_pc_status, name='get_temperature_and_humidity'),
     path('api/', include(router.urls)),
     path('admin/', admin.site.urls),
 ]
