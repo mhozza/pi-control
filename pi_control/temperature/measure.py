@@ -1,10 +1,11 @@
 #!/usr/bin/python
 
 import posix
-from fcntl import ioctl
 import time
-
+from fcntl import ioctl
 from random import randint
+
+from .models import Entry
 
 
 class AM2320:
@@ -92,3 +93,8 @@ def measure_temperature_and_humidity(debug=False):
     if debug:
         return randint(17, 30), randint(20, 70)
     return am2320.readSensor()
+
+
+def log_temperature(debug=False):
+    temperature, humidity = measure_temperature_and_humidity(debug)
+    Entry.objects.create(temperature=temperature, humidity=humidity)
