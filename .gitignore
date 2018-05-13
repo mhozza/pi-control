@@ -106,3 +106,5 @@ ENV/
 .static/*
 
 **/node_modules/**
+
+celerybeat.pid
