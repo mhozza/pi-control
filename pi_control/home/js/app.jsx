@@ -24,18 +24,62 @@ class TemperatureWidget extends React.Component {
     }
 }
 
-function update_temperature() {
-    axios.get("/api/temperature").then(response => {
-        let time = new Date(response.data.time).toLocaleString();
+class Widgets extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: {
+                temperature: {
+                    value: null,
+                    high: null,
+                    low: null,
+                },
+                humidity: {
+                    value: null,
+                    high: null,
+                    low: null,
+                },
+                time: null,
+            }
+        };
+    }
 
-        ReactDOM.render(<TemperatureWidget title="Teplota" value={response.data.temperature.value} unit="°C" time={time}
-                                           high={response.data.temperature.high}
-                                           low={response.data.temperature.low}/>, document.getElementById('temperature_widget'));
-        ReactDOM.render(<TemperatureWidget title="Vlhkosť" value={response.data.humidity.value} unit="%" time={time}
-                                           high={response.data.humidity.high}
-                                           low={response.data.humidity.low}/>, document.getElementById('humidity_widget'));
-    });
+    componentDidMount() {
+        this.tick();
+        this.timerID = setInterval(
+            () => this.tick(),
+            15000
+        );
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timerID);
+    }
+
+    tick() {
+        let self = this;
+        axios.get("/api/temperature").then(response => {
+            self.setState({
+                data: response.data
+            });
+        });
+    }
+
+    render() {
+        let time = new Date(this.state.data.time).toLocaleString();
+        return <div className="row">
+            <div className="col-sm-6 col-md-3" id="temperature_widget">
+                <TemperatureWidget title="Teplota" value={this.state.data.temperature.value} unit="°C" time={time}
+                                   high={this.state.data.temperature.high}
+                                   low={this.state.data.temperature.low}/>
+            </div>
+            <div className="col-sm-6 col-md-3" id="humidity_widget">
+                <TemperatureWidget title="Vlhkosť" value={this.state.data.humidity.value} unit="%" time={time}
+                                   high={this.state.data.humidity.high}
+                                   low={this.state.data.humidity.low}/>
+            </div>
+        </div>
+    }
 }
 
-update_temperature();
-setInterval(update_temperature, 15000);
+ReactDOM.render(<Widgets/>, document.getElementById('widgets'));
