@@ -85,7 +85,7 @@ class Widgets extends React.Component {
 
     tick() {
         let self = this;
-        axios.get("/api/temperature").then(response => {
+        axios.get("/api/temperature/now/").then(response => {
             self.setState({
                 temperature_data: response.data
             });
