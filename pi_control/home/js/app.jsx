@@ -3,27 +3,29 @@ import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {Line} from 'react-chartjs-2';
 
+const moment = require('moment');
+
 class TemperatureWidget extends React.Component {
   render() {
-    let labels = this.props.historicData.map(x => x.time);
+    let labels = this.props.historicData.map(x => moment(x.time).format('HH:mm'));
     let temperature_dataset = this.props.historicData.map(x => x.temperature);
     let humidity_dataset = this.props.historicData.map(x => x.humidity);
 
     let chartData = {
-      labels: labels.map(time => new Date(time).toLocaleTimeString()),
+      labels: labels,
       datasets: [
         {
           label: 'Teplota',
           data: temperature_dataset,
           borderColor: 'rgba(220, 53, 69, .8)',
-          backgroundColor: 'rgba(220, 53, 69, .8)',
+          pointRadius: 0,
           fill: false,
           yAxisID: 'y-axis-1'
         }, {
           label: 'Vlhkosť',
           data: humidity_dataset,
           borderColor: 'rgba(0, 123, 255, .8)',
-          backgroundColor: 'rgba(0, 123, 255, .8)',
+          pointRadius: 0,
           fill: false,
           yAxisID: 'y-axis-2'
         }
@@ -66,6 +68,7 @@ class TemperatureWidget extends React.Component {
     };
 
     let time = new Date(this.props.currentData.time).toLocaleString();
+
     let temperatureColorClass = this.props.currentData.temperature.value > this.props.currentData.temperature.high
       ? "text-danger"
       : this.props.currentData.temperature.value < this.props.currentData.temperature.low
@@ -157,7 +160,7 @@ class Widgets extends React.Component {
           high: null,
           low: null
         },
-        time: 'N/A'
+        time: null
       },
       pc_status_data: {
         online: 'N/A',
