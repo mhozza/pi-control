@@ -5,13 +5,27 @@ import {Line} from 'react-chartjs-2';
 
 class TemperatureWidget extends React.Component {
   render() {
+    let labels = this.props.historicData.map(x => x.time);
+    let temperature_dataset = this.props.historicData.map(x => x.temperature);
+    let humidity_dataset = this.props.historicData.map(x => x.humidity);
+
     let chartData = {
-      labels: this.props.data.labels.map(time => new Date(time).toLocaleTimeString()),
+      labels: labels.map(time => new Date(time).toLocaleTimeString()),
       datasets: [
         {
-          data: this.props.data.data,
-          borderColor: "rgba(220, 53, 69, .8)",
-          backgroundColor: "rgba(0, 0, 0, 0)"
+          label: 'Temperature',
+          data: temperature_dataset,
+          borderColor: 'rgba(220, 53, 69, .8)',
+          backgroundColor: 'rgba(220, 53, 69, .8)',
+          fill: false,
+          yAxisID: 'y-axis-1'
+        }, {
+          label: 'Humidity',
+          data: humidity_dataset,
+          borderColor: 'rgba(0, 123, 255, .8)',
+          backgroundColor: 'rgba(0, 123, 255, .8)',
+          fill: false,
+          yAxisID: 'y-axis-2'
         }
       ]
     };
@@ -19,28 +33,71 @@ class TemperatureWidget extends React.Component {
       responsive: true,
       legend: {
         display: false
+      },
+      scales: {
+        yAxes: [
+          {
+            type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+            display: true,
+            position: 'left',
+            id: 'y-axis-1',
+            scaleLabel: {
+              display: true,
+              labelString: 'Teplota'
+            }
+          }, {
+            type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+            display: true,
+            position: 'right',
+            id: 'y-axis-2',
+
+            scaleLabel: {
+              display: true,
+              labelString: 'Vlhkosť'
+            },
+
+            // grid line settings
+            gridLines: {
+              drawOnChartArea: false, // only want the grid lines for one axis to show up
+            }
+          }
+        ]
       }
     };
 
-    let time = new Date(this.props.time).toLocaleString();
-    let colorClass = this.props.value > this.props.high
+    let time = new Date(this.props.currentData.time).toLocaleString();
+    let temperatureColorClass = this.props.currentData.temperature.value > this.props.currentData.temperature.high
       ? "text-danger"
-      : this.props.value < this.props.low
+      : this.props.currentData.temperature.value < this.props.currentData.temperature.low
         ? "text-primary"
         : "text-success";
 
-    return (<div className="col-sm-6 col-md-3">
+    let humidityColorClass = this.props.currentData.humidity.value > this.props.currentData.humidity.high
+      ? "text-danger"
+      : this.props.currentData.humidity.value < this.props.currentData.humidity.low
+        ? "text-primary"
+        : "text-success";
+
+    return (<div className="col-sm-6 col-md-4">
       <div className="card">
-        <div className="card-header text-center">{this.props.title}</div>
+        <div className="card-header text-center">Teplota a vlhkosť</div>
         <div className="card-body">
-          <div className={"card-text text-center temperature-widget-body " + colorClass}>
-            {this.props.value}
-            <sup>
-              <span>{this.props.unit}</span>
-            </sup>
+          <div className="card-text row">
+            <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
+              {this.props.currentData.temperature.value}
+              <sup>
+                <span>°C</span>
+              </sup>
+            </div>
+            <div className={"col-6 text-center temperature-widget-body " + humidityColorClass}>
+              {this.props.currentData.humidity.value}
+              <sup>
+                <span>%</span>
+              </sup>
+            </div>
           </div>
         </div>
-        <Line className="card-img-bottom" data={chartData} options={chartOptions} width={100} height={100}/>
+        <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100}/>
         <div className="card-footer text-muted text-center">{time}</div>
       </div>
     </div>);
@@ -138,14 +195,7 @@ class Widgets extends React.Component {
     let temperature_dataset = this.state.temperature_list.map(x => x.temperature);
     let humidity_dataset = this.state.temperature_list.map(x => x.humidity);
     return <div className="row">
-      <TemperatureWidget title="Teplota" value={this.state.temperature_now.temperature.value} unit="°C" time={this.state.temperature_now.time} high={this.state.temperature_now.temperature.high} low={this.state.temperature_now.temperature.low} data={{
-          labels: labels,
-          data: temperature_dataset
-        }}/>
-      <TemperatureWidget title="Vlhkosť" value={this.state.temperature_now.humidity.value} unit="%" time={this.state.temperature_now.time} high={this.state.temperature_now.humidity.high} low={this.state.temperature_now.humidity.low} data={{
-          labels: labels,
-          data: humidity_dataset
-        }}/>
+      <TemperatureWidget currentData={this.state.temperature_now} historicData={this.state.temperature_list}/>
 
       <PcStatusWidget title={this.state.pc_status_data.name} status={this.state.pc_status_data.online} ssh={this.state.pc_status_data.ssh} time={this.state.pc_status_data.time}/>
     </div>
