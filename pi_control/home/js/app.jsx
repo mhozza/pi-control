@@ -13,14 +13,14 @@ class TemperatureWidget extends React.Component {
       labels: labels.map(time => new Date(time).toLocaleTimeString()),
       datasets: [
         {
-          label: 'Temperature',
+          label: 'Teplota',
           data: temperature_dataset,
           borderColor: 'rgba(220, 53, 69, .8)',
           backgroundColor: 'rgba(220, 53, 69, .8)',
           fill: false,
           yAxisID: 'y-axis-1'
         }, {
-          label: 'Humidity',
+          label: 'Vlhkosť',
           data: humidity_dataset,
           borderColor: 'rgba(0, 123, 255, .8)',
           backgroundColor: 'rgba(0, 123, 255, .8)',
