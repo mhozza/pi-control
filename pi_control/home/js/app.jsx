@@ -11,7 +11,7 @@ class TemperatureWidget extends React.Component {
         {
           data: this.props.data.data,
           borderColor: "rgba(220, 53, 69, .8)",
-          backgroundColor: "rgba(0, 0, 0, 0)",
+          backgroundColor: "rgba(0, 0, 0, 0)"
         }
       ]
     };
@@ -19,7 +19,7 @@ class TemperatureWidget extends React.Component {
       responsive: true,
       legend: {
         display: false
-      },
+      }
     };
 
     let time = new Date(this.props.time).toLocaleString();
@@ -29,18 +29,20 @@ class TemperatureWidget extends React.Component {
         ? "text-primary"
         : "text-success";
 
-    return (<div className="card">
-      <div className="card-header text-center">{this.props.title}</div>
-      <div className="card-body">
-        <div className={"card-text text-center temperature-widget-body " + colorClass}>
-          {this.props.value}
-          <sup>
-            <span>{this.props.unit}</span>
-          </sup>
+    return (<div className="col-sm-6 col-md-3">
+      <div className="card">
+        <div className="card-header text-center">{this.props.title}</div>
+        <div className="card-body">
+          <div className={"card-text text-center temperature-widget-body " + colorClass}>
+            {this.props.value}
+            <sup>
+              <span>{this.props.unit}</span>
+            </sup>
+          </div>
         </div>
+        <Line className="card-img-bottom" data={chartData} options={chartOptions} width={100} height={100}/>
+        <div className="card-footer text-muted text-center">{time}</div>
       </div>
-      <Line className="card-img-bottom" data={chartData} options={chartOptions} width={100} height={100}/>
-      <div className="card-footer text-muted text-center">{time}</div>
     </div>);
   }
 }
@@ -48,34 +50,36 @@ class TemperatureWidget extends React.Component {
 class PcStatusWidget extends React.Component {
   render() {
     let time = new Date(this.props.time).toLocaleString();
-    return (<div className="card">
-      <div className="card-header text-center">{this.props.title}</div>
-      <div className="card-body">
-        <div className="card-text text-center pc_status-widget-primary">
-          <span className={this.props.status
-              ? "text-success"
-              : "text-danger"}>
-            {
-              this.props.status
-                ? "online"
-                : "offline"
-            }
-          </span>
+    return (<div className="col-sm-6 col-md-3">
+      <div className="card">
+        <div className="card-header text-center">{this.props.title}</div>
+        <div className="card-body">
+          <div className="card-text text-center pc_status-widget-primary">
+            <span className={this.props.status
+                ? "text-success"
+                : "text-danger"}>
+              {
+                this.props.status
+                  ? "online"
+                  : "offline"
+              }
+            </span>
+          </div>
+          <div className="card-text text-center pc_status-widget-secondary">
+            SSH:
+            <span className={this.props.ssh
+                ? "text-success"
+                : "text-danger"}>
+              {
+                this.props.ssh
+                  ? "online"
+                  : "offline"
+              }
+            </span>
+          </div>
         </div>
-        <div className="card-text text-center pc_status-widget-secondary">
-          SSH:
-          <span className={this.props.ssh
-              ? "text-success"
-              : "text-danger"}>
-            {
-              this.props.ssh
-                ? "online"
-                : "offline"
-            }
-          </span>
-        </div>
+        <div className="card-footer text-muted text-center">{time}</div>
       </div>
-      <div className="card-footer text-muted text-center">{time}</div>
     </div>);
   }
 }
@@ -134,16 +138,16 @@ class Widgets extends React.Component {
     let temperature_dataset = this.state.temperature_list.map(x => x.temperature);
     let humidity_dataset = this.state.temperature_list.map(x => x.humidity);
     return <div className="row">
-      <div className="col-sm-6 col-md-3">
-        <TemperatureWidget title="Teplota" value={this.state.temperature_now.temperature.value} unit="°C" time={this.state.temperature_now.time} high={this.state.temperature_now.temperature.high} low={this.state.temperature_now.temperature.low} data={{labels: labels, data: temperature_dataset}}/>
-      </div>
-      <div className="col-sm-6 col-md-3">
-        <TemperatureWidget title="Vlhkosť" value={this.state.temperature_now.humidity.value} unit="%" time={this.state.temperature_now.time} high={this.state.temperature_now.humidity.high} low={this.state.temperature_now.humidity.low} data={{labels: labels, data: humidity_dataset}}/>
-      </div>
+      <TemperatureWidget title="Teplota" value={this.state.temperature_now.temperature.value} unit="°C" time={this.state.temperature_now.time} high={this.state.temperature_now.temperature.high} low={this.state.temperature_now.temperature.low} data={{
+          labels: labels,
+          data: temperature_dataset
+        }}/>
+      <TemperatureWidget title="Vlhkosť" value={this.state.temperature_now.humidity.value} unit="%" time={this.state.temperature_now.time} high={this.state.temperature_now.humidity.high} low={this.state.temperature_now.humidity.low} data={{
+          labels: labels,
+          data: humidity_dataset
+        }}/>
 
-      <div className="col-sm-6 col-md-3">
-        <PcStatusWidget title={this.state.pc_status_data.name} status={this.state.pc_status_data.online} ssh={this.state.pc_status_data.ssh} time={this.state.pc_status_data.time}/>
-      </div>
+      <PcStatusWidget title={this.state.pc_status_data.name} status={this.state.pc_status_data.online} ssh={this.state.pc_status_data.ssh} time={this.state.pc_status_data.time}/>
     </div>
   }
 }
