@@ -81,7 +81,7 @@ class TemperatureWidget extends React.Component {
         ? "text-primary"
         : "text-success";
 
-    return (<div className="col-sm-6 col-md-4">
+    return (<div className="col-md-4">
       <div className="card">
         <div className="card-header text-center">Teplota a vlhkosť</div>
         <div className="card-body">
