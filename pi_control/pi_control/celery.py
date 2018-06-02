@@ -1,8 +1,12 @@
 from __future__ import absolute_import, unicode_literals
+
 import os
+
+import dotenv
 from celery import Celery
 
 # set the default Django settings module for the 'celery' program.
+dotenv.read_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'pi_control.settings')
 
 app = Celery('pi_control')
