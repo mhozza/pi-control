@@ -94,8 +94,8 @@ DATABASES = {
         'NAME': env('DB_NAME', os.path.join(BASE_DIR, 'db.sqlite3')),
         'USER': env('DB_USER', ''),
         'PASSWORD': env('DB_PASSWORD', ''),
-        'HOST': env('DB_HOST', ''),
-        'PORT': env('DB_PORT', ''),
+        'HOST': env('DB_HOST', '127.0.0.1'),
+        'PORT': env('DB_PORT', '5432'),
     }
 }
 
