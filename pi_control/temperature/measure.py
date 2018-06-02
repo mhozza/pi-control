@@ -1,9 +1,12 @@
 #!/usr/bin/python
 
+import logging
 import posix
 import time
 from fcntl import ioctl
 from random import randint
+
+logger = logging.getLogger(__name__)
 
 
 class AM2320:
@@ -90,6 +93,6 @@ am2320 = AM2320(1)
 def measure_temperature_and_humidity():
     try:
         return am2320.readSensor()
-    except:
+    except Exception as e:
+        logger.error('Cannot read from temperature sensor! {}'.format(e))
         return randint(17, 30), randint(20, 70)
-
