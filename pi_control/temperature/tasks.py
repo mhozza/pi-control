@@ -2,6 +2,7 @@ import logging
 import time
 
 from celery import shared_task
+from django.conf import settings
 from django.utils import timezone
 
 from .measure import measure_temperature_and_humidity
@@ -23,9 +24,15 @@ def log_temperature():
             last_entry_time, MIN_MEASUREMENT_TIME_DIFFERENCE_MINUTES))
         return
 
-    temperature_measurements, humidity_measurements = zip(*[delay_measure(i > 0) for i in range(3)])
+    try:
+        temperature_measurements, humidity_measurements = zip(*[delay_measure(i > 0) for i in range(3)])
 
-    temperature = sorted(temperature_measurements)[1]
-    humidity = sorted(humidity_measurements)[1]
+        temperature = sorted(temperature_measurements)[1]
+        humidity = sorted(humidity_measurements)[1]
+    except Exception as e:
+        logger.error('Cannot read from temperature sensor! {}'.format(e))
+        if not settings.DEBUG:
+            raise e
+        temperature, humidity = 0, 0
 
     Entry.objects.create(temperature=temperature, humidity=humidity)

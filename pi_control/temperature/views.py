@@ -1,3 +1,7 @@
+import logging
+from random import randint
+
+from django.conf import settings
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from rest_framework import generics
@@ -13,11 +17,21 @@ HUMIDITY_LOW = 30
 TEMPERATURE_HIGH = 25
 TEMPERATURE_LOW = 22
 
+logger = logging.getLogger(__name__)
+
+
 
 @api_view(['GET'])
 def get_temperature_and_humidity(request):
     now = timezone.now()
-    temperature, humidity = measure_temperature_and_humidity()
+    try:
+        temperature, humidity = measure_temperature_and_humidity()
+    except Exception as e:
+        logger.error('Cannot read from temperature sensor! {}'.format(e))
+        if not settings.DEBUG:
+            raise e
+        temperature, humidity = randint(17, 30), randint(20, 70)
+
     return Response({
         'time': now,
         'temperature': {

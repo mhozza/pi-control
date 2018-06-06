@@ -1,12 +1,7 @@
 #!/usr/bin/python
-
-import logging
-import posix
+import os
 import time
 from fcntl import ioctl
-from random import randint
-
-logger = logging.getLogger(__name__)
 
 
 class AM2320:
@@ -34,20 +29,20 @@ class AM2320:
         return msb << 8 | lsb
 
     def readSensor(self):
-        fd = posix.open("/dev/i2c-%d" % self._i2cbus, posix.O_RDWR)
+        fd = os.open("/dev/i2c-%d" % self._i2cbus, os.O_RDWR)
 
         ioctl(fd, self.I2C_SLAVE, self.I2C_ADDR)
 
         # wake AM2320 up, goes to sleep to not warm up and affect the humidity sensor
         # This write will fail as AM2320 won't ACK this write
         try:
-            posix.write(fd, b'\0x00')
+            os.write(fd, b'\0x00')
         except:
             pass
         time.sleep(0.001)  # Wait at least 0.8ms, at most 3ms
 
         # write at addr 0x03, start reg = 0x00, num regs = 0x04 */
-        posix.write(fd, b'\x03\x00\x04')
+        os.write(fd, b'\x03\x00\x04')
         time.sleep(0.0016)  # Wait at least 1.5ms for result
 
         # Read out 8 bytes of result data
@@ -59,7 +54,9 @@ class AM2320:
         # Byte 5: Temperature lsb
         # Byte 6: CRC lsb byte
         # Byte 7: CRC msb byte
-        data = bytearray(posix.read(fd, 8))
+        data = bytearray(os.read(fd, 8))
+        # TODO: also close fd on exception.
+        os.close(fd)
 
         # Check data[0] and data[1]
         if data[0] != 0x03 or data[1] != 0x04:
@@ -91,8 +88,4 @@ am2320 = AM2320(1)
 
 
 def measure_temperature_and_humidity():
-    try:
-        return am2320.readSensor()
-    except Exception as e:
-        logger.error('Cannot read from temperature sensor! {}'.format(e))
-        return randint(17, 30), randint(20, 70)
+    return am2320.readSensor()
