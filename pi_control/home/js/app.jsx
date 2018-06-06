@@ -47,6 +47,10 @@ class TemperatureWidget extends React.Component {
                         },
 
                     },
+                    ticks: {
+                        source: 'data',
+                        autoSkip: true
+                    },
                     scaleLabel: {
                         display: false,
                     }
