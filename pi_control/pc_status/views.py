@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 from .pc_status import check_connection, check_ping
 from .tasks import wake_pc as wake_pc_task
+from pi_control.authentication import QueryStringBasedTokenAuthentication
 
 PC_IP = '192.168.0.47'
 PC_NAME = 'mamut'
@@ -27,7 +28,7 @@ def get_pc_status(request):
 
 
 @api_view(['POST'])
-@authentication_classes((SessionAuthentication, TokenAuthentication))
+@authentication_classes((SessionAuthentication, TokenAuthentication, QueryStringBasedTokenAuthentication))
 def wake_pc(request):
     wake_pc_task.delay(PC_MAC)
     return Response()
