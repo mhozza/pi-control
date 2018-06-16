@@ -29,7 +29,8 @@ urlpatterns = [
     path('logout/', auth_views.logout, name='logout'),
     path('oauth/', include('social_django.urls', namespace='social')),
     path('api/temperature/', include('temperature.urls')),
-    path('api/pc_status/', pc_status_views.get_pc_status, name='pc_status'),
+    path('api/pc_status/', include('pc_status.urls')),
+
     path('api/', include(router.urls)),
     path('admin/', admin.site.urls),
 ]

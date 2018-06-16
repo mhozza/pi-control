@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'social_django',
     'rest_framework',
+    'rest_framework.authtoken',
     'sekizai',
     'django_celery_beat',
     'django_celery_results',
@@ -161,25 +162,33 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('AUTH_KEY', '252833193334-p1smqapcll45s38659
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('AUTH_SECRET', 'ocvhSjJyjKfMROBh4z8EUTA9')
 
 # Logging
-if not DEBUG:
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'handlers': {
-            'file': {
-                'level': 'DEBUG',
-                'class': 'logging.FileHandler',
-                'filename': '/var/www/malina/debug.log',
-            },
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, '..', 'debug.log'),
         },
-        'loggers': {
-            'django': {
-                'handlers': ['file'],
-                'level': 'DEBUG',
-                'propagate': True,
-            },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
         },
-    }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
+if DEBUG:
+    # make all loggers use the console.
+    for logger in LOGGING['loggers']:
+        LOGGING['loggers'][logger]['handlers'] = ['console']
 
 # Rest framework
 REST_FRAMEWORK = {
