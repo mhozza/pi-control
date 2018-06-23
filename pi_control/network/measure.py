@@ -19,7 +19,8 @@ end_matcher = re.compile("rtt min/avg/max/mdev = (?P<min>\d+.\d+)/(?P<avg>\d+.\d
 Stats = namedtuple('Stats', ['min', 'avg', 'max', 'mdev'])
 
 HOST = 'google.co.uk'
-COUNT = 5
+COUNT = 10
+INTERVAL = 3
 
 
 def ping(host=None, count=4, interval=1.0, debug=False):
@@ -56,5 +57,5 @@ def ping(host=None, count=4, interval=1.0, debug=False):
 
 
 def measure_ping():
-    _, stats = ping(HOST, COUNT)
+    _, stats = ping(HOST, COUNT, INTERVAL)
     return stats.avg
