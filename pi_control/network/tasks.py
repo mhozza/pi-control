@@ -21,4 +21,5 @@ def log_ping():
     except Entry.DoesNotExist:
         logger.info('First entry.')
 
-    Entry.objects.create(ping=measure_ping())
+    ping_time = measure_ping()
+    Entry.objects.create(ping=ping_time)

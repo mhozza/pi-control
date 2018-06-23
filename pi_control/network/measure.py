@@ -58,4 +58,8 @@ def ping(host=None, count=4, interval=1.0, debug=False):
 
 def measure_ping():
     _, stats = ping(HOST, COUNT, INTERVAL)
-    return stats.avg
+    if stats is not None:
+        return stats.avg
+    else:
+        logger.info('No network')
+        return None
