@@ -3,7 +3,11 @@ import ReactDOM from 'react-dom';
 import axios from 'axios';
 import {Line} from 'react-chartjs-2';
 
-const moment = require('moment');
+const DISPLAY_FORMATS = {
+    hour: 'HH:mm',
+    minute: 'HH:mm',
+    second: 'HH:mm:ss',
+};
 
 class TemperatureWidget extends React.Component {
     render() {
@@ -15,14 +19,12 @@ class TemperatureWidget extends React.Component {
             labels: labels,
             datasets: [
                 {
-                    label: 'Teplota',
                     data: temperature_dataset,
                     borderColor: 'rgba(220, 53, 69, .8)',
                     pointRadius: 0,
                     fill: false,
                     yAxisID: 'y-axis-1'
                 }, {
-                    label: 'Vlhkosť',
                     data: humidity_dataset,
                     borderColor: 'rgba(0, 123, 255, .8)',
                     pointRadius: 0,
@@ -41,11 +43,7 @@ class TemperatureWidget extends React.Component {
                     type: 'time',
                     time: {
                         tooltipFormat: 'HH:mm',
-                        displayFormats: {
-                            hour: 'HH:mm',
-                            minute: 'HH:mm'
-                        },
-
+                        displayFormats: DISPLAY_FORMATS,
                     },
                     ticks: {
                         source: 'data',
@@ -162,11 +160,62 @@ class PcStatusWidget extends React.Component {
     }
 }
 
+class PingWidget extends React.Component {
+    render() {
+        let labels = this.props.historicData.map(x => x.time);
+        let ping_dataset = this.props.historicData.map(x => x.ping);
+
+        let chartData = {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Ping latencia',
+                    data: ping_dataset,
+                    borderColor: 'rgba(128, 128, 128, .8)',
+                    pointRadius: 0,
+                    fill: false,
+                }
+            ]
+        };
+        let chartOptions = {
+            responsive: true,
+            legend: {
+                display: false
+            },
+            scales: {
+                xAxes: [{
+                    type: 'time',
+                    time: {
+                        tooltipFormat: 'HH:mm:ss',
+                        displayFormats: DISPLAY_FORMATS,
+
+                    },
+                    ticks: {
+                        source: 'data',
+                        autoSkip: true
+                    },
+                    scaleLabel: {
+                        display: false,
+                    }
+                }],
+            }
+        };
+
+        return (<div className="col-md-4">
+            <div className="card">
+                <div className="card-header text-center">Latencia siete</div>
+                <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100}/>
+            </div>
+        </div>);
+    }
+}
+
 class Widgets extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             temperature_list: [],
+            ping_time_list: [],
             temperature_now: {
                 temperature: {
                     value: 'N/A',
@@ -209,17 +258,20 @@ class Widgets extends React.Component {
         axios.get("/api/pc_status").then(response => {
             self.setState({pc_status_data: response.data});
         });
+
+        axios.get("/api/network/list").then(response => {
+            self.setState({ping_time_list: response.data});
+        });
     }
 
     render() {
-        let labels = this.state.temperature_list.map(x => x.time);
-        let temperature_dataset = this.state.temperature_list.map(x => x.temperature);
-        let humidity_dataset = this.state.temperature_list.map(x => x.humidity);
         return <div className="row">
             <TemperatureWidget currentData={this.state.temperature_now} historicData={this.state.temperature_list}/>
 
             <PcStatusWidget title={this.state.pc_status_data.name} status={this.state.pc_status_data.online}
                             ssh={this.state.pc_status_data.ssh} time={this.state.pc_status_data.time}/>
+
+            <PingWidget historicData={this.state.ping_time_list}/>
         </div>
     }
 }
