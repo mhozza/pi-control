@@ -200,6 +200,18 @@ class PingWidget extends React.Component {
                         display: false,
                     }
                 }],
+
+                yAxes: [
+                    {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Ping (ms)'
+                        }
+                    }
+                ]
             }
         };
 
