@@ -19,12 +19,14 @@ class TemperatureWidget extends React.Component {
             labels: labels,
             datasets: [
                 {
+                    label: 'Teplota',
                     data: temperature_dataset,
                     borderColor: 'rgba(220, 53, 69, .8)',
                     pointRadius: 0,
                     fill: false,
                     yAxisID: 'y-axis-1'
                 }, {
+                    label: 'Vlhkosť',
                     data: humidity_dataset,
                     borderColor: 'rgba(0, 123, 255, .8)',
                     pointRadius: 0,
