@@ -11,10 +11,14 @@ MIN_MEASUREMENT_TIME_DIFFERENCE_MINUTES = 1
 
 @shared_task
 def log_ping():
-    last_entry_time = Entry.objects.latest('time').time
-    if timezone.now() - last_entry_time < timezone.timedelta(minutes=MIN_MEASUREMENT_TIME_DIFFERENCE_MINUTES):
-        logger.warning('Skipping measurement. Last measurement is too recent. {} is less than {} minutes ago.'.format(
-            last_entry_time, MIN_MEASUREMENT_TIME_DIFFERENCE_MINUTES))
-        return
+    try:
+        last_entry_time = Entry.objects.latest('time').time
+        if timezone.now() - last_entry_time < timezone.timedelta(minutes=MIN_MEASUREMENT_TIME_DIFFERENCE_MINUTES):
+            logger.warning(
+                'Skipping measurement. Last measurement is too recent. {} is less than {} minutes ago.'.format(
+                    last_entry_time, MIN_MEASUREMENT_TIME_DIFFERENCE_MINUTES))
+            return
+    except Entry.DoesNotExist:
+        logger.info('First entry.')
 
     Entry.objects.create(ping=measure_ping())
