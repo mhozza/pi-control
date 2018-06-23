@@ -19,7 +19,7 @@ from django.urls import include, path
 from rest_framework import routers
 
 from home import views as home_views
-from pc_status import views as pc_status_views
+
 router = routers.DefaultRouter()
 
 
@@ -28,9 +28,9 @@ urlpatterns = [
     path('login/', auth_views.login, name='login'),
     path('logout/', auth_views.logout, name='logout'),
     path('oauth/', include('social_django.urls', namespace='social')),
-    path('api/temperature/', include('temperature.urls')),
+    path('api/network/', include('network.urls')),
     path('api/pc_status/', include('pc_status.urls')),
-
+    path('api/temperature/', include('temperature.urls')),
     path('api/', include(router.urls)),
     path('admin/', admin.site.urls),
 ]

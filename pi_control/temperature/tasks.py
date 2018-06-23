@@ -1,15 +1,16 @@
-import logging
 import time
 
+import logging
 from celery import shared_task
 from django.conf import settings
 from django.utils import timezone
+from random import randint
 
 from .measure import measure_temperature_and_humidity
 from .models import Entry
 
 logger = logging.getLogger(__name__)
-MIN_MEASUREMENT_TIME_DIFFERENCE_MINUTES = 5
+MIN_MEASUREMENT_TIME_DIFFERENCE_MINUTES = 1
 
 
 @shared_task
@@ -33,6 +34,6 @@ def log_temperature():
         logger.error('Cannot read from temperature sensor! {}'.format(e))
         if not settings.DEBUG:
             raise e
-        temperature, humidity = 0, 0
+        temperature, humidity = randint(15, 30), randint(20, 70)
 
     Entry.objects.create(temperature=temperature, humidity=humidity)

@@ -49,7 +49,9 @@ INSTALLED_APPS = [
 
     'pi_control',
     'home',
-    'temperature'
+    'network',
+    'pc_status',
+    'temperature',
 ]
 
 
