@@ -57,9 +57,16 @@ def ping(host=None, count=4, interval=1.0, debug=False):
 
 
 def measure_ping():
-    _, stats = ping(HOST, COUNT, INTERVAL)
-    if stats is not None:
-        return stats.avg
-    else:
-        logger.info('No network')
-        return None
+    times = []
+    while len(times) < 10:
+        t, stats = ping(HOST, COUNT, INTERVAL)
+        if stats is None or not t:
+            logger.info('No network')
+            return None
+        times += t
+
+    # Remove first five (warm-up) and sort.
+    times = sorted(times[5:])
+    # Remove outliers.
+    times = times[1:-1]
+    return sum(times) / len(times)
