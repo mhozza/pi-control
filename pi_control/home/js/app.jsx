@@ -32,14 +32,16 @@ class TemperatureWidget extends React.Component {
                     borderColor: 'rgba(220, 53, 69, .8)',
                     pointRadius: 0,
                     fill: false,
-                    yAxisID: 'y-axis-1'
+                    yAxisID: 'y-axis-1',
+                    cubicInterpolationMode: 'monotone'
                 }, {
                     label: 'Vlhkosť',
                     data: humidity_dataset,
                     borderColor: 'rgba(0, 123, 255, .8)',
                     pointRadius: 0,
                     fill: false,
-                    yAxisID: 'y-axis-2'
+                    yAxisID: 'y-axis-2',
+                    cubicInterpolationMode: 'monotone'
                 }
             ]
         };
@@ -220,6 +222,7 @@ class PingWidget extends React.Component {
                     borderColor: 'rgba(128, 128, 128, .8)',
                     pointRadius: 0,
                     fill: false,
+                    cubicInterpolationMode: 'monotone'
                 }
             ]
         };
