@@ -1,9 +1,8 @@
 import logging
-from random import randint
-
 from django.conf import settings
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
+from random import randint
 from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -18,7 +17,6 @@ TEMPERATURE_HIGH = 25
 TEMPERATURE_LOW = 22
 
 logger = logging.getLogger(__name__)
-
 
 
 @api_view(['GET'])

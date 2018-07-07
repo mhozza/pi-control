@@ -74,18 +74,24 @@ class TemperatureWidget extends React.Component {
                         scaleLabel: {
                             display: true,
                             labelString: 'Teplota'
+                        },
+                        ticks: {
+                            suggestedMin: 20,
+                            suggestedMax: 30
                         }
                     }, {
                         type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
                         display: true,
                         position: 'right',
                         id: 'y-axis-2',
-
                         scaleLabel: {
                             display: true,
                             labelString: 'Vlhkosť'
                         },
-
+                        ticks: {
+                            suggestedMin: 30,
+                            suggestedMax: 50
+                        },
                         // grid line settings
                         gridLines: {
                             drawOnChartArea: false, // only want the grid lines for one axis to show up
@@ -220,7 +226,7 @@ class PingWidget extends React.Component {
                     label: 'Ping latencia',
                     data: ping_dataset,
                     borderColor: 'rgba(128, 128, 128, .8)',
-                    pointRadius: 0,
+                    pointRadius: 3,
                     fill: false,
                     cubicInterpolationMode: 'monotone'
                 }
@@ -256,6 +262,10 @@ class PingWidget extends React.Component {
                         scaleLabel: {
                             display: true,
                             labelString: 'Ping (ms)'
+                        },
+                        ticks: {
+                            beginAtZero: true,
+                            suggestedMax: 50
                         }
                     }
                 ]
