@@ -78,7 +78,8 @@ class Widgets extends React.Component {
                             ssh={this.state.pc_status_data.ssh} time={this.state.pc_status_data.time}/>
             <PingWidget historicData={this.state.ping_time_list}/>
             <ServerStatsWidget title={this.state.server_stats_data.name} time={this.state.server_stats_data.time}
-                               uptime={this.state.server_stats_data.uptime}/>
+                               uptime={this.state.server_stats_data.uptime}
+                               backuptime={this.state.server_stats_data.backuptime}/>
         </div>
     }
 }

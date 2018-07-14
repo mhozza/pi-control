@@ -1,5 +1,8 @@
 import datetime
+import os
 import subprocess
+
+BACKUP_FILENAME = os.environ.get('BACKUP_FILENAME')
 
 
 def get_uptime():
@@ -17,3 +20,9 @@ def get_uptime():
     else:
         hours, minutes = map(int, raw_tokens[2 + offset].split(':'))
     return datetime.timedelta(days=days, hours=hours, minutes=minutes)
+
+
+def get_last_backup_time():
+    if not BACKUP_FILENAME:
+        raise OSError('No filename set')
+    return os.path.getmtime(BACKUP_FILENAME)
