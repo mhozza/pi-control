@@ -30,6 +30,7 @@ urlpatterns = [
     path('oauth/', include('social_django.urls', namespace='social')),
     path('api/network/', include('network.urls')),
     path('api/pc_status/', include('pc_status.urls')),
+    path('api/server_stats/', include('server_stats.urls')),
     path('api/temperature/', include('temperature.urls')),
     path('api/', include(router.urls)),
     path('admin/', admin.site.urls),

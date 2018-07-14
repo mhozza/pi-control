@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'home',
     'network',
     'pc_status',
+    'server_stats',
     'temperature',
 ]
 
