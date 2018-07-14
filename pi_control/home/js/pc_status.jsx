@@ -46,7 +46,7 @@ class PcStatusWidget extends React.Component {
             }
         }
 
-        return (<div className="col-sm-6 col-md-3">
+        return (<div className="col-sm-6 col-md-4">
             <div className="card text-center">
                 <div className="card-header">{this.props.title}</div>
                 <div className="card-body">
@@ -62,7 +62,7 @@ class PcStatusWidget extends React.Component {
                     </span>
                         <br/>
                         <span className="pc_status-widget-secondary">
-                        SSH:
+                            <strong>SSH:</strong>&nbsp;
                         <span className={this.props.ssh
                             ? "text-success"
                             : "text-danger"}>
