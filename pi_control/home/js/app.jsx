@@ -35,6 +35,9 @@ class Widgets extends React.Component {
                 time: null,
                 title: 'N/A',
                 uptime: 'N/A',
+                cpu: 0,
+                memory: 0,
+                swap: 0,
             }
         };
     }
@@ -79,7 +82,11 @@ class Widgets extends React.Component {
             <PingWidget historicData={this.state.ping_time_list}/>
             <ServerStatsWidget title={this.state.server_stats_data.name} time={this.state.server_stats_data.time}
                                uptime={this.state.server_stats_data.uptime}
-                               backuptime={this.state.server_stats_data.backuptime}/>
+                               backuptime={this.state.server_stats_data.backuptime}
+                               cpu={this.state.server_stats_data.cpu}
+                               memory={this.state.server_stats_data.memory}
+                               swap={this.state.server_stats_data.swap}/>
+
         </div>
     }
 }

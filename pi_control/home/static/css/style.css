@@ -2,10 +2,19 @@
   margin: 0.4em 0;
 }
 
-.temperature-widget-body, .pc_status-widget-primary{
+.temperature-widget-body, .pc_status-widget-primary {
   font-size: 2.5em;
 }
 
 .temperature-widget-body > sup > span{
   font-size: 0.6em;
 }
+
+.serverstats-controls {
+  font-size: 2em;
+}
+
+.serverstats-controls > sup > span {
+  font-size: 0.6em;
+}
+

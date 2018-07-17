@@ -22,4 +22,7 @@ def get_server_stats(request):
         uptime=uptime,
         backuptime=backuptime,
         time=now,
+        cpu=helpers.get_cpu(),
+        memory=helpers.get_memory(),
+        swap=helpers.get_swap(),
     ))
