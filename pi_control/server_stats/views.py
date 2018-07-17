@@ -11,7 +11,7 @@ with open('/etc/hostname') as f:
 @api_view(['GET'])
 def get_server_stats(request):
     now = timezone.now()
-    uptime = str(helpers.get_uptime())
+    uptime = str(timezone.timedelta(seconds=helpers.get_uptime()))
     try:
         backuptime = timezone.datetime.fromtimestamp(helpers.get_last_backup_time())
     except OSError:
