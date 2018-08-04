@@ -1,26 +1,23 @@
+from django.conf import settings
 from django.utils import timezone
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
 
-from .pc_status import check_connection, check_ping
-from .tasks import wake_pc as wake_pc_task
 from pi_control.authentication import QueryStringBasedTokenAuthentication
-
-PC_IP = '192.168.0.47'
-PC_NAME = 'mamut'
-PC_MAC = '10:7B:44:15:E4:DA'
+from . import pc_status
+from .tasks import wake_pc as wake_pc_task
 
 
 @api_view(['GET'])
 def get_pc_status(request):
     now = timezone.now()
-    online = check_ping(PC_IP)
+    online = pc_status.check_ping(settings.PC_IP)
     ssh_status = False
     if online:
-        ssh_status = check_connection(PC_IP, 22)
+        ssh_status = pc_status.check_connection(settings.PC_IP, 22)
     return Response({
-        'name': PC_NAME,
+        'name': settings.PC_NAME,
         'online': online,
         'ssh': ssh_status,
         'time': now,
@@ -29,6 +26,13 @@ def get_pc_status(request):
 
 @api_view(['POST'])
 @authentication_classes((SessionAuthentication, TokenAuthentication, QueryStringBasedTokenAuthentication))
-def wake_pc(request):
-    wake_pc_task.delay(PC_MAC)
+def wakeup(request):
+    wake_pc_task.delay(settings.PC_MAC)
     return Response()
+
+
+@api_view(['POST'])
+@authentication_classes((SessionAuthentication, TokenAuthentication, QueryStringBasedTokenAuthentication))
+def make_sleep(request):
+    success = pc_status.make_sleep(settings.PC_CONTROL_URL, settings.PC_CONTROL_SECRET)
+    return Response(success)

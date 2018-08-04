@@ -12,11 +12,14 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 
-def env(name, default, type=str):
+
+def env(name, default=None, type=str):
     return type(os.environ.get(name, default))
+
 
 def bool_env(name, default):
     return env(name, default) == 'True'
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -205,3 +208,12 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'django-db'
+
+# Slave PC
+PC_NAME = env('PC_NAME')
+PC_IP = env('PC_IP')
+PC_MAC = env('PC_MAC')
+PC_SSH_PORT = env('PC_CONTROL_PORT', '4780')
+PC_CONTROL_PORT = env('PC_CONTROL_PORT', '4780')
+PC_CONTROL_URL = env('PC_CONTROL_URL', 'http://%s:%s' % (PC_IP, PC_CONTROL_PORT))
+PC_CONTROL_SECRET = env('PC_CONTROL_SECRET')

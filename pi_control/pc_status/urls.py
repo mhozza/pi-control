@@ -5,5 +5,6 @@ from pc_status import views
 
 urlpatterns = [
     path('', views.get_pc_status, name='pc_status'),
-    path('wakeup/', views.wake_pc, name='wake_up'),
+    path('wakeup/', views.wakeup, name='wake_up'),
+    path('sleep/', views.make_sleep, name='make_sleep'),
 ]

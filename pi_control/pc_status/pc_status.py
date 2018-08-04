@@ -1,5 +1,6 @@
 import logging
 import os
+import requests
 import socket
 
 logger = logging.getLogger(__name__)
@@ -24,3 +25,13 @@ def check_connection(host, port):
 def wakeup(mac):
     logger.info('Waking up {}.'.format(mac))
     return os.system('wakeonlan {}'.format(mac))
+
+
+def make_sleep(pc_control_url, pc_control_key):
+    sleep_command = 'SUSPEND'
+    payload = {
+        'key': pc_control_key,
+        'command': sleep_command,
+    }
+    response = requests.get(pc_control_url, params=payload)
+    return response.status_code in (200, 204)
