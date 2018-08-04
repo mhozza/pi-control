@@ -15,7 +15,7 @@ def get_pc_status(request):
     online = pc_status.check_ping(settings.PC_IP)
     ssh_status = False
     if online:
-        ssh_status = pc_status.check_connection(settings.PC_IP, 22)
+        ssh_status = pc_status.check_connection(settings.PC_IP, settings.PC_SSH_PORT)
     return Response({
         'name': settings.PC_NAME,
         'online': online,
