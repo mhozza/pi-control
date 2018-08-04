@@ -15,12 +15,21 @@ class PcStatusWidget extends React.Component {
         this.state = {
             loading: false
         };
-        this.handleButtonClick = this.handleButtonClick.bind(this);
+        this.handleWakeupButtonClick = this.handleWakeupButtonClick.bind(this);
+        this.handleSleepButtonClick = this.handleSleepButtonClick.bind(this);
     }
 
-    handleButtonClick(event) {
+    handleWakeupButtonClick(event) {
         let self = this;
         axios.post("/api/pc_status/wakeup/").then(response => {
+            console.log(self, this, event, response);
+            self.setState({loading: true});
+        });
+    }
+
+    handleSleepButtonClick(event) {
+        let self = this;
+        axios.post("/api/pc_status/sleep/").then(response => {
             console.log(self, this, event, response);
             self.setState({loading: true});
         });
@@ -36,12 +45,20 @@ class PcStatusWidget extends React.Component {
         let time = new Date(this.props.time).toLocaleString();
 
         let button;
-        if (!this.props.status) {
+        if (this.props.status) {
             if (this.state.loading) {
-                button = <button onClick={this.handleButtonClick} className="btn btn-primary btn-block">
+                button = <button onClick={this.handleSleepButtonClick} className="btn btn-primary btn-block">
+                    <i className="fa fa-refresh fa-spin"/> Uspi</button>;
+            } else {
+                button = <button onClick={this.handleSleepButtonClick} className="btn btn-primary btn-block">
+                    Uspi</button>
+            }
+        } else {
+            if (this.state.loading) {
+                button = <button onClick={this.handleWakeupButtonClick} className="btn btn-primary btn-block">
                     <i className="fa fa-refresh fa-spin"/> Zapni</button>;
             } else {
-                button = <button onClick={this.handleButtonClick} className="btn btn-primary btn-block">
+                button = <button onClick={this.handleWakeupButtonClick} className="btn btn-primary btn-block">
                     Zapni</button>
             }
         }
