@@ -17,6 +17,7 @@ def get_server_stats(request):
     except OSError:
         backuptime = None
 
+    updates_total, updates_security = helpers.get_update_counts()
     return Response(dict(
         name=SERVER_NAME,
         uptime=uptime,
@@ -25,4 +26,5 @@ def get_server_stats(request):
         cpu=helpers.get_cpu(),
         memory=helpers.get_memory(),
         swap=helpers.get_swap(),
+        updates = dict(total=updates_total, security=updates_security),
     ))
