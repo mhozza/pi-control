@@ -33,7 +33,7 @@ SECRET_KEY = env('SECRET', '@jzqxp^%&b4=(u10%%i-hgz7$8!5ql+vairvmjyru%sj#m9k__')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool_env('DEBUG', True)
 
-ALLOWED_HOSTS = [] if DEBUG else ['malina.hozza.eu']
+ALLOWED_HOSTS = ['*'] if DEBUG else ['malina.hozza.eu']
 
 # Application definition
 INSTALLED_APPS = [
