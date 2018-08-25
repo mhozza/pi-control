@@ -31,14 +31,7 @@ class Widgets extends React.Component {
                 ssh: 'N/A',
                 title: 'N/A',
             },
-            server_stats_data: {
-                time: null,
-                title: 'N/A',
-                uptime: 'N/A',
-                cpu: 0,
-                memory: 0,
-                swap: 0,
-            }
+            server_stats_data: null
         };
     }
 
@@ -79,12 +72,7 @@ class Widgets extends React.Component {
             <TemperatureWidget currentData={this.state.temperature_now} historicData={this.state.temperature_list}/>
             <PcStatusWidget title={this.state.pc_status_data.name} status={this.state.pc_status_data.online}
                             ssh={this.state.pc_status_data.ssh} time={this.state.pc_status_data.time}/>
-            <ServerStatsWidget title={this.state.server_stats_data.name} time={this.state.server_stats_data.time}
-                               uptime={this.state.server_stats_data.uptime}
-                               backuptime={this.state.server_stats_data.backuptime}
-                               cpu={this.state.server_stats_data.cpu}
-                               memory={this.state.server_stats_data.memory}
-                               swap={this.state.server_stats_data.swap}/>
+            <ServerStatsWidget data={this.state.server_stats_data}/>
             <PingWidget historicData={this.state.ping_time_list}/>
         </div>
     }
