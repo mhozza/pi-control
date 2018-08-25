@@ -41,10 +41,10 @@ def get_update_counts():
 
 def is_service_active(service):
     """Return True if service is running."""
-    cmd = subprocess.Popen(['/bin/systemctl', 'status', '%s.service' % service], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    cmd = subprocess.Popen(['/bin/systemctl', 'show', '%s.service' % service, '--no-page'], stdout=subprocess.PIPE,
+                           stderr=subprocess.STDOUT)
     stdout = cmd.stdout.read().decode()
     for line in stdout.split('\n'):
-        if 'Active:' in line:
-            if '(running)' in line:
-                return True
+        if line == 'ActiveState=active':
+            return True
     return False
