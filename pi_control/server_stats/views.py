@@ -1,3 +1,6 @@
+from collections import OrderedDict
+
+from django.conf import settings
 from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -16,8 +19,10 @@ def get_server_stats(request):
         backuptime = timezone.datetime.fromtimestamp(helpers.get_last_backup_time())
     except OSError:
         backuptime = None
-
     updates_total, updates_security = helpers.get_update_counts()
+    service_statuses = OrderedDict(
+        (service, helpers.is_service_active(service)) for service in settings.MONITORED_SERVICES)
+
     return Response(dict(
         name=SERVER_NAME,
         uptime=uptime,
@@ -26,5 +31,6 @@ def get_server_stats(request):
         cpu=helpers.get_cpu(),
         memory=helpers.get_memory(),
         swap=helpers.get_swap(),
-        updates = dict(total=updates_total, security=updates_security),
+        updates=dict(total=updates_total, security=updates_security),
+        service_statuses=service_statuses,
     ))
