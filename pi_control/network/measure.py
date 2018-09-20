@@ -23,9 +23,9 @@ COUNT = 10
 INTERVAL = 3
 
 
-def ping(host=None, count=4, interval=1.0, debug=False):
+def ping(host, count=4, interval=1.0, debug=False):
     ping_command = subprocess.Popen(
-        ["ping", "-c", str(count), "-i", str(interval), host],
+        ["ping", "-4", "-c", str(count), "-i", str(interval), host],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT
     )
