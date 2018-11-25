@@ -4,12 +4,21 @@ import django.db.models.deletion
 from django.db import migrations, models
 
 
+def create_default_device(apps, schema_editor):
+    MeasurementDevice = apps.getModel('temperature', 'MeasurementDevice')
+    try:
+        MeasurementDevice.objects.create(id='raspberry_pi', name='Ob\u00fdva\u010dka (Raspberry Pi)')
+    except:
+        pass
+
+
 class Migration(migrations.Migration):
     dependencies = [
         ('temperature', '0004_measurementdevice_room'),
     ]
 
     operations = [
+        migrations.RunPython(create_default_device),
         migrations.AlterField(
             model_name='entry',
             name='device_id',
