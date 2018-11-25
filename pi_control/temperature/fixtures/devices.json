@@ -1,0 +1,9 @@
+[
+  {
+    "model": "temperature.measurementdevice",
+    "pk": "raspberry_pi",
+    "fields": {
+      "name": "Ob\u00fdva\u010dka (Raspberry Pi)"
+    }
+  }
+]
