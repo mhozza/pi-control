@@ -11,6 +11,7 @@ from .models import Entry
 
 logger = logging.getLogger(__name__)
 MIN_MEASUREMENT_TIME_DIFFERENCE_MINUTES = 1
+DEVICE_ID = 'raspberry_pi'
 
 
 @shared_task
@@ -40,4 +41,4 @@ def log_temperature():
             raise e
         temperature, humidity = randint(15, 30), randint(20, 70)
 
-    Entry.objects.create(temperature=temperature, humidity=humidity)
+    Entry.objects.create(temperature=temperature, humidity=humidity, device_id=DEVICE_ID)
