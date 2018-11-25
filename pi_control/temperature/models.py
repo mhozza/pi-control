@@ -12,7 +12,7 @@ class Entry(models.Model):
     time = models.DateTimeField(auto_now_add=True, verbose_name='measurement time.')
     temperature = models.FloatField(verbose_name='temperature in Celsius.')
     humidity = models.FloatField(verbose_name='humidity in %.')
-    device_id = models.ForeignKey(MeasurementDevice, on_delete=models.CASCADE)
+    device = models.ForeignKey(MeasurementDevice, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'temperature entry'

@@ -66,5 +66,5 @@ class TemperatureListView(generics.ListAPIView):
             time_to = timezone.now()
         queryset = Entry.objects.filter(time__range=(time_from, time_to))
         if 'device' in self.kwargs:
-            queryset = queryset.filter(device_id=self.kwargs['device'])
+            queryset = queryset.filter(device=self.kwargs['device'])
         return queryset
