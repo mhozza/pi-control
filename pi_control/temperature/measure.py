@@ -1,7 +1,10 @@
 #!/usr/bin/python
-import os
 import time
 from fcntl import ioctl
+
+import json
+import os
+import socket
 
 
 class AM2320:
@@ -28,7 +31,7 @@ class AM2320:
     def _combine_bytes(msb, lsb):
         return msb << 8 | lsb
 
-    def readSensor(self):
+    def read_sensor(self):
         fd = os.open("/dev/i2c-%d" % self._i2cbus, os.O_RDWR)
 
         ioctl(fd, self.I2C_SLAVE, self.I2C_ADDR)
@@ -84,8 +87,29 @@ class AM2320:
         return (temp, humi)
 
 
+class NetworkTemperatureSensor:
+    BUFFER_SIZE = 256
+
+    def __init__(self, ip, port):
+        self.ip = ip
+        self.port = port
+
+    def read_sensor(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
+            sck.connect((self.ip, self.port))
+            sck.send(b'{}')  # TODO: Define protocol.
+            payload = sck.recv(self.BUFFER_SIZE)
+
+        data = json.loads(payload)
+        return data['temperature'] / 10.0, data['humidity'] / 10.0
+
+
 am2320 = AM2320(1)
 
 
-def measure_temperature_and_humidity():
-    return am2320.readSensor()
+def measure_temperature_and_humidity(device=None):
+    if device:
+        if device.ip_address and device.port:
+            device = NetworkTemperatureSensor(device.ip_address, device.port)
+            return device.read_sensor()
+    return am2320.read_sensor()

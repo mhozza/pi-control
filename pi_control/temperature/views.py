@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from .measure import measure_temperature_and_humidity
-from .models import Entry
+from .models import Entry, MeasurementDevice
 from .serializers import EntrySerializer
 
 HUMIDITY_HIGH = 50
@@ -22,8 +22,13 @@ logger = logging.getLogger(__name__)
 @api_view(['GET'])
 def get_temperature_and_humidity(request):
     now = timezone.now()
+    device_id = request.GET.get('device')
     try:
-        temperature, humidity = measure_temperature_and_humidity()
+        device = MeasurementDevice.objects.get(pk=device_id)
+    except MeasurementDevice.DoesNotExist:
+        device = None
+    try:
+        temperature, humidity = measure_temperature_and_humidity(device)
     except Exception as e:
         logger.error('Cannot read from temperature sensor! {}'.format(e))
         if not settings.DEBUG:
@@ -32,6 +37,7 @@ def get_temperature_and_humidity(request):
 
     return Response({
         'time': now,
+        'device': device_id,
         'temperature': {
             'value': temperature,
             'high': TEMPERATURE_HIGH,

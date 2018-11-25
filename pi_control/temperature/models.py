@@ -4,6 +4,8 @@ from django.db import models
 class MeasurementDevice(models.Model):
     id = models.CharField(primary_key=True, max_length=100, verbose_name='device ID')
     name = models.CharField(max_length=100, verbose_name='device name')
+    ip_address = models.GenericIPAddressField(protocol='IPv4', blank=True, null=True, verbose_name='device IP address')
+    port = models.IntegerField(default=80, blank=True, null=True, verbose_name='device port')
 
 
 class Entry(models.Model):
