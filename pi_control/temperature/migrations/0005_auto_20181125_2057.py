@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 
 def create_default_device(apps, schema_editor):
-    MeasurementDevice = apps.getModel('temperature', 'MeasurementDevice')
+    MeasurementDevice = apps.get_model('temperature', 'MeasurementDevice')
     try:
         MeasurementDevice.objects.create(id='raspberry_pi', name='Ob\u00fdva\u010dka (Raspberry Pi)')
     except:
