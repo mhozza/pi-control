@@ -51,11 +51,14 @@ class TemperatureListView(generics.ListAPIView):
     def get_queryset(self):
         try:
             time_from = parse_datetime(self.kwargs['from'])
-        except:
+        except KeyError:
             time_from = timezone.now() - timezone.timedelta(days=1)
 
         try:
             time_to = parse_datetime(self.kwargs['to'])
-        except:
+        except KeyError:
             time_to = timezone.now()
-        return Entry.objects.filter(time__range=(time_from, time_to))
+        queryset = Entry.objects.filter(time__range=(time_from, time_to))
+        if 'device' in self.kwargs:
+            queryset = queryset.filter(device_id=self.kwargs['device'])
+        return queryset
