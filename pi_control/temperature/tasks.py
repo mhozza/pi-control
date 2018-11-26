@@ -22,7 +22,7 @@ def log_temperature():
 
     for device in MeasurementDevice.objects.all():
         try:
-            last_entry_time = Entry.objects.latest('time').time
+            last_entry_time = Entry.objects.filter(device=device).latest('time').time
             if timezone.now() - last_entry_time < timezone.timedelta(minutes=MIN_MEASUREMENT_TIME_DIFFERENCE_MINUTES):
                 logger.warning(
                     'Skipping measurement. Last measurement is too recent. {} is less than {} minutes ago.'.format(
