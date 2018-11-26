@@ -6,6 +6,10 @@
   font-size: 2.5em;
 }
 
+a.temperature-tappable-header {
+  text-decoration: none;
+}
+
 .temperature-widget-body > sup > span{
   font-size: 0.6em;
 }

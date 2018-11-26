@@ -111,22 +111,27 @@ class TemperatureWidget extends React.Component {
             <div className="card">
                 <div className="card-header text-center">Teplota a vlhkosť</div>
                 <div className="card-body">
-                    <div className="card-text row">
-                        <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
-                            {this.props.currentData.temperature.value}
-                            <sup>
-                                <span>°C</span>
-                            </sup>
+                    <a className="temperature-tappable-header" data-toggle="collapse" role="button"
+                       href="#collapse_raspberry_pi" aria-expanded="false" aria-controls="collapse_raspberry_pi">
+                        <div className="card-text row">
+                            <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
+                                {this.props.currentData.temperature.value}
+                                <sup>
+                                    <span>°C</span>
+                                </sup>
+                            </div>
+                            <div className={"col-6 text-center temperature-widget-body " + humidityColorClass}>
+                                {this.props.currentData.humidity.value}
+                                <sup>
+                                    <span>%</span>
+                                </sup>
+                            </div>
                         </div>
-                        <div className={"col-6 text-center temperature-widget-body " + humidityColorClass}>
-                            {this.props.currentData.humidity.value}
-                            <sup>
-                                <span>%</span>
-                            </sup>
-                        </div>
-                    </div>
+                    </a>
                 </div>
-                <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100}/>
+                <div className="collapse" id="collapse_raspberry_pi">
+                    <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100}/>
+                </div>
                 <div className="card-footer text-muted text-center">{time}</div>
             </div>
         </div>);
