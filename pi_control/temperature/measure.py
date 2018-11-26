@@ -100,7 +100,7 @@ class NetworkTemperatureSensor:
             sck.send(b'{}')  # TODO: Define protocol.
             payload = sck.recv(self.BUFFER_SIZE)
 
-        data = json.loads(payload)
+        data = json.loads(payload.decode(encoding='utf-8'))
         return data['temperature'] / 10.0, data['humidity'] / 10.0
 
 
