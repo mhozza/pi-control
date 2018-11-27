@@ -11,9 +11,36 @@ const DISPLAY_FORMATS = {
 
 class TemperatureWidget extends React.Component {
     render() {
+        if (this.props.data.length === 0) {
+            return <div>Loading</div>;
+        }
+
+        let device_widgets = [];
+
+        for (let i in this.props.data) {
+            let device = this.props.data[i].device;
+            let current_data = this.props.data[i].current_data;
+            let graph_data = this.props.data[i].graph_data;
+
+            device_widgets.push(<TemperatureData key={'temperature_data_' + device.id} device={device}
+                                                 currentData={current_data} historicData={graph_data}/>);
+        }
+
+        return (<div className="col-md-4">
+            <div className="card">
+                <div className="card-header text-center">Teplota a vlhkosť</div>
+                {device_widgets}
+            </div>
+        </div>);
+    }
+}
+
+class TemperatureData extends React.Component {
+    render() {
         let labels = this.props.historicData.map(x => x.time);
         let temperature_dataset = this.props.historicData.map(x => x.temperature);
         let humidity_dataset = this.props.historicData.map(x => x.humidity);
+        let device = this.props.device;
 
         let chartData = {
             labels: labels,
@@ -93,7 +120,7 @@ class TemperatureWidget extends React.Component {
             }
         };
 
-        let time = new Date(this.props.currentData.time).toLocaleString();
+        // let time = new Date(this.props.currentData.time).toLocaleString();
 
         let temperatureColorClass = this.props.currentData.temperature.value > this.props.currentData.temperature.high
             ? "text-danger"
@@ -107,12 +134,12 @@ class TemperatureWidget extends React.Component {
                 ? "text-primary"
                 : "text-success";
 
-        return (<div className="col-md-4">
-            <div className="card">
-                <div className="card-header text-center">Teplota a vlhkosť</div>
+        return (
+            <div>
                 <div className="card-body">
+                    <h5 className="card-title text-center">{device.name}</h5>
                     <a className="temperature-tappable-header" data-toggle="collapse" role="button"
-                       href="#collapse_raspberry_pi" aria-expanded="false" aria-controls="collapse_raspberry_pi">
+                       href={"#collapse_" + device.id} aria-expanded="false" aria-controls={"collapse_" + device.id}>
                         <div className="card-text row">
                             <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
                                 {this.props.currentData.temperature.value}
@@ -129,12 +156,11 @@ class TemperatureWidget extends React.Component {
                         </div>
                     </a>
                 </div>
-                <div className="collapse" id="collapse_raspberry_pi">
+                <div className="collapse" id={"collapse_" + device.id}>
                     <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100}/>
                 </div>
-                <div className="card-footer text-muted text-center">{time}</div>
-            </div>
-        </div>);
+                {/*<div className="card-footer text-muted text-center">{time}</div>*/}
+            </div>);
     }
 }
 

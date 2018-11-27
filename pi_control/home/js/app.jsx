@@ -7,25 +7,54 @@ import PingWidget from './network.jsx'
 import ServerStatsWidget from './server_stats.jsx';
 
 
+async function getTemperatureData() {
+    const devices = (await axios.get("/api/temperature/devices/")).data;
+    console.log(devices);
+
+    const currentDataPromises = devices.map(device => axios.get("/api/temperature/now/?device=" + device.id));
+    const graphPromises = devices.map(device => axios.get("/api/temperature/list/?device=" + device.id));
+    const allPromises = [Promise.all(currentDataPromises), Promise.all(graphPromises)];
+    const allData = await Promise.all(allPromises);
+
+    const currentDatas = allData[0].map(response => response.data);
+    const graphDatas = allData[1].map(response => response.data);
+
+    console.log(currentDatas, graphDatas);
+
+    let deviceToCurrentData = new Map();
+    for (let i in currentDatas) {
+        let currentData = currentDatas[i];
+        deviceToCurrentData.set(currentData.device, currentData);
+    }
+
+    let deviceToGraphData = new Map();
+    for (let i in graphDatas) {
+        let graphData = graphDatas[i];
+        if (graphData.length > 0) {
+            deviceToGraphData.set(graphData[0].device, graphData);
+        }
+    }
+
+    let result = [];
+    for (let i in devices) {
+        let device = devices[i];
+        result.push({
+            device: device,
+            current_data: deviceToCurrentData.get(device.id),
+            graph_data: deviceToGraphData.get(device.id),
+        })
+    }
+
+    return result;
+}
+
+
 class Widgets extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            temperature_list: [],
+            temperature_humidity_data: [],
             ping_time_list: [],
-            temperature_now: {
-                temperature: {
-                    value: 'N/A',
-                    high: null,
-                    low: null
-                },
-                humidity: {
-                    value: 'N/A',
-                    high: null,
-                    low: null
-                },
-                time: null
-            },
             pc_status_data: {
                 online: 'N/A',
                 ssh: 'N/A',
@@ -46,12 +75,9 @@ class Widgets extends React.Component {
 
     tick() {
         let self = this;
-        axios.get("/api/temperature/now/").then(response => {
-            self.setState({temperature_now: response.data});
-        });
 
-        axios.get("/api/temperature/list/").then(response => {
-            self.setState({temperature_list: response.data});
+        getTemperatureData().then(response => {
+            self.setState({temperature_humidity_data: response});
         });
 
         axios.get("/api/pc_status").then(response => {
@@ -69,7 +95,7 @@ class Widgets extends React.Component {
 
     render() {
         return <div className="row">
-            <TemperatureWidget currentData={this.state.temperature_now} historicData={this.state.temperature_list}/>
+            <TemperatureWidget data={this.state.temperature_humidity_data}/>
             <PcStatusWidget title={this.state.pc_status_data.name} status={this.state.pc_status_data.online}
                             ssh={this.state.pc_status_data.ssh} time={this.state.pc_status_data.time}/>
             <ServerStatsWidget data={this.state.server_stats_data}/>

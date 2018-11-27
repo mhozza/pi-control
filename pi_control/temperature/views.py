@@ -9,12 +9,13 @@ from rest_framework.response import Response
 
 from .measure import measure_temperature_and_humidity
 from .models import Entry, MeasurementDevice
-from .serializers import EntrySerializer
+from .serializers import EntrySerializer, MeasurementDeviceSerializer
 
 HUMIDITY_HIGH = 50
 HUMIDITY_LOW = 30
 TEMPERATURE_HIGH = 25
 TEMPERATURE_LOW = 22
+DEFAULT_DEVICE = 'raspberry_pi'
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ logger = logging.getLogger(__name__)
 @api_view(['GET'])
 def get_temperature_and_humidity(request):
     now = timezone.now()
-    device_id = request.GET.get('device')
+    device_id = request.GET.get('device', DEFAULT_DEVICE)
     try:
         device = MeasurementDevice.objects.get(pk=device_id)
     except MeasurementDevice.DoesNotExist:
@@ -64,4 +65,10 @@ class TemperatureListView(generics.ListAPIView):
             time_to = parse_datetime(self.kwargs['to'])
         except KeyError:
             time_to = timezone.now()
-        return Entry.objects.filter(time__range=(time_from, time_to), device=self.kwargs.get('device', 'raspberry_pi'))
+        return Entry.objects.filter(time__range=(time_from, time_to),
+                                    device=self.request.GET.get('device', DEFAULT_DEVICE))
+
+
+class MeasurementDeviceListView(generics.ListAPIView):
+    serializer_class = MeasurementDeviceSerializer
+    queryset = MeasurementDevice.objects.all()

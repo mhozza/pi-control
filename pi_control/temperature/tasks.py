@@ -11,7 +11,6 @@ from .models import Entry, MeasurementDevice
 
 logger = logging.getLogger(__name__)
 MIN_MEASUREMENT_TIME_DIFFERENCE_MINUTES = 1
-DEVICE_ID = 'raspberry_pi'
 
 
 @shared_task

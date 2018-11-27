@@ -107,7 +107,7 @@ class NetworkTemperatureSensor:
 am2320 = AM2320(1)
 
 
-def measure_temperature_and_humidity(device=None):
+def measure_temperature_and_humidity(device):
     if device:
         if device.ip_address and device.port:
             device = NetworkTemperatureSensor(device.ip_address, device.port)
