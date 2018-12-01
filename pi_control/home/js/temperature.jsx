@@ -1,5 +1,6 @@
 import React from "react";
 import {Line} from 'react-chartjs-2';
+import LoadingSpinner from './loading.jsx';
 
 
 const DISPLAY_FORMATS = {
@@ -11,21 +12,19 @@ const DISPLAY_FORMATS = {
 
 class TemperatureWidget extends React.Component {
     render() {
-        if (this.props.data.length === 0) {
-            return <div>Loading</div>;
-        }
-
         let device_widgets = [];
+        if (this.props.data.length === 0) {
+            device_widgets = <LoadingSpinner/>;
+        } else {
+            for (let i in this.props.data) {
+                let device = this.props.data[i].device;
+                let current_data = this.props.data[i].current_data;
+                let graph_data = this.props.data[i].graph_data;
 
-        for (let i in this.props.data) {
-            let device = this.props.data[i].device;
-            let current_data = this.props.data[i].current_data;
-            let graph_data = this.props.data[i].graph_data;
-
-            device_widgets.push(<TemperatureData key={'temperature_data_' + device.id} device={device}
-                                                 currentData={current_data} historicData={graph_data}/>);
+                device_widgets.push(<TemperatureData key={'temperature_data_' + device.id} device={device}
+                                                     currentData={current_data} historicData={graph_data}/>);
+            }
         }
-
         return (<div className="col-md-4">
             <div className="card">
                 <div className="card-header text-center">Teplota a vlhkosť</div>

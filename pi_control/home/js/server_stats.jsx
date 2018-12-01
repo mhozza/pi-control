@@ -1,10 +1,15 @@
 import React from "react";
-
+import LoadingSpinner from './loading.jsx';
 
 class ServerStatsWidget extends React.Component {
     render() {
         if (this.props.data === null) {
-            return '';
+            return <div className="col-sm-6 col-md-4">
+                <div className="card text-center">
+                    <div className="card-header">Server</div>
+                    <LoadingSpinner/>
+                </div>
+            </div>
         }
         let time = new Date(this.props.data.time).toLocaleString();
         let backuptime = new Date(this.props.data.backuptime).toLocaleString();

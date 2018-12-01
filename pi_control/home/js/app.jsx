@@ -55,11 +55,7 @@ class Widgets extends React.Component {
         this.state = {
             temperature_humidity_data: [],
             ping_time_list: [],
-            pc_status_data: {
-                online: 'N/A',
-                ssh: 'N/A',
-                title: 'N/A',
-            },
+            pc_status_data: null,
             server_stats_data: null
         };
     }
@@ -96,10 +92,9 @@ class Widgets extends React.Component {
     render() {
         return <div className="row">
             <TemperatureWidget data={this.state.temperature_humidity_data}/>
-            <PcStatusWidget title={this.state.pc_status_data.name} status={this.state.pc_status_data.online}
-                            ssh={this.state.pc_status_data.ssh} time={this.state.pc_status_data.time}/>
+            <PcStatusWidget data={this.state.pc_status_data}/>
             <ServerStatsWidget data={this.state.server_stats_data}/>
-            <PingWidget historicData={this.state.ping_time_list}/>
+            <PingWidget data={this.state.ping_time_list}/>
         </div>
     }
 }

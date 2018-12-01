@@ -1,8 +1,8 @@
 import React from "react";
 import axios from 'axios';
 import cookie from "cookie";
+import LoadingSpinner from './loading.jsx';
 
-// noinspection SpellCheckingInspection
 const csrf_cookie = cookie.parse(document.cookie)['csrftoken'];
 
 if (csrf_cookie) {
@@ -36,16 +36,25 @@ class PcStatusWidget extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.time !== this.props.time) {
+        if (this.props.data !== null && (prevProps.data === null || prevProps.data.time !== this.props.data.time)) {
             this.setState({loading: false});
         }
     }
 
     render() {
-        let time = new Date(this.props.time).toLocaleString();
+        if (this.props.data === null) {
+            return <div className="col-sm-6 col-md-4">
+                <div className="card text-center">
+                    <div className="card-header">PC</div>
+                    <LoadingSpinner/>
+                </div>
+            </div>
+        }
+
+        let time = new Date(this.props.data.time).toLocaleString();
 
         let button;
-        if (this.props.status) {
+        if (this.props.data.status) {
             if (this.state.loading) {
                 button = <button onClick={this.handleSleepButtonClick} className="btn btn-primary btn-block">
                     <i className="fa fa-refresh fa-spin"/> Uspi</button>;
@@ -65,14 +74,14 @@ class PcStatusWidget extends React.Component {
 
         return (<div className="col-sm-6 col-md-4">
             <div className="card text-center">
-                <div className="card-header">{this.props.title}</div>
+                <div className="card-header">{this.props.data.name}</div>
                 <div className="card-body">
                     <p className="card-text">
-                    <span className={"pc_status-widget-primary " + (this.props.status
+                    <span className={"pc_status-widget-primary " + (this.props.data.status
                         ? "text-success"
                         : "text-danger")}>
                       {
-                          this.props.status
+                          this.props.data.status
                               ? "online"
                               : "offline"
                       }
@@ -80,11 +89,11 @@ class PcStatusWidget extends React.Component {
                         <br/>
                         <span className="pc_status-widget-secondary">
                             <strong>SSH:</strong>&nbsp;
-                        <span className={this.props.ssh
-                            ? "text-success"
-                            : "text-danger"}>
+                            <span className={this.props.data.ssh
+                                ? "text-success"
+                                : "text-danger"}>
                           {
-                              this.props.ssh
+                              this.props.data.ssh
                                   ? "online"
                                   : "offline"
                           }
