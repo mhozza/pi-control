@@ -13,6 +13,9 @@ class Room(models.Model):
     humidity_high = models.FloatField(verbose_name='highest comfortable humidity',
                                       default=constants.DEFAULT_HUMIDITY_HIGH)
 
+    def __str__(self):
+        return self.name
+
 
 class MeasurementDevice(models.Model):
     id = models.CharField(primary_key=True, max_length=100, verbose_name='device ID')
@@ -20,6 +23,9 @@ class MeasurementDevice(models.Model):
     ip_address = models.GenericIPAddressField(protocol='IPv4', blank=True, null=True, verbose_name='device IP address')
     port = models.IntegerField(default=80, blank=True, null=True, verbose_name='device port')
     room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Entry(models.Model):
