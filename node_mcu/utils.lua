@@ -1,4 +1,4 @@
-function createPayload(config)
+function createPayload()
     ip, mask, gateway = wifi.sta.getip()
     h, t = am2320.read()
 
@@ -16,6 +16,7 @@ function loadConfig()
         file.close()
         return sjson.decode(raw_config)
     end
+    return {}
 end
 
 return {
