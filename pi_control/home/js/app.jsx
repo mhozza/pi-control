@@ -41,7 +41,7 @@ async function getTemperatureData() {
         result.push({
             device: device,
             current_data: deviceToCurrentData.get(device.id),
-            graph_data: deviceToGraphData.get(device.id),
+            graph_data: deviceToGraphData.has(device.id) ? deviceToGraphData.get(device.id) : [],
         })
     }
 
