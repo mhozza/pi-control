@@ -11,9 +11,11 @@ function createPayload(config)
 end
 
 function loadConfig()
-    return {
-        id = 'bedroom'
-    }
+    if file.open("config.json") then
+        raw_config = file.read()
+        file.close()
+        return sjson.decode(raw_config)
+    end
 end
 
 return {
