@@ -7,15 +7,11 @@ from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from temperature.constants import (DEFAULT_DEVICE, DEFAULT_HUMIDITY_HIGH, DEFAULT_HUMIDITY_LOW,
+                                   DEFAULT_TEMPERATURE_HIGH, DEFAULT_TEMPERATURE_LOW)
 from .measure import measure_temperature_and_humidity
 from .models import Entry, MeasurementDevice
 from .serializers import EntrySerializer, MeasurementDeviceSerializer
-
-HUMIDITY_HIGH = 50
-HUMIDITY_LOW = 30
-TEMPERATURE_HIGH = 25
-TEMPERATURE_LOW = 22
-DEFAULT_DEVICE = 'raspberry_pi'
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +20,19 @@ logger = logging.getLogger(__name__)
 def get_temperature_and_humidity(request):
     now = timezone.now()
     device_id = request.GET.get('device', DEFAULT_DEVICE)
+
+    temperature_low = DEFAULT_TEMPERATURE_LOW
+    temperature_high = DEFAULT_TEMPERATURE_HIGH
+    humidity_low = DEFAULT_HUMIDITY_LOW
+    humidity_high = DEFAULT_HUMIDITY_HIGH
+
     try:
         device = MeasurementDevice.objects.get(pk=device_id)
+        if device.room:
+            temperature_low = device.room.temperature_low
+            temperature_high = device.room.temperature_high
+            humidity_low = device.room.humidity_low
+            humidity_high = device.room.humidity_high
     except MeasurementDevice.DoesNotExist:
         device = None
     try:
@@ -41,13 +48,13 @@ def get_temperature_and_humidity(request):
         'device': device_id,
         'temperature': {
             'value': temperature,
-            'high': TEMPERATURE_HIGH,
-            'low': TEMPERATURE_LOW,
+            'high': temperature_high,
+            'low': temperature_low,
         },
         'humidity': {
             'value': humidity,
-            'high': HUMIDITY_HIGH,
-            'low': HUMIDITY_LOW,
+            'high': humidity_high,
+            'low': humidity_low,
         },
     })
 

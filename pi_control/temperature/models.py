@@ -1,11 +1,25 @@
 from django.db import models
 
+from temperature import constants
+
+
+class Room(models.Model):
+    name = models.CharField(max_length=100, verbose_name='room name')
+    temperature_low = models.FloatField(verbose_name='lowest comfortable temperature',
+                                        default=constants.DEFAULT_TEMPERATURE_LOW)
+    temperature_high = models.FloatField(verbose_name='highest comfortable temperature',
+                                         default=constants.DEFAULT_TEMPERATURE_HIGH)
+    humidity_low = models.FloatField(verbose_name='lowest comfortable humidity', default=constants.DEFAULT_HUMIDITY_LOW)
+    humidity_high = models.FloatField(verbose_name='highest comfortable humidity',
+                                      default=constants.DEFAULT_HUMIDITY_HIGH)
+
 
 class MeasurementDevice(models.Model):
     id = models.CharField(primary_key=True, max_length=100, verbose_name='device ID')
     name = models.CharField(max_length=100, verbose_name='device name')
     ip_address = models.GenericIPAddressField(protocol='IPv4', blank=True, null=True, verbose_name='device IP address')
     port = models.IntegerField(default=80, blank=True, null=True, verbose_name='device port')
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
 
 
 class Entry(models.Model):
@@ -20,8 +34,3 @@ class Entry(models.Model):
 
     def __str__(self):
         return '{}: {}°C, {}%'.format(self.time, self.temperature, self.humidity)
-
-
-class Room(models.Model):
-    name = models.CharField(max_length=100, verbose_name='room name')
-    devices = models.ManyToManyField(MeasurementDevice)
