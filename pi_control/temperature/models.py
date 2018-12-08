@@ -37,9 +37,9 @@ class MeasurementDevice(models.Model):
 
 
 class Entry(models.Model):
-    time = models.DateTimeField(auto_now_add=True, verbose_name='measurement time.')
-    temperature = models.FloatField(verbose_name='temperature in Celsius.')
-    humidity = models.FloatField(verbose_name='humidity in %.')
+    time = models.DateTimeField(auto_now_add=True, verbose_name='measurement time')
+    temperature = models.FloatField(verbose_name='temperature in °C')
+    humidity = models.FloatField(verbose_name='humidity in %')
     device = models.ForeignKey(MeasurementDevice, on_delete=models.CASCADE)
 
     class Meta:
