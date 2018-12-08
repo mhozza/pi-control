@@ -13,3 +13,9 @@ class MeasurementDeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = MeasurementDevice
         fields = ('id', 'name')
+
+
+class RoomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MeasurementDevice
+        fields = ('id', 'name')

@@ -1,6 +1,13 @@
 from django.db import models
+from django.db.models import Count, Q
 
 from temperature import constants
+
+
+class RoomManager(models.Manager):
+    def non_empty(self):
+        return self.get_queryset().annotate(device_count=Count('devices', filter=Q(devices__active=True))).filter(
+            device_count__gt=0)
 
 
 class Room(models.Model):
@@ -12,6 +19,8 @@ class Room(models.Model):
     humidity_low = models.FloatField(verbose_name='lowest comfortable humidity', default=constants.DEFAULT_HUMIDITY_LOW)
     humidity_high = models.FloatField(verbose_name='highest comfortable humidity',
                                       default=constants.DEFAULT_HUMIDITY_HIGH)
+
+    objects = RoomManager()
 
     def __str__(self):
         return self.name
@@ -27,7 +36,7 @@ class MeasurementDevice(models.Model):
     name = models.CharField(max_length=100, verbose_name='device name')
     ip_address = models.GenericIPAddressField(protocol='IPv4', blank=True, null=True, verbose_name='device IP address')
     port = models.IntegerField(default=80, blank=True, null=True, verbose_name='device port')
-    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True, related_name='devices')
     active = models.BooleanField(default=True)
 
     objects = DeviceManager()
