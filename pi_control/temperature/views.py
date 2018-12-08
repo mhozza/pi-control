@@ -73,7 +73,7 @@ class TemperatureListView(generics.ListAPIView):
         except KeyError:
             time_to = timezone.now()
         return Entry.objects.filter(time__range=(time_from, time_to),
-                                    device=self.request.GET.get('device', DEFAULT_DEVICE))
+                                    device=self.request.GET.get('device', DEFAULT_DEVICE)).order_by('time')
 
 
 class MeasurementDeviceListView(generics.ListAPIView):
