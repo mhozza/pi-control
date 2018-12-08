@@ -78,4 +78,4 @@ class TemperatureListView(generics.ListAPIView):
 
 class MeasurementDeviceListView(generics.ListAPIView):
     serializer_class = MeasurementDeviceSerializer
-    queryset = MeasurementDevice.objects.all()
+    queryset = MeasurementDevice.objects.active()

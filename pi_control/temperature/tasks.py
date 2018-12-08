@@ -19,7 +19,7 @@ def log_temperature():
         time.sleep(delay)
         return measure_temperature_and_humidity(measurement_device)
 
-    for device in MeasurementDevice.objects.all():
+    for device in MeasurementDevice.objects.active():
         try:
             last_entry_time = Entry.objects.filter(device=device).latest('time').time
             if timezone.now() - last_entry_time < timezone.timedelta(minutes=MIN_MEASUREMENT_TIME_DIFFERENCE_MINUTES):

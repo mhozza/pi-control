@@ -17,12 +17,20 @@ class Room(models.Model):
         return self.name
 
 
+class DeviceManager(models.Manager):
+    def active(self):
+        return self.get_queryset().filter(active=True)
+
+
 class MeasurementDevice(models.Model):
     id = models.CharField(primary_key=True, max_length=100, verbose_name='device ID')
     name = models.CharField(max_length=100, verbose_name='device name')
     ip_address = models.GenericIPAddressField(protocol='IPv4', blank=True, null=True, verbose_name='device IP address')
     port = models.IntegerField(default=80, blank=True, null=True, verbose_name='device port')
     room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True)
+    active = models.BooleanField(default=True)
+
+    objects = DeviceManager()
 
     def __str__(self):
         return self.name
