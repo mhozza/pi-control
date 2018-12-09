@@ -14,7 +14,7 @@ async function getTemperatureData() {
     const currentDataPromises = rooms.map(room => axios.get("/api/temperature/room/" + room.id + "/now/"));
     const roomDatas = (await Promise.all(currentDataPromises)).map(response => response.data);
     const graphPromises = roomDatas.map(roomData =>
-        Promise.all(roomData.devices.map(device => axios.get("/api/temperature/list/?device=" + device.id)))
+        Promise.all(roomData.devices.map(device_info => axios.get("/api/temperature/list/?device=" + device_info.device)))
     );
     const graphDatas = (await Promise.all(graphPromises)).map(response_list => response_list.map(response => response.data));
 
