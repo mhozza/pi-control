@@ -12,29 +12,77 @@ const DISPLAY_FORMATS = {
 
 class TemperatureWidget extends React.Component {
     render() {
-        let device_widgets = [];
+        let room_widgets = [];
         if (this.props.data.length === 0) {
-            device_widgets = <LoadingSpinner/>;
+            room_widgets = <LoadingSpinner/>;
         } else {
             for (let i in this.props.data) {
-                let device = this.props.data[i].device;
-                let current_data = this.props.data[i].current_data;
-                let graph_data = this.props.data[i].graph_data;
+                let room = this.props.data[i].room;
+                let room_data = this.props.data[i].data;
 
-                device_widgets.push(<TemperatureData key={'temperature_data_' + device.id} device={device}
-                                                     currentData={current_data} historicData={graph_data}/>);
+                room_widgets.push(<RoomData key={'temperature_data_' + room.id} room={room}
+                                            data={room_data}/>);
             }
         }
         return (<div className="col-md-4">
             <div className="card">
                 <div className="card-header text-center">Teplota a vlhkosť</div>
-                {device_widgets}
+                {room_widgets}
             </div>
         </div>);
     }
 }
 
-class TemperatureData extends React.Component {
+class RoomData extends React.Component {
+    render() {
+        let room = this.props.room;
+        let temperatureColorClass = this.props.data.temperature.value > this.props.data.temperature.high
+            ? "text-danger"
+            : this.props.data.temperature.value < this.props.data.temperature.low
+                ? "text-primary"
+                : "text-success";
+        let humidityColorClass = this.props.data.humidity.value > this.props.data.humidity.high
+            ? "text-danger"
+            : this.props.data.humidity.value < this.props.data.humidity.low
+                ? "text-primary"
+                : "text-success";
+
+        let device_data = this.props.data.devices.map(device_info =>
+            <DeviceData key={'temperature_room_data_' + device_info.device}
+                        device={{id: device_info.device, name: device_info.device_name}}
+                        historicData={device_info.graphData}/>);
+
+        return (
+            <div>
+                <div className="card-body">
+                    <h5 className="card-title text-center">{room.name}</h5>
+                    <a className="temperature-tappable-header" data-toggle="collapse" role="button"
+                       href={"#collapse_" + room.id} aria-expanded="false" aria-controls={"collapse_" + room.id}>
+                        <div className="card-text row">
+                            <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
+                                {this.props.data.temperature.value}
+                                <sup>
+                                    <span>°C</span>
+                                </sup>
+                            </div>
+                            <div className={"col-6 text-center temperature-widget-body " + humidityColorClass}>
+                                {this.props.data.humidity.value}
+                                <sup>
+                                    <span>%</span>
+                                </sup>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div className="collapse" id={"collapse_" + room.id}>
+                    {device_data}
+                </div>
+            </div>);
+    }
+}
+
+
+class DeviceData extends React.Component {
     render() {
         let labels = this.props.historicData.map(x => x.time);
         let temperature_dataset = this.props.historicData.map(x => x.temperature);
@@ -119,47 +167,12 @@ class TemperatureData extends React.Component {
             }
         };
 
-        // let time = new Date(this.props.currentData.time).toLocaleString();
-
-        let temperatureColorClass = this.props.currentData.temperature.value > this.props.currentData.temperature.high
-            ? "text-danger"
-            : this.props.currentData.temperature.value < this.props.currentData.temperature.low
-                ? "text-primary"
-                : "text-success";
-
-        let humidityColorClass = this.props.currentData.humidity.value > this.props.currentData.humidity.high
-            ? "text-danger"
-            : this.props.currentData.humidity.value < this.props.currentData.humidity.low
-                ? "text-primary"
-                : "text-success";
-
         return (
             <div>
-                <div className="card-body">
-                    <h5 className="card-title text-center">{device.name}</h5>
-                    <a className="temperature-tappable-header" data-toggle="collapse" role="button"
-                       href={"#collapse_" + device.id} aria-expanded="false" aria-controls={"collapse_" + device.id}>
-                        <div className="card-text row">
-                            <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
-                                {this.props.currentData.temperature.value}
-                                <sup>
-                                    <span>°C</span>
-                                </sup>
-                            </div>
-                            <div className={"col-6 text-center temperature-widget-body " + humidityColorClass}>
-                                {this.props.currentData.humidity.value}
-                                <sup>
-                                    <span>%</span>
-                                </sup>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div className="collapse" id={"collapse_" + device.id}>
-                    <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100}/>
-                </div>
-                {/*<div className="card-footer text-muted text-center">{time}</div>*/}
-            </div>);
+                <h6 className="card-title text-center">{device.name}</h6>
+                <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100}/>
+            </div>
+        );
     }
 }
 

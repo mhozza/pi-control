@@ -82,6 +82,7 @@ def get_room_temperature_and_humidity(request, room_id):
             temperature, humidity = randint(17, 30), randint(20, 70)
         measurements.append({
             'device': device.id,
+            'device_name': device.name,
             'temperature': temperature,
             'humidity': humidity,
         })

@@ -8,40 +8,33 @@ import ServerStatsWidget from './server_stats.jsx';
 
 
 async function getTemperatureData() {
-    const devices = (await axios.get("/api/temperature/devices/")).data;
-    console.log(devices);
+    const rooms = (await axios.get("/api/temperature/rooms/")).data;
+    console.log(rooms);
 
-    const currentDataPromises = devices.map(device => axios.get("/api/temperature/now/?device=" + device.id));
-    const graphPromises = devices.map(device => axios.get("/api/temperature/list/?device=" + device.id));
-    const allPromises = [Promise.all(currentDataPromises), Promise.all(graphPromises)];
-    const allData = await Promise.all(allPromises);
+    const currentDataPromises = rooms.map(room => axios.get("/api/temperature/room/" + room.id + "/now/"));
+    const roomDatas = (await Promise.all(currentDataPromises)).map(response => response.data);
+    const graphPromises = roomDatas.map(roomData =>
+        Promise.all(roomData.devices.map(device => axios.get("/api/temperature/list/?device=" + device.id)))
+    );
+    const graphDatas = (await Promise.all(graphPromises)).map(response_list => response_list.map(response => response.data));
 
-    const currentDatas = allData[0].map(response => response.data);
-    const graphDatas = allData[1].map(response => response.data);
+    console.log(roomDatas, graphDatas);
 
-    console.log(currentDatas, graphDatas);
-
-    let deviceToCurrentData = new Map();
-    for (let i in currentDatas) {
-        let currentData = currentDatas[i];
-        deviceToCurrentData.set(currentData.device, currentData);
-    }
-
-    let deviceToGraphData = new Map();
-    for (let i in graphDatas) {
-        let graphData = graphDatas[i];
-        if (graphData.length > 0) {
-            deviceToGraphData.set(graphData[0].device, graphData);
+    let roomToCurrentData = new Map();
+    for (let i in roomDatas) {
+        let roomData = roomDatas[i];
+        for (let j in roomData.devices) {
+            roomData.devices[j].graphData = graphDatas[i][j];
         }
+        roomToCurrentData.set(roomData.room.toString(), roomData);
     }
 
     let result = [];
-    for (let i in devices) {
-        let device = devices[i];
+    for (let i in rooms) {
+        let room = rooms[i];
         result.push({
-            device: device,
-            current_data: deviceToCurrentData.get(device.id),
-            graph_data: deviceToGraphData.has(device.id) ? deviceToGraphData.get(device.id) : [],
+            room: room,
+            data: roomToCurrentData.get(room.id),
         })
     }
 
