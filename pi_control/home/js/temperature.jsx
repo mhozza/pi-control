@@ -50,10 +50,21 @@ class RoomData extends React.Component {
         let device_data = this.props.data.devices.map(device_info =>
             <DeviceData key={'temperature_room_data_' + device_info.device}
                         device={{id: device_info.device, name: device_info.device_name}}
-                        historicData={device_info.graphData}/>);
+                        temperature={{
+                            value: device_info.temperature,
+                            low: this.props.data.temperature.low,
+                            high: this.props.data.temperature.high,
+                        }}
+                        humidity={{
+                            value: device_info.humidity,
+                            low: this.props.data.humidity.low,
+                            high: this.props.data.humidity.high,
+                        }}
+                        data={device_info.graphData}
+                        needs_legend={this.props.data.devices.length > 1}/>);
 
         return (
-            <div>
+            <React.Fragment>
                 <div className="card-body">
                     <h5 className="card-title text-center">{room.name}</h5>
                     <a className="temperature-tappable-header" data-toggle="collapse" role="button"
@@ -77,17 +88,28 @@ class RoomData extends React.Component {
                 <div className="collapse" id={"collapse_" + room.id}>
                     {device_data}
                 </div>
-            </div>);
+            </React.Fragment>);
     }
 }
 
 
 class DeviceData extends React.Component {
     render() {
-        let labels = this.props.historicData.map(x => x.time);
-        let temperature_dataset = this.props.historicData.map(x => x.temperature);
-        let humidity_dataset = this.props.historicData.map(x => x.humidity);
+        let labels = this.props.data.map(x => x.time);
+        let temperature_dataset = this.props.data.map(x => x.temperature);
+        let humidity_dataset = this.props.data.map(x => x.humidity);
         let device = this.props.device;
+
+        let temperatureColorClass = this.props.temperature.value > this.props.temperature.high
+            ? "text-danger"
+            : this.props.temperature.value < this.props.temperature.low
+                ? "text-primary"
+                : "text-success";
+        let humidityColorClass = this.props.humidity.value > this.props.humidity.high
+            ? "text-danger"
+            : this.props.humidity.value < this.props.humidity.low
+                ? "text-primary"
+                : "text-success";
 
         let chartData = {
             labels: labels,
@@ -167,11 +189,26 @@ class DeviceData extends React.Component {
             }
         };
 
-        return (
-            <div>
+        let legend = '';
+        if (this.props.needs_legend) {
+            legend = <React.Fragment>
                 <h6 className="card-title text-center">{device.name}</h6>
+                <div className="card-text row">
+                    <div className={"offset-2 col-4 text-center " + temperatureColorClass}>
+                        {this.props.temperature.value}°C
+                    </div>
+                    <div className={"col-4 text-center " + humidityColorClass}>
+                        {this.props.humidity.value}%
+                    </div>
+                </div>
+            </React.Fragment>;
+        }
+
+        return (
+            <React.Fragment>
+                {legend}
                 <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100}/>
-            </div>
+            </React.Fragment>
         );
     }
 }
