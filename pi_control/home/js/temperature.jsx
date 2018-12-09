@@ -61,7 +61,7 @@ class RoomData extends React.Component {
                             high: this.props.data.humidity.high,
                         }}
                         data={device_info.graphData}
-                        needs_legend={this.props.data.devices.length > 1}/>);
+                        needs_details={this.props.data.devices.length > 1}/>);
 
         return (
             <React.Fragment>
@@ -71,13 +71,13 @@ class RoomData extends React.Component {
                        href={"#collapse_" + room.id} aria-expanded="false" aria-controls={"collapse_" + room.id}>
                         <div className="card-text row">
                             <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
-                                {this.props.data.temperature.value}
+                                {this.props.data.temperature.value.toFixed(1)}
                                 <sup>
                                     <span>°C</span>
                                 </sup>
                             </div>
                             <div className={"col-6 text-center temperature-widget-body " + humidityColorClass}>
-                                {this.props.data.humidity.value}
+                                {this.props.data.humidity.value.toFixed(1)}
                                 <sup>
                                     <span>%</span>
                                 </sup>
@@ -189,9 +189,9 @@ class DeviceData extends React.Component {
             }
         };
 
-        let legend = '';
-        if (this.props.needs_legend) {
-            legend = <React.Fragment>
+        let details = '';
+        if (this.props.needs_details) {
+            details = <React.Fragment>
                 <h6 className="card-title text-center">{device.name}</h6>
                 <div className="card-text row">
                     <div className={"offset-2 col-4 text-center " + temperatureColorClass}>
@@ -206,7 +206,7 @@ class DeviceData extends React.Component {
 
         return (
             <React.Fragment>
-                {legend}
+                {details}
                 <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100}/>
             </React.Fragment>
         );
