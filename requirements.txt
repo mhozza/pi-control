@@ -13,6 +13,7 @@ defusedxml==0.5.0
 django-celery-beat==1.4.0
 django-celery-results==1.0.4
 django-classy-tags==0.8.0
+django-crispy-forms==1.7.2
 django-dotenv==1.4.2
 django-sekizai==0.10.0
 django-timezone-field==3.0  # via django-celery-beat

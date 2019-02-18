@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'sekizai',
     'django_celery_beat',
     'django_celery_results',
+    'crispy_forms',
 
     'pi_control',
     'home',
@@ -56,6 +57,7 @@ INSTALLED_APPS = [
     'pc_status',
     'server_stats',
     'temperature',
+    'ff_ebook_frontend',
 ]
 
 
@@ -208,6 +210,8 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'django-db'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Slave PC
 PC_NAME = env('PC_NAME')

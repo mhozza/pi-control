@@ -18,6 +18,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import include, path
 from rest_framework import routers
 
+from ff_ebook_frontend.views import BuildEbookView
 from home import views as home_views
 
 router = routers.DefaultRouter()
@@ -33,5 +34,6 @@ urlpatterns = [
     path('api/server_stats/', include('server_stats.urls')),
     path('api/temperature/', include('temperature.urls')),
     path('api/', include(router.urls)),
+    path('ebook/', BuildEbookView.as_view()),
     path('admin/', admin.site.urls),
 ]

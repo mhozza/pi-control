@@ -8,6 +8,7 @@ Django
 django-celery-beat
 django-celery-results
 django-classy-tags
+django-crispy-forms
 django-dotenv
 django-sekizai
 djangorestframework
