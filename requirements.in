@@ -27,3 +27,4 @@ social-auth-app-django
 social-auth-core
 urllib3
 vine
+-e git+https://github.com/mhozza/fanfiction.ebook#egg=ff_ebook
