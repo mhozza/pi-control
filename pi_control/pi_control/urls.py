@@ -34,6 +34,6 @@ urlpatterns = [
     path('api/server_stats/', include('server_stats.urls')),
     path('api/temperature/', include('temperature.urls')),
     path('api/', include(router.urls)),
-    path('ebook/', BuildEbookView.as_view()),
+    path('ebook/', BuildEbookView.as_view(), name='build-ebook'),
     path('admin/', admin.site.urls),
 ]
