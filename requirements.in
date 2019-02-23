@@ -8,6 +8,7 @@ Django
 django-celery-beat
 django-celery-results
 django-classy-tags
+django-crispy-forms
 django-dotenv
 django-sekizai
 djangorestframework
@@ -18,6 +19,7 @@ psutil
 psycopg2
 PyJWT
 python3-openid
+python-slugify
 pytz
 requests
 requests-oauthlib
@@ -26,3 +28,4 @@ social-auth-app-django
 social-auth-core
 urllib3
 vine
+-e git+https://github.com/mhozza/fanfiction.ebook#egg=ff_ebook
