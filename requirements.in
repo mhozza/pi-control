@@ -19,6 +19,7 @@ psutil
 psycopg2
 PyJWT
 python3-openid
+python-slugify
 pytz
 requests
 requests-oauthlib
