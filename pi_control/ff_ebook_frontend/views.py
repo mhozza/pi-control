@@ -18,6 +18,6 @@ class BuildEbookView(FormView):
 
     def form_valid(self, form):
         url = form.cleaned_data['url']
-        add_message(self.request, SUCCESS, 'Started conversion of {}'.format(url))
-        convert_ebook.delay(url, form.cleaned_data['sender_email'], form.cleaned_data['kindle_email'])
+        result = convert_ebook.delay(url, form.cleaned_data['sender_email'], form.cleaned_data['kindle_email'])
+        add_message(self.request, SUCCESS, 'Vyrábam knihu pre Kindle z {}.'.format(url))
         return super().form_valid(form)
