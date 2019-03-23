@@ -1,4 +1,5 @@
 amqp
+asgiref
 billiard
 celery
 certifi
