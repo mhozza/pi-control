@@ -77,11 +77,11 @@ class PcStatusWidget extends React.Component {
                 <div className="card-header">{this.props.data.name}</div>
                 <div className="card-body">
                     <p className="card-text">
-                    <span className={"pc_status-widget-primary " + (this.props.data.status
+                    <span className={"pc_status-widget-primary " + (this.props.data.online
                         ? "text-success"
                         : "text-danger")}>
                       {
-                          this.props.data.status
+                          this.props.data.online
                               ? "online"
                               : "offline"
                       }
