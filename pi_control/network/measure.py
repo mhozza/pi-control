@@ -59,7 +59,7 @@ async def ping(host, count=4, interval=1.0, debug=False):
 
 async def measure_ping():
     times, stats = await ping(HOST, COUNT, INTERVAL)
-    if stats is None or not t:
+    if stats is None or not times:
         logger.info('No network')
         return None
     elif len(times) < WARM_UP:
