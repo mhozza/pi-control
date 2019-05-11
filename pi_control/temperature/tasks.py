@@ -1,11 +1,11 @@
 import asyncio
-
 import logging
+from random import randint
+
 from asgiref.sync import async_to_sync, sync_to_async
 from celery import shared_task
 from django.conf import settings
 from django.utils import timezone
-from random import randint
 
 from .measure import measure_temperature_and_humidity
 from .models import Entry, MeasurementDevice
@@ -17,11 +17,6 @@ MIN_MEASUREMENT_TIME_DIFFERENCE_MINUTES = 1
 async def delay_measure(delay, measurement_device):
     await asyncio.sleep(delay)
     return await sync_to_async(measure_temperature_and_humidity)(measurement_device)
-
-
-@sync_to_async
-def save_entry(temperature, humidity, device):
-    return Entry.objects.create(temperature=temperature, humidity=humidity, device=device)
 
 
 async def log_temperature_for_device(device):
@@ -47,17 +42,12 @@ async def log_temperature_for_device(device):
             raise e
         temperature, humidity = randint(15, 30), randint(20, 70)
 
-    await save_entry(temperature, humidity, device)
-
-
-@sync_to_async
-def get_devices():
-    return MeasurementDevice.objects.active()
+    Entry.objects.create(temperature=temperature, humidity=humidity, device=device)
 
 
 @async_to_sync
 async def log_all_temperatures():
-    devices = await get_devices()
+    devices = MeasurementDevice.objects.active()
     await asyncio.gather(
         *[log_temperature_for_device(device) for device in devices])
 
