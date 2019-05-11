@@ -18,6 +18,7 @@ django-celery-beat==1.4.0
 django-celery-results==1.0.4
 django-classy-tags==0.8.0
 django-crispy-forms==1.7.2
+django-debug-toolbar==1.11
 django-dotenv==1.4.2
 django-sekizai==0.10.0
 django-timezone-field==3.0  # via django-celery-beat
@@ -42,6 +43,7 @@ six==1.12.0
 social-auth-app-django==3.1.0
 social-auth-core==3.0.0
 soupsieve==1.8            # via beautifulsoup4
+sqlparse==0.3.0           # via django-debug-toolbar
 unidecode==1.0.23         # via python-slugify
 urllib3==1.24.1
 vine==1.2.0
