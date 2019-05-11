@@ -30,14 +30,6 @@ class ServerStatsWidget extends React.Component {
 
         let updatesColorClass = updates === 0 ? "text-success" : security_updates > 0 ? "text-danger" : "text-warning";
 
-        let service_rows = [];
-        for (let service in this.props.data.service_statuses) {
-            let up = this.props.data.service_statuses[service];
-            let color = up ? "badge-success" : "badge-danger";
-            service_rows.push(<li key={service}><span
-                className={"badge badge-pill " + color}>{up ? '\u2713' : '\u274C'}</span> {service}</li>);
-        }
-
         return (<div className="col-sm-6 col-md-4">
             <div className="card text-center">
                 <div className="card-header">{this.props.data.name}</div>
@@ -79,11 +71,6 @@ class ServerStatsWidget extends React.Component {
                         <strong>Aktualizácie:</strong> <span
                         className={updatesColorClass}>{updates}({security_updates})</span>
                     </p>
-                    <hr/>
-                    <h5 className="card-title">Služby</h5>
-                    <ul className="card-text list-unstyled centered-block">
-                        {service_rows}
-                    </ul>
                 </div>
                 <div className="card-footer text-muted">{time}</div>
             </div>

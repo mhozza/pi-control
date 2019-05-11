@@ -35,6 +35,9 @@ DEBUG = bool_env('DEBUG', True)
 
 ALLOWED_HOSTS = ['*'] if DEBUG else ['malina.hozza.eu']
 
+# For debug-toolbar.
+INTERNAL_IPS = ['127.0.0.1']
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -226,11 +229,4 @@ PC_CONTROL_PORT = env('PC_CONTROL_PORT', 8001, int)
 PC_CONTROL_URL = env('PC_CONTROL_URL', 'http://%s:%d' % (PC_IP, PC_CONTROL_PORT))
 PC_CONTROL_SECRET = env('PC_CONTROL_SECRET')
 
-# Monitored services
-MONITORED_SERVICES = (
-    'celeryd',
-    'celerybeat',
-    'postgresql',
-)
 
-INTERNAL_IPS = ['127.0.0.1']
