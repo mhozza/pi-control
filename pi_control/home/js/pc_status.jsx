@@ -54,7 +54,7 @@ class PcStatusWidget extends React.Component {
         let time = new Date(this.props.data.time).toLocaleString();
 
         let button;
-        if (this.props.data.status) {
+        if (this.props.data.online) {
             if (this.state.loading) {
                 button = <button onClick={this.handleSleepButtonClick} className="btn btn-primary btn-block">
                     <i className="fa fa-refresh fa-spin"/> Uspi</button>;

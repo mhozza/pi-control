@@ -1,8 +1,6 @@
 const webpack = require('webpack');
 
-module.exports = (env, args) =;
->
-{
+module.exports = (env, args) => {
   const debug = args.mode !== 'production';
   return {
     context: __dirname,
@@ -26,4 +24,4 @@ module.exports = (env, args) =;
       ]
     }
   };
-}
+};
