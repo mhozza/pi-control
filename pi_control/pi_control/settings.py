@@ -39,7 +39,16 @@ ALLOWED_HOSTS = ['*'] if DEBUG else ['malina.hozza.eu']
 INTERNAL_IPS = ['127.0.0.1']
 
 # Application definition
+
 INSTALLED_APPS = [
+    'home',
+    'network',
+    'pc_status',
+    'server_stats',
+    'temperature',
+
+    'pi_control',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -53,16 +62,9 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'django_celery_results',
     'crispy_forms',
-
-    'pi_control',
-    'home',
-    'network',
-    'pc_status',
-    'server_stats',
-    'temperature',
     'ff_ebook_frontend',
+    'webpush',
 ]
-
 if DEBUG:
     INSTALLED_APPS.append('debug_toolbar')
 
@@ -132,6 +134,13 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+WEBPUSH_SETTINGS = {
+    'VAPID_PUBLIC_KEY': env('VAPID_PUBLIC_KEY',
+                            'BCqW_ue9--d8vsSNAsAs1GP05rgtTHAHL8Jhyl6Q2Q1HFn9Y-fJYzbFS0-seUbx5rMI0FS4jjLaxQ946p1ZAU_c'),
+    'VAPID_PRIVATE_KEY': env('VAPID_PRIVATE_KEY', 'olVttz_LPSJYEZpHKMcEVxckCZkmrS3oT_VvUS3VFMY'),
+    'VAPID_ADMIN_EMAIL': env('VAPID_ADMIN_EMAIL', 'admin@malina.localhost')
+}
 
 
 # Internationalization

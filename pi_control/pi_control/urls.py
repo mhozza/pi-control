@@ -37,6 +37,7 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('ebook/', BuildEbookView.as_view(), name='build-ebook'),
     path('admin/', admin.site.urls),
+    path('webpush/', include('webpush.urls')),
 ]
 
 if settings.DEBUG:

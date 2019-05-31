@@ -1,12 +1,17 @@
 import asyncio
 import logging
+from datetime import datetime, timedelta
 from random import randint
 
 from asgiref.sync import async_to_sync, sync_to_async
 from celery import shared_task
 from django.conf import settings
+from django.db.models import Avg, OuterRef, Subquery
 from django.utils import timezone
+from webpush import send_group_notification
 
+from temperature.constants import (NOTIFICATION_GROUP_TEMPERATURE_HIGH, NOTIFICATION_GROUP_TEMPERATURE_LOW,
+                                   NOTIFICATION_TTL)
 from .measure import measure_temperature_and_humidity
 from .models import Entry, MeasurementDevice
 
@@ -52,6 +57,36 @@ async def log_all_temperatures():
         *[log_temperature_for_device(device) for device in devices])
 
 
+def get_temperature_and_humidity_by_room():
+    newest_entries = Entry.objects.filter(
+        device=OuterRef('pk'),
+        time__gte=datetime.now() - timedelta(minutes=60)).order_by('-time')
+    room_data = MeasurementDevice.objects.filter(active=True).annotate(
+        latest_temperature=Subquery(newest_entries.values('temperature')[:1])).values('room', 'room__name',
+                                                                                      'room__temperature_high',
+                                                                                      'room__temperature_low').annotate(
+        temperature=Avg('latest_temperature'))
+    return room_data
+
+
+def notify_temperature():
+    for room_data in get_temperature_and_humidity_by_room():
+        print(room_data)
+        if room_data['temperature'] < room_data['room__temperature_low']:
+            payload = {'head': 'Príliš nízka teplota',
+                       'body': 'Teplota v miestnosti {} je {}.'.format(room_data['room__name'],
+                                                                       room_data['temperature'])}
+            send_group_notification(group_name=NOTIFICATION_GROUP_TEMPERATURE_LOW, payload=payload,
+                                    ttl=NOTIFICATION_TTL)
+        if room_data['temperature'] > room_data['room__temperature_high']:
+            payload = {'head': 'Príliš vysoká teplota',
+                       'body': 'Teplota v miestnosti {} je {}.'.format(room_data['room__name'],
+                                                                       room_data['temperature'])}
+            send_group_notification(group_name=NOTIFICATION_GROUP_TEMPERATURE_HIGH, payload=payload,
+                                    ttl=NOTIFICATION_TTL)
+
+
 @shared_task
 def log_temperature():
     log_all_temperatures()
+    notify_temperature()

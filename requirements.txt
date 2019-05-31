@@ -7,12 +7,15 @@
 -e git+https://github.com/mhozza/fanfiction.ebook#egg=ff_ebook
 amqp==2.4.2
 asgiref==3.1.2
+asn1crypto==0.24.0        # via cryptography
 async-timeout==3.0.1      # via asgiref
 beautifulsoup4==4.7.1
 billiard==3.6.0.0
 celery==4.3.0
 certifi==2019.3.9
+cffi==1.12.3              # via cryptography
 chardet==3.0.4
+cryptography==2.6.1       # via http-ece, py-vapid, pywebpush
 defusedxml==0.6.0
 django-celery-beat==1.4.0
 django-celery-results==1.0.4
@@ -22,14 +25,18 @@ django-debug-toolbar==1.11
 django-dotenv==1.4.2
 django-sekizai==1.0.0
 django-timezone-field==3.0  # via django-celery-beat
+django-webpush==0.2.7
 django==2.2.1
 djangorestframework==3.9.4
+http-ece==1.1.0           # via pywebpush
 idna==2.8
 kombu==4.5.0
 lxml==4.3.3
 oauthlib==3.0.1
 psutil==5.6.2
 psycopg2==2.8.2
+py-vapid==1.5.0           # via pywebpush
+pycparser==2.19           # via cffi
 pycurl==7.43.0.2
 pyjwt==1.7.1
 python-crontab==2.3.6     # via django-celery-beat
@@ -37,6 +44,7 @@ python-dateutil==2.8.0    # via python-crontab
 python-slugify==3.0.2
 python3-openid==3.1.0
 pytz==2019.1
+pywebpush==1.6.0          # via django-webpush
 requests-oauthlib==1.2.0
 requests==2.21.0
 six==1.12.0

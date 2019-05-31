@@ -52,7 +52,6 @@ class Entry(models.Model):
     device = models.ForeignKey(MeasurementDevice, on_delete=models.CASCADE, db_index=True)
 
     class Meta:
-        ordering = ('-time',)
         verbose_name = 'temperature entry'
         verbose_name_plural = 'temperature entries'
 

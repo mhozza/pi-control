@@ -13,6 +13,7 @@ django-crispy-forms
 django-debug-toolbar
 django-dotenv
 django-sekizai
+django-webpush
 djangorestframework
 idna
 kombu
