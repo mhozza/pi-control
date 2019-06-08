@@ -1,6 +1,7 @@
 amqp
 asgiref
 billiard
+black
 celery
 certifi
 chardet
@@ -18,6 +19,7 @@ djangorestframework
 idna
 kombu
 oauthlib
+pre-commit
 psutil
 psycopg2
 PyJWT
