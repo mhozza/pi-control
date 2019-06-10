@@ -32,7 +32,7 @@ django-dotenv==1.4.2
 django-sekizai==1.0.0
 django-timezone-field==3.0  # via django-celery-beat
 django-webpush==0.2.7
-django==2.2.1
+django==2.2.2
 djangorestframework==3.9.4
 http-ece==1.1.0           # via pywebpush
 identify==1.4.3           # via pre-commit
