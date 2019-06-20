@@ -1,14 +1,13 @@
 #!/usr/bin/python
-import time
-from fcntl import ioctl
-
 import json
 import os
 import socket
+import time
+from fcntl import ioctl
 
 
 class AM2320:
-    I2C_ADDR = 0x5c
+    I2C_ADDR = 0x5C
     I2C_SLAVE = 0x0703
 
     def __init__(self, i2cbus=1):
@@ -39,13 +38,13 @@ class AM2320:
         # wake AM2320 up, goes to sleep to not warm up and affect the humidity sensor
         # This write will fail as AM2320 won't ACK this write
         try:
-            os.write(fd, b'\0x00')
+            os.write(fd, b"\0x00")
         except:
             pass
         time.sleep(0.001)  # Wait at least 0.8ms, at most 3ms
 
         # write at addr 0x03, start reg = 0x00, num regs = 0x04 */
-        os.write(fd, b'\x03\x00\x04')
+        os.write(fd, b"\x03\x00\x04")
         time.sleep(0.0016)  # Wait at least 1.5ms for result
 
         # Read out 8 bytes of result data
@@ -97,11 +96,11 @@ class NetworkTemperatureSensor:
     def read_sensor(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
             sck.connect((self.ip, self.port))
-            sck.send(b'{}')  # TODO: Define protocol.
+            sck.send(b"{}")  # TODO: Define protocol.
             payload = sck.recv(self.BUFFER_SIZE)
 
-        data = json.loads(payload.decode(encoding='utf-8'))
-        return data['temperature'] / 10.0, data['humidity'] / 10.0
+        data = json.loads(payload.decode(encoding="utf-8"))
+        return data["temperature"] / 10.0, data["humidity"] / 10.0
 
 
 am2320 = AM2320(1)

@@ -4,14 +4,10 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
-        ('temperature', '0002_auto_20181202_1651'),
-    ]
+    dependencies = [("temperature", "0002_auto_20181202_1651")]
 
     operations = [
         migrations.AddField(
-            model_name='measurementdevice',
-            name='active',
-            field=models.BooleanField(default=True),
-        ),
+            model_name="measurementdevice", name="active", field=models.BooleanField(default=True)
+        )
     ]

@@ -4,14 +4,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
-        ('network', '0001_initial'),
-    ]
+    dependencies = [("network", "0001_initial")]
 
     operations = [
         migrations.AlterField(
-            model_name='entry',
-            name='ping',
-            field=models.FloatField(null=True, verbose_name='Ping time (ms).'),
-        ),
+            model_name="entry",
+            name="ping",
+            field=models.FloatField(null=True, verbose_name="Ping time (ms)."),
+        )
     ]

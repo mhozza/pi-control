@@ -4,19 +4,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
-        ('temperature', '0004_auto_20181208_1523'),
-    ]
+    dependencies = [("temperature", "0004_auto_20181208_1523")]
 
     operations = [
         migrations.AlterModelOptions(
-            name='entry',
-            options={'ordering': ('-time',), 'verbose_name': 'temperature entry',
-                     'verbose_name_plural': 'temperature entries'},
+            name="entry",
+            options={
+                "ordering": ("-time",),
+                "verbose_name": "temperature entry",
+                "verbose_name_plural": "temperature entries",
+            },
         ),
         migrations.AlterField(
-            model_name='entry',
-            name='time',
-            field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='measurement time'),
+            model_name="entry",
+            name="time",
+            field=models.DateTimeField(
+                auto_now_add=True, db_index=True, verbose_name="measurement time"
+            ),
         ),
     ]

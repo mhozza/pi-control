@@ -4,24 +4,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
-        ('temperature', '0003_measurementdevice_active'),
-    ]
+    dependencies = [("temperature", "0003_measurementdevice_active")]
 
     operations = [
         migrations.AlterField(
-            model_name='entry',
-            name='humidity',
-            field=models.FloatField(verbose_name='humidity in %'),
+            model_name="entry",
+            name="humidity",
+            field=models.FloatField(verbose_name="humidity in %"),
         ),
         migrations.AlterField(
-            model_name='entry',
-            name='temperature',
-            field=models.FloatField(verbose_name='temperature in °C'),
+            model_name="entry",
+            name="temperature",
+            field=models.FloatField(verbose_name="temperature in °C"),
         ),
         migrations.AlterField(
-            model_name='entry',
-            name='time',
-            field=models.DateTimeField(auto_now_add=True, verbose_name='measurement time'),
+            model_name="entry",
+            name="time",
+            field=models.DateTimeField(auto_now_add=True, verbose_name="measurement time"),
         ),
     ]

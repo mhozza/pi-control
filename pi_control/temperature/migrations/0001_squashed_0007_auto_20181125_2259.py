@@ -5,56 +5,83 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    replaces = [('temperature', '0001_initial'), ('temperature', '0002_auto_20180513_1412'),
-                ('temperature', '0003_auto_20181125_2007'), ('temperature', '0004_measurementdevice_room'),
-                ('temperature', '0005_auto_20181125_2057'), ('temperature', '0006_auto_20181125_2231'),
-                ('temperature', '0007_auto_20181125_2259')]
+    replaces = [
+        ("temperature", "0001_initial"),
+        ("temperature", "0002_auto_20180513_1412"),
+        ("temperature", "0003_auto_20181125_2007"),
+        ("temperature", "0004_measurementdevice_room"),
+        ("temperature", "0005_auto_20181125_2057"),
+        ("temperature", "0006_auto_20181125_2231"),
+        ("temperature", "0007_auto_20181125_2259"),
+    ]
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Entry',
+            name="Entry",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('time', models.DateTimeField(auto_now_add=True, verbose_name='measurement time.')),
-                ('temperature', models.FloatField(verbose_name='temperature in Celsius.')),
-                ('humidity', models.FloatField(verbose_name='humidity in %.')),
-                ('device',
-                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='temperature.MeasurementDevice')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("time", models.DateTimeField(auto_now_add=True, verbose_name="measurement time.")),
+                ("temperature", models.FloatField(verbose_name="temperature in Celsius.")),
+                ("humidity", models.FloatField(verbose_name="humidity in %.")),
+                (
+                    "device",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="temperature.MeasurementDevice",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'temperature entry',
-                'verbose_name_plural': 'temperature entries',
+                "verbose_name": "temperature entry",
+                "verbose_name_plural": "temperature entries",
             },
         ),
         migrations.CreateModel(
-            name='MeasurementDevice',
+            name="MeasurementDevice",
             fields=[
-                ('id', models.CharField(max_length=100, primary_key=True, serialize=False, verbose_name='device ID')),
-                ('name', models.CharField(max_length=100, verbose_name='device name')),
+                (
+                    "id",
+                    models.CharField(
+                        max_length=100, primary_key=True, serialize=False, verbose_name="device ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, verbose_name="device name")),
             ],
         ),
         migrations.CreateModel(
-            name='Room',
+            name="Room",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, verbose_name='room name')),
-                ('devices', models.ManyToManyField(to='temperature.MeasurementDevice')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, verbose_name="room name")),
+                ("devices", models.ManyToManyField(to="temperature.MeasurementDevice")),
             ],
         ),
         migrations.AddField(
-            model_name='measurementdevice',
-            name='ip_address',
-            field=models.GenericIPAddressField(blank=True, null=True, protocol='IPv4',
-                                               verbose_name='device IP address'),
+            model_name="measurementdevice",
+            name="ip_address",
+            field=models.GenericIPAddressField(
+                blank=True, null=True, protocol="IPv4", verbose_name="device IP address"
+            ),
         ),
         migrations.AddField(
-            model_name='measurementdevice',
-            name='port',
-            field=models.IntegerField(blank=True, default=80, null=True, verbose_name='device port'),
+            model_name="measurementdevice",
+            name="port",
+            field=models.IntegerField(
+                blank=True, default=80, null=True, verbose_name="device port"
+            ),
         ),
     ]

@@ -5,15 +5,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
-        ('temperature', '0005_auto_20181208_1542'),
-    ]
+    dependencies = [("temperature", "0005_auto_20181208_1542")]
 
     operations = [
         migrations.AlterField(
-            model_name='measurementdevice',
-            name='room',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='devices',
-                                    to='temperature.Room'),
-        ),
+            model_name="measurementdevice",
+            name="room",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="devices",
+                to="temperature.Room",
+            ),
+        )
     ]

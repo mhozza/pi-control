@@ -6,16 +6,16 @@ from .models import Entry, MeasurementDevice
 class EntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Entry
-        fields = ('time', 'temperature', 'humidity', 'device')
+        fields = ("time", "temperature", "humidity", "device")
 
 
 class MeasurementDeviceSerializer(serializers.ModelSerializer):
     class Meta:
         model = MeasurementDevice
-        fields = ('id', 'name')
+        fields = ("id", "name")
 
 
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = MeasurementDevice
-        fields = ('id', 'name')
+        fields = ("id", "name")

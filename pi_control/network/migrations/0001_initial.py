@@ -6,20 +6,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Entry',
+            name="Entry",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('time', models.DateTimeField(auto_now_add=True, verbose_name='Measurment time.')),
-                ('ping', models.FloatField(verbose_name='Ping time (ms).')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("time", models.DateTimeField(auto_now_add=True, verbose_name="Measurment time.")),
+                ("ping", models.FloatField(verbose_name="Ping time (ms).")),
             ],
             options={
-                'verbose_name': 'network status entry',
-                'verbose_name_plural': 'network status entries',
+                "verbose_name": "network status entry",
+                "verbose_name_plural": "network status entries",
             },
-        ),
+        )
     ]
