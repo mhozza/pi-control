@@ -9,6 +9,26 @@ if (csrf_cookie) {
     axios.defaults.headers.post['X-CSRFToken'] = csrf_cookie;
 }
 
+class PcStatusWidgetSet extends React.Component {
+    render() {
+        console.log(this.props.data);
+        if (this.props.data === null) {
+            return <div className="col-sm-6 col-md-4">
+                <div className="card text-center">
+                    <div className="card-header">PC</div>
+                    <LoadingSpinner/>
+                </div>
+            </div>
+        }
+
+        const widgets = this.props.data.map((data, index) => <PcStatusWidget key={index} data={data}/>);
+
+        return <React.Fragment>
+            {widgets}
+        </React.Fragment>
+    }
+}
+
 class PcStatusWidget extends React.Component {
     constructor(props) {
         super(props);
@@ -21,7 +41,7 @@ class PcStatusWidget extends React.Component {
 
     handleWakeupButtonClick(event) {
         let self = this;
-        axios.post("/api/pc_status/wakeup/" + self.props.name).then(response => {
+        axios.post("/api/pc_status/wakeup/" + self.props.data.name).then(response => {
             console.log(self, this, event, response);
             self.setState({loading: true});
         });
@@ -29,7 +49,7 @@ class PcStatusWidget extends React.Component {
 
     handleSleepButtonClick(event) {
         let self = this;
-        axios.post("/api/pc_status/sleep/" + self.props.name).then(response => {
+        axios.post("/api/pc_status/sleep/" + self.props.data.name).then(response => {
             console.log(self, this, event, response);
             self.setState({loading: true});
         });
@@ -108,4 +128,4 @@ class PcStatusWidget extends React.Component {
     }
 }
 
-module.exports = PcStatusWidget;
+module.exports = PcStatusWidgetSet;
