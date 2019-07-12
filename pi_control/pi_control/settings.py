@@ -191,7 +191,7 @@ LOGGING = {
         },
         "console": {"level": "DEBUG", "class": "logging.StreamHandler"},
     },
-    "loggers": {"django": {"handlers": ["file"], "level": "DEBUG", "propagate": True}},
+    "loggers": {"django": {"handlers": ["file"], "level": "WARNING", "propagate": True}},
 }
 
 if DEBUG:
@@ -209,12 +209,3 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_RESULT_BACKEND = "django-db"
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
-
-# Slave PC
-PC_NAME = env("PC_NAME")
-PC_IP = env("PC_IP")
-PC_MAC = env("PC_MAC")
-PC_SSH_PORT = env("PC_CONTROL_PORT", 22, int)
-PC_CONTROL_PORT = env("PC_CONTROL_PORT", 8001, int)
-PC_CONTROL_URL = env("PC_CONTROL_URL", "http://%s:%d" % (PC_IP, PC_CONTROL_PORT))
-PC_CONTROL_SECRET = env("PC_CONTROL_SECRET")

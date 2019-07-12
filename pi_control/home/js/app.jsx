@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import TemperatureWidget from './temperature.jsx';
-import PcStatusWidget from './pc_status.jsx';
+import PcStatusWidgetSet from './pc_status.jsx';
 import PingWidget from './network.jsx'
 import ServerStatsWidget from './server_stats.jsx';
 
@@ -41,6 +41,13 @@ async function getTemperatureData() {
     return result;
 }
 
+async function getPcStatusData() {
+    const pcs = (await axios.get("/api/pc_status/list")).data;
+    console.log(pcs);
+
+    return (await Promise.all(pcs.map(pc => axios.get("/api/pc_status/status/" + pc)))).map(response => response.data)
+}
+
 
 class Widgets extends React.Component {
     constructor(props) {
@@ -69,8 +76,8 @@ class Widgets extends React.Component {
             self.setState({temperature_humidity_data: response});
         });
 
-        axios.get("/api/pc_status").then(response => {
-            self.setState({pc_status_data: response.data});
+        getPcStatusData().then(response => {
+            self.setState({pc_status_data: response});
         });
 
         axios.get("/api/network/list").then(response => {
@@ -85,7 +92,7 @@ class Widgets extends React.Component {
     render() {
         return <div className="row">
             <TemperatureWidget data={this.state.temperature_humidity_data}/>
-            <PcStatusWidget data={this.state.pc_status_data}/>
+            <PcStatusWidgetSet data={this.state.pc_status_data}/>
             <ServerStatsWidget data={this.state.server_stats_data}/>
             <PingWidget data={this.state.ping_time_list}/>
         </div>
