@@ -69,7 +69,7 @@ class Widgets extends React.Component {
             self.setState({temperature_humidity_data: response});
         });
 
-        axios.get("/api/pc_status").then(response => {
+        axios.get("/api/pc_status/status/mamut").then(response => {
             self.setState({pc_status_data: response.data});
         });
 
@@ -85,7 +85,7 @@ class Widgets extends React.Component {
     render() {
         return <div className="row">
             <TemperatureWidget data={this.state.temperature_humidity_data}/>
-            <PcStatusWidget data={this.state.pc_status_data}/>
+            <PcStatusWidget name="mamut" data={this.state.pc_status_data}/>
             <ServerStatsWidget data={this.state.server_stats_data}/>
             <PingWidget data={this.state.ping_time_list}/>
         </div>

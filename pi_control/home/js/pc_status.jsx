@@ -21,7 +21,7 @@ class PcStatusWidget extends React.Component {
 
     handleWakeupButtonClick(event) {
         let self = this;
-        axios.post("/api/pc_status/wakeup/").then(response => {
+        axios.post("/api/pc_status/wakeup/" + self.props.name).then(response => {
             console.log(self, this, event, response);
             self.setState({loading: true});
         });
@@ -29,7 +29,7 @@ class PcStatusWidget extends React.Component {
 
     handleSleepButtonClick(event) {
         let self = this;
-        axios.post("/api/pc_status/sleep/").then(response => {
+        axios.post("/api/pc_status/sleep/" + self.props.name).then(response => {
             console.log(self, this, event, response);
             self.setState({loading: true});
         });
