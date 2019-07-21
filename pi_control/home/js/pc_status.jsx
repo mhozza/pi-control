@@ -13,12 +13,10 @@ class PcStatusWidgetSet extends React.Component {
     render() {
         console.log(this.props.data);
         if (this.props.data === null) {
-            return <div className="col-sm-6 col-md-4">
-                <div className="card text-center">
-                    <div className="card-header">PC</div>
-                    <LoadingSpinner/>
-                </div>
-            </div>
+            return (<div className="card text-center">
+                <div className="card-header">PC</div>
+                <LoadingSpinner/>
+            </div>);
         }
 
         const widgets = this.props.data.map((data, index) => <PcStatusWidget key={index} data={data}/>);
@@ -63,11 +61,10 @@ class PcStatusWidget extends React.Component {
 
     render() {
         if (this.props.data === null) {
-            return <div className="col-sm-6 col-md-4">
-                <div className="card text-center">
-                    <div className="card-header">PC</div>
-                    <LoadingSpinner/>
-                </div>
+            return;
+            <div className="card text-center">
+                <div className="card-header">PC</div>
+                <LoadingSpinner/>
             </div>
         }
 
@@ -92,39 +89,38 @@ class PcStatusWidget extends React.Component {
             }
         }
 
-        return (<div className="col-sm-6 col-md-4">
+        return (
             <div className="card text-center">
                 <div className="card-header">{this.props.data.name}</div>
                 <div className="card-body">
                     <p className="card-text">
-                    <span className={"pc_status-widget-primary " + (this.props.data.online
-                        ? "text-success"
-                        : "text-danger")}>
-                      {
-                          this.props.data.online
-                              ? "online"
-                              : "offline"
-                      }
-                    </span>
+                        <span className={"pc_status-widget-primary " + (this.props.data.online
+                            ? "text-success"
+                            : "text-danger")}>
+                            {
+                                this.props.data.online
+                                    ? "online"
+                                    : "offline"
+                            }
+                        </span>
                         <br/>
                         <span className="pc_status-widget-secondary">
                             <strong>SSH:</strong>&nbsp;
                             <span className={this.props.data.ssh
                                 ? "text-success"
                                 : "text-danger"}>
-                          {
-                              this.props.data.ssh
-                                  ? "online"
-                                  : "offline"
-                          }
+                                {
+                                    this.props.data.ssh
+                                        ? "online"
+                                        : "offline"
+                                }
+                            </span>
                         </span>
-                    </span>
                     </p>
                     {button}
                 </div>
                 <div className="card-footer text-muted">{time}</div>
-            </div>
-        </div>);
+            </div>);
     }
 }
 

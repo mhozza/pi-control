@@ -30,7 +30,7 @@ class ServerStatsWidget extends React.Component {
 
         let updatesColorClass = updates === 0 ? "text-success" : security_updates > 0 ? "text-danger" : "text-warning";
 
-        return (<div className="col-sm-6 col-md-4">
+        return (
             <div className="card text-center">
                 <div className="card-header">{this.props.data.name}</div>
                 <div className="card-body">
@@ -74,7 +74,7 @@ class ServerStatsWidget extends React.Component {
                 </div>
                 <div className="card-footer text-muted">{time}</div>
             </div>
-        </div>);
+        );
     }
 }
 

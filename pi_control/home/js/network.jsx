@@ -75,11 +75,9 @@ class PingWidget extends React.Component {
                 <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100}/>;
         }
 
-        return <div className="col-md-4">
-            <div className="card">
-                <div className="card-header text-center">Latencia siete</div>
-                {content}
-            </div>
+        return <div className="card">
+            <div className="card-header text-center">Latencia siete</div>
+            {content}
         </div>;
 
     }
