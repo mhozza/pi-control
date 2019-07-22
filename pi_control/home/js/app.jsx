@@ -90,7 +90,7 @@ class Widgets extends React.Component {
     }
 
     render() {
-        return <div className="card-columns">
+        return <div className="row">
             <TemperatureWidget data={this.state.temperature_humidity_data}/>
             <PcStatusWidgetSet data={this.state.pc_status_data}/>
             <ServerStatsWidget data={this.state.server_stats_data}/>
