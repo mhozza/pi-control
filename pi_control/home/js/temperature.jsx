@@ -24,12 +24,12 @@ class TemperatureWidget extends React.Component {
                                             data={room_data}/>);
             }
         }
-        return (
+        return (<div className="col-md-4">
             <div className="card">
                 <div className="card-header text-center">Teplota a vlhkosť</div>
                 {room_widgets}
             </div>
-        );
+        </div>);
     }
 }
 
