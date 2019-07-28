@@ -28,6 +28,10 @@ class ServerStatsWidget extends React.Component {
             ? "text-danger"
             : "text-success";
 
+        let cpuTempColorClass = this.props.data.cpu_temp > 80
+            ? "text-danger"
+            : "text-success";
+
         let updatesColorClass = updates === 0 ? "text-success" : security_updates > 0 ? "text-danger" : "text-warning";
 
         return (<div className="col-sm-6 col-md-4">
@@ -64,12 +68,18 @@ class ServerStatsWidget extends React.Component {
                         </div>
                     </div>
                     <p className="card-text">
-                        <strong>Čas od zapnutia:</strong> {this.props.data.uptime}
-                        <br/>
-                        <strong>Posledná záloha:</strong> {backuptime}
-                        <br/>
-                        <strong>Aktualizácie:</strong> <span
-                        className={updatesColorClass}>{updates}({security_updates})</span>
+                        <ul className="list-unstyled">
+                            {this.props.data.cpu_temp && <li>
+                                <strong>Teplota CPU: </strong>
+                                <span className={cpuTempColorClass}>{this.props.data.cpu_temp}°C</span>
+                            </li>}
+                            <li><strong>Čas od zapnutia: </strong>{this.props.data.uptime}</li>
+                            <li><strong>Posledná záloha: </strong>{backuptime}</li>
+                            <li>
+                                <strong>Aktualizácie: </strong>
+                                <span className={updatesColorClass}>{updates}({security_updates})</span>
+                            </li>
+                        </ul>
                     </p>
                 </div>
                 <div className="card-footer text-muted">{time}</div>

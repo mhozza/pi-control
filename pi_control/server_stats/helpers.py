@@ -5,6 +5,7 @@ import time
 import psutil
 
 BACKUP_FILENAME = os.environ.get("BACKUP_FILENAME")
+CPU_TEMPERATURE_FILE = os.environ.get("CPU_TEMPERATURE_FILE")
 
 
 def get_uptime():
@@ -25,7 +26,7 @@ def get_swap():
 
 def get_last_backup_time():
     if not BACKUP_FILENAME:
-        raise OSError("No filename set")
+        raise AssertionError("No backup filename set.")
     return os.path.getmtime(BACKUP_FILENAME)
 
 
@@ -53,3 +54,11 @@ def is_service_active(service):
         if line == "ActiveState=active":
             return True
     return False
+
+
+def get_cpu_temperature():
+    if not CPU_TEMPERATURE_FILE:
+        raise AssertionError("No cpu temperature filename set.")
+    with open(CPU_TEMPERATURE_FILE) as f:
+        raw_temp = f.readline()
+        return int(raw_temp) / 1000
