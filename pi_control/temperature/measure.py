@@ -31,34 +31,36 @@ class AM2320:
         return msb << 8 | lsb
 
     def read_sensor(self):
-        fd = os.open("/dev/i2c-%d" % self._i2cbus, os.O_RDWR)
-
-        ioctl(fd, self.I2C_SLAVE, self.I2C_ADDR)
-
-        # wake AM2320 up, goes to sleep to not warm up and affect the humidity sensor
-        # This write will fail as AM2320 won't ACK this write
         try:
-            os.write(fd, b"\0x00")
-        except:
-            pass
-        time.sleep(0.001)  # Wait at least 0.8ms, at most 3ms
+            fd = os.open("/dev/i2c-%d" % self._i2cbus, os.O_RDWR)
 
-        # write at addr 0x03, start reg = 0x00, num regs = 0x04 */
-        os.write(fd, b"\x03\x00\x04")
-        time.sleep(0.0016)  # Wait at least 1.5ms for result
+            ioctl(fd, self.I2C_SLAVE, self.I2C_ADDR)
 
-        # Read out 8 bytes of result data
-        # Byte 0: Should be Modbus function code 0x03
-        # Byte 1: Should be number of registers to read (0x04)
-        # Byte 2: Humidity msb
-        # Byte 3: Humidity lsb
-        # Byte 4: Temperature msb
-        # Byte 5: Temperature lsb
-        # Byte 6: CRC lsb byte
-        # Byte 7: CRC msb byte
-        data = bytearray(os.read(fd, 8))
-        # TODO: also close fd on exception.
-        os.close(fd)
+            # Wake AM2320 up, goes to sleep to not warm up and affect
+            # the humidity sensor.
+            # This write will fail as AM2320 won't ACK this write
+            try:
+                os.write(fd, b"\0x00")
+            except Exception:
+                pass
+            time.sleep(0.001)  # Wait at least 0.8ms, at most 3ms
+
+            # write at addr 0x03, start reg = 0x00, num regs = 0x04 */
+            os.write(fd, b"\x03\x00\x04")
+            time.sleep(0.0016)  # Wait at least 1.5ms for result
+
+            # Read out 8 bytes of result data
+            # Byte 0: Should be Modbus function code 0x03
+            # Byte 1: Should be number of registers to read (0x04)
+            # Byte 2: Humidity msb
+            # Byte 3: Humidity lsb
+            # Byte 4: Temperature msb
+            # Byte 5: Temperature lsb
+            # Byte 6: CRC lsb byte
+            # Byte 7: CRC msb byte
+            data = bytearray(os.read(fd, 8))
+        finally:
+            os.close(fd)
 
         # Check data[0] and data[1]
         if data[0] != 0x03 or data[1] != 0x04:
@@ -96,6 +98,7 @@ class NetworkTemperatureSensor:
     def read_sensor(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
             sck.connect((self.ip, self.port))
+            sck.settimeout(10)
             sck.send(b"{}")  # TODO: Define protocol.
             payload = sck.recv(self.BUFFER_SIZE)
 
@@ -103,7 +106,7 @@ class NetworkTemperatureSensor:
         return data["temperature"] / 10.0, data["humidity"] / 10.0
 
 
-am2320 = AM2320(1)
+am2320 = AM2320(i2cbus=1)
 
 
 def measure_temperature_and_humidity(device):
