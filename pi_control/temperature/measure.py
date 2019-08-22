@@ -31,6 +31,7 @@ class AM2320:
         return msb << 8 | lsb
 
     def read_sensor(self):
+        fd = None
         try:
             fd = os.open("/dev/i2c-%d" % self._i2cbus, os.O_RDWR)
 
@@ -60,7 +61,8 @@ class AM2320:
             # Byte 7: CRC msb byte
             data = bytearray(os.read(fd, 8))
         finally:
-            os.close(fd)
+            if fd is not None:
+                os.close(fd)
 
         # Check data[0] and data[1]
         if data[0] != 0x03 or data[1] != 0x04:
