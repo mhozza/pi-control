@@ -2,6 +2,7 @@ import React from "react";
 import axios from 'axios';
 import cookie from "cookie";
 import LoadingSpinner from './loading.jsx';
+import Widget from './widget.jsx'
 
 const csrf_cookie = cookie.parse(document.cookie)['csrftoken'];
 
@@ -9,10 +10,32 @@ if (csrf_cookie) {
     axios.defaults.headers.post['X-CSRFToken'] = csrf_cookie;
 }
 
-class PcStatusWidgetSet extends React.Component {
+async function getPcStatusData() {
+    const pcs = (await axios.get("/api/pc_status/list")).data;
+    console.log(pcs);
+
+    return (await Promise.all(pcs.map(pc => axios.get("/api/pc_status/status/" + pc)))).map(response => response.data)
+}
+
+
+class PcStatusWidgetSet extends Widget {
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: null,
+        };
+    }
+
+    tick() {
+        let self = this;
+
+        getPcStatusData().then(response => {
+            self.setState({data: response});
+        });
+    }
+
     render() {
-        console.log(this.props.data);
-        if (this.props.data === null) {
+        if (this.state.data === null) {
             return <div className="col-sm-6 col-md-4">
                 <div className="card text-center">
                     <div className="card-header">PC</div>
@@ -21,7 +44,7 @@ class PcStatusWidgetSet extends React.Component {
             </div>
         }
 
-        const widgets = this.props.data.map((data, index) => <PcStatusWidget key={index} data={data}/>);
+        const widgets = this.state.data.map((data, index) => <PcStatusWidget key={index} data={data}/>);
 
         return <React.Fragment>
             {widgets}

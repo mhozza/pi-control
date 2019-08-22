@@ -1,6 +1,8 @@
 import React from "react";
 import {Line} from 'react-chartjs-2';
 import LoadingSpinner from './loading.jsx';
+import Widget from './widget.jsx'
+import axios from "axios";
 
 
 const DISPLAY_FORMATS = {
@@ -10,14 +12,29 @@ const DISPLAY_FORMATS = {
 };
 
 
-class PingWidget extends React.Component {
+class PingWidget extends Widget {
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: [],
+        };
+    }
+
+    tick() {
+        let self = this;
+
+        axios.get("/api/network/list").then(response => {
+            self.setState({data: response.data});
+        });
+    }
+
     render() {
         let content;
-        if (this.props.data.length === 0) {
+        if (this.state.data.length === 0) {
             content = <LoadingSpinner/>;
         } else {
-            let labels = this.props.data.map(x => x.time);
-            let ping_dataset = this.props.data.map(x => x.ping);
+            let labels = this.state.data.map(x => x.time);
+            let ping_dataset = this.state.data.map(x => x.ping);
 
             let chartData = {
                 labels: labels,

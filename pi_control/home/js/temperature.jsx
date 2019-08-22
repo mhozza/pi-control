@@ -1,7 +1,8 @@
 import React from "react";
 import {Line} from 'react-chartjs-2';
 import LoadingSpinner from './loading.jsx';
-
+import Widget from './widget.jsx'
+import axios from "axios";
 
 const DISPLAY_FORMATS = {
     hour: 'HH:mm',
@@ -9,16 +10,65 @@ const DISPLAY_FORMATS = {
     second: 'HH:mm:ss',
 };
 
+async function getTemperatureData() {
+    const rooms = (await axios.get("/api/temperature/rooms/")).data;
+    console.log(rooms);
 
-class TemperatureWidget extends React.Component {
+    const currentDataPromises = rooms.map(room => axios.get("/api/temperature/room/" + room.id + "/now/"));
+    const roomDatas = (await Promise.all(currentDataPromises)).map(response => response.data);
+    const graphPromises = roomDatas.map(roomData =>
+        Promise.all(roomData.devices.map(device_info => axios.get("/api/temperature/list/?device=" + device_info.device)))
+    );
+    const graphDatas = (await Promise.all(graphPromises)).map(response_list => response_list.map(response => response.data));
+
+    console.log(roomDatas, graphDatas);
+
+    let roomToCurrentData = new Map();
+    for (let i in roomDatas) {
+        let roomData = roomDatas[i];
+        for (let j in roomData.devices) {
+            roomData.devices[j].graphData = graphDatas[i][j];
+        }
+        roomToCurrentData.set(roomData.room.toString(), roomData);
+    }
+
+    let result = [];
+    for (let i in rooms) {
+        let room = rooms[i];
+        result.push({
+            room: room,
+            data: roomToCurrentData.get(room.id),
+        })
+    }
+
+    return result;
+}
+
+
+class TemperatureWidget extends Widget {
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: [],
+        };
+    }
+
+    tick() {
+        let self = this;
+
+        getTemperatureData().then(response => {
+            self.setState({data: response});
+        });
+    }
+
     render() {
         let room_widgets = [];
-        if (this.props.data.length === 0) {
+        if (this.state.data.length === 0) {
             room_widgets = <LoadingSpinner/>;
         } else {
-            for (let i in this.props.data) {
-                let room = this.props.data[i].room;
-                let room_data = this.props.data[i].data;
+            for (let i in this.state.data) {
+                let room = this.state.data[i].room;
+                let room_data = this.state.data[i].data;
 
                 room_widgets.push(<RoomData key={'temperature_data_' + room.id} room={room}
                                             data={room_data}/>);
