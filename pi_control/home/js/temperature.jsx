@@ -44,8 +44,7 @@ async function getTemperatureData() {
     return result;
 }
 
-
-class TemperatureWidget extends Widget {
+class TemperatureWidgetSet extends Widget {
     constructor(props) {
         super(props);
         this.state = {
@@ -70,20 +69,18 @@ class TemperatureWidget extends Widget {
                 let room = this.state.data[i].room;
                 let room_data = this.state.data[i].data;
 
-                room_widgets.push(<RoomData key={'temperature_data_' + room.id} room={room}
-                                            data={room_data}/>);
+                room_widgets.push(<TemperatureWidget key={'temperature_data_' + room.id} room={room}
+                                                     data={room_data}/>);
             }
         }
-        return (<div className="col-md-4">
-            <div className="card">
-                <div className="card-header text-center">Teplota a vlhkosť</div>
+        return (
+            <React.Fragment>
                 {room_widgets}
-            </div>
-        </div>);
+            </React.Fragment>);
     }
 }
 
-class RoomData extends React.Component {
+class TemperatureWidget extends React.Component {
     render() {
         let room = this.props.room;
         let temperatureColorClass = this.props.data.temperature.value > this.props.data.temperature.high
@@ -114,34 +111,35 @@ class RoomData extends React.Component {
                         needs_details={this.props.data.devices.length > 1}/>);
 
         return (
-            <React.Fragment>
-                <div className="card-body">
-                    <h5 className="card-title text-center">{room.name}</h5>
-                    <a className="temperature-tappable-header" data-toggle="collapse" role="button"
-                       href={"#collapse_" + room.id} aria-expanded="false" aria-controls={"collapse_" + room.id}>
-                        <div className="card-text row">
-                            <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
-                                {this.props.data.temperature.value.toFixed(1)}
-                                <sup>
-                                    <span>°C</span>
-                                </sup>
+            <div className="col-md-4">
+                <div className="card">
+                    <div className="card-header text-center">{room.name}</div>
+                    <div className="card-body">
+                        <a className="temperature-tappable-header" data-toggle="collapse" role="button"
+                           href={"#collapse_" + room.id} aria-expanded="false" aria-controls={"collapse_" + room.id}>
+                            <div className="card-text row">
+                                <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
+                                    {this.props.data.temperature.value.toFixed(1)}
+                                    <sup>
+                                        <span>°C</span>
+                                    </sup>
+                                </div>
+                                <div className={"col-6 text-center temperature-widget-body " + humidityColorClass}>
+                                    {this.props.data.humidity.value.toFixed(1)}
+                                    <sup>
+                                        <span>%</span>
+                                    </sup>
+                                </div>
                             </div>
-                            <div className={"col-6 text-center temperature-widget-body " + humidityColorClass}>
-                                {this.props.data.humidity.value.toFixed(1)}
-                                <sup>
-                                    <span>%</span>
-                                </sup>
-                            </div>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
+                    <div className="collapse" id={"collapse_" + room.id}>
+                        {device_data}
+                    </div>
                 </div>
-                <div className="collapse" id={"collapse_" + room.id}>
-                    {device_data}
-                </div>
-            </React.Fragment>);
+            </div>);
     }
 }
-
 
 class DeviceData extends React.Component {
     render() {
@@ -242,7 +240,7 @@ class DeviceData extends React.Component {
         let details = '';
         if (this.props.needs_details) {
             details = <React.Fragment>
-                <h6 className="card-title text-center">{device.name}</h6>
+                <h5 className="card-title text-center">{device.name}</h5>
                 <div className="card-text row">
                     <div className={"offset-2 col-4 text-center " + temperatureColorClass}>
                         {this.props.temperature.value}°C
@@ -263,4 +261,4 @@ class DeviceData extends React.Component {
     }
 }
 
-module.exports = TemperatureWidget;
+module.exports = TemperatureWidgetSet;
