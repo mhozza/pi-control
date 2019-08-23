@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import TemperatureWidget from './temperature.jsx';
+import TemperatureWidgetSet from './temperature.jsx';
 import PcStatusWidgetSet from './pc_status.jsx';
 import PingWidget from './network.jsx'
 import ServerStatsWidget from './server_stats.jsx';
@@ -9,7 +9,7 @@ import ServerStatsWidget from './server_stats.jsx';
 class Widgets extends React.Component {
     render() {
         return <div className="row">
-            <TemperatureWidget/>
+            <TemperatureWidgetSet/>
             <PcStatusWidgetSet/>
             <ServerStatsWidget/>
             <PingWidget/>
