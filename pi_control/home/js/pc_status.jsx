@@ -2,6 +2,7 @@ import React from "react";
 import axios from 'axios';
 import cookie from "cookie";
 import LoadingSpinner from './loading.jsx';
+import Widget from './widget.jsx'
 
 const csrf_cookie = cookie.parse(document.cookie)['csrftoken'];
 
@@ -9,10 +10,24 @@ if (csrf_cookie) {
     axios.defaults.headers.post['X-CSRFToken'] = csrf_cookie;
 }
 
-class PcStatusWidgetSet extends React.Component {
+class PcStatusWidgetSet extends Widget {
+    constructor(props) {
+        super(props);
+        this.state = {
+            pcs: null,
+        };
+    }
+
+    tick() {
+        let self = this;
+
+        axios.get("/api/pc_status/list").then(response => {
+            self.setState({pcs: response.data});
+        });
+    }
+
     render() {
-        console.log(this.props.data);
-        if (this.props.data === null) {
+        if (this.state.pcs === null) {
             return <div className="col-sm-6 col-md-4">
                 <div className="card text-center">
                     <div className="card-header">PC</div>
@@ -21,7 +36,7 @@ class PcStatusWidgetSet extends React.Component {
             </div>
         }
 
-        const widgets = this.props.data.map((data, index) => <PcStatusWidget key={index} data={data}/>);
+        const widgets = this.state.pcs.map((pc, index) => <PcStatusWidget key={index} pc={pc}/>);
 
         return <React.Fragment>
             {widgets}
@@ -29,19 +44,30 @@ class PcStatusWidgetSet extends React.Component {
     }
 }
 
-class PcStatusWidget extends React.Component {
+class PcStatusWidget extends Widget {
     constructor(props) {
         super(props);
         this.state = {
-            loading: false
+            loading: false,
+            data: null,
         };
         this.handleWakeupButtonClick = this.handleWakeupButtonClick.bind(this);
         this.handleSleepButtonClick = this.handleSleepButtonClick.bind(this);
     }
 
+    tick() {
+        let self = this;
+        axios.get("/api/pc_status/status/" + self.props.pc).then(response => {
+            self.setState({
+                data: response.data,
+                loading: false
+            });
+        });
+    }
+
     handleWakeupButtonClick(event) {
         let self = this;
-        axios.post("/api/pc_status/wakeup/" + self.props.data.name).then(response => {
+        axios.post("/api/pc_status/wakeup/" + self.state.data.name).then(response => {
             console.log(self, this, event, response);
             self.setState({loading: true});
         });
@@ -49,20 +75,14 @@ class PcStatusWidget extends React.Component {
 
     handleSleepButtonClick(event) {
         let self = this;
-        axios.post("/api/pc_status/sleep/" + self.props.data.name).then(response => {
+        axios.post("/api/pc_status/sleep/" + self.state.data.name).then(response => {
             console.log(self, this, event, response);
             self.setState({loading: true});
         });
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.data !== null && (prevProps.data === null || prevProps.data.time !== this.props.data.time)) {
-            this.setState({loading: false});
-        }
-    }
-
     render() {
-        if (this.props.data === null) {
+        if (this.state.data === null) {
             return <div className="col-sm-6 col-md-4">
                 <div className="card text-center">
                     <div className="card-header">PC</div>
@@ -71,10 +91,10 @@ class PcStatusWidget extends React.Component {
             </div>
         }
 
-        let time = new Date(this.props.data.time).toLocaleString();
+        let time = new Date(this.state.data.time).toLocaleString();
 
         let button;
-        if (this.props.data.online) {
+        if (this.state.data.online) {
             if (this.state.loading) {
                 button = <button onClick={this.handleSleepButtonClick} className="btn btn-primary btn-block">
                     <i className="fa fa-refresh fa-spin"/> Uspi</button>;
@@ -94,14 +114,14 @@ class PcStatusWidget extends React.Component {
 
         return (<div className="col-sm-6 col-md-4">
             <div className="card text-center">
-                <div className="card-header">{this.props.data.name}</div>
+                <div className="card-header">{this.state.data.name}</div>
                 <div className="card-body">
                     <p className="card-text">
-                    <span className={"pc_status-widget-primary " + (this.props.data.online
+                    <span className={"pc_status-widget-primary " + (this.state.data.online
                         ? "text-success"
                         : "text-danger")}>
                       {
-                          this.props.data.online
+                          this.state.data.online
                               ? "online"
                               : "offline"
                       }
@@ -109,11 +129,11 @@ class PcStatusWidget extends React.Component {
                         <br/>
                         <span className="pc_status-widget-secondary">
                             <strong>SSH:</strong>&nbsp;
-                            <span className={this.props.data.ssh
+                            <span className={this.state.data.ssh
                                 ? "text-success"
                                 : "text-danger"}>
                           {
-                              this.props.data.ssh
+                              this.state.data.ssh
                                   ? "online"
                                   : "offline"
                           }

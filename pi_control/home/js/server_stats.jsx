@@ -1,9 +1,26 @@
 import React from "react";
 import LoadingSpinner from './loading.jsx';
+import Widget from './widget.jsx'
+import axios from "axios";
 
-class ServerStatsWidget extends React.Component {
+class ServerStatsWidget extends Widget {
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: null,
+        };
+    }
+
+    tick() {
+        let self = this;
+
+        axios.get("/api/server_stats").then(response => {
+            self.setState({data: response.data});
+        });
+    }
+
     render() {
-        if (this.props.data === null) {
+        if (this.state.data === null) {
             return <div className="col-sm-6 col-md-4">
                 <div className="card text-center">
                     <div className="card-header">Server</div>
@@ -11,24 +28,24 @@ class ServerStatsWidget extends React.Component {
                 </div>
             </div>
         }
-        let time = new Date(this.props.data.time).toLocaleString();
-        let backuptime = new Date(this.props.data.backuptime).toLocaleString();
-        let updates = this.props.data.updates.total;
-        let security_updates = this.props.data.updates.security;
+        let time = new Date(this.state.data.time).toLocaleString();
+        let backuptime = new Date(this.state.data.backuptime).toLocaleString();
+        let updates = this.state.data.updates.total;
+        let security_updates = this.state.data.updates.security;
 
-        let cpuColorClass = this.props.data.cpu > 50
+        let cpuColorClass = this.state.data.cpu > 50
             ? "text-danger"
             : "text-success";
 
-        let memoryColorClass = this.props.data.memory > 50
+        let memoryColorClass = this.state.data.memory > 50
             ? "text-danger"
             : "text-success";
 
-        let swapColorClass = this.props.data.swap > 50
+        let swapColorClass = this.state.data.swap > 50
             ? "text-danger"
             : "text-success";
 
-        let cpuTempColorClass = this.props.data.cpu_temp > 80
+        let cpuTempColorClass = this.state.data.cpu_temp > 80
             ? "text-danger"
             : "text-success";
 
@@ -36,13 +53,13 @@ class ServerStatsWidget extends React.Component {
 
         return (<div className="col-sm-6 col-md-4">
             <div className="card text-center">
-                <div className="card-header">{this.props.data.name}</div>
+                <div className="card-header">{this.state.data.name}</div>
                 <div className="card-body">
                     <div className="card-text row">
                         <div className="col-4 text-center">
                             <div>CPU</div>
                             <div className={"serverstats-controls " + cpuColorClass}>
-                                {this.props.data.cpu}
+                                {this.state.data.cpu}
                                 <sup>
                                     <span>%</span>
                                 </sup>
@@ -51,7 +68,7 @@ class ServerStatsWidget extends React.Component {
                         <div className="col-4 text-center">
                             <div>RAM</div>
                             <div className={"serverstats-controls " + memoryColorClass}>
-                                {this.props.data.memory}
+                                {this.state.data.memory}
                                 <sup>
                                     <span>%</span>
                                 </sup>
@@ -60,27 +77,27 @@ class ServerStatsWidget extends React.Component {
                         <div className="col-4 text-center">
                             <div>SWAP</div>
                             <div className={"serverstats-controls " + swapColorClass}>
-                                {this.props.data.swap}
+                                {this.state.data.swap}
                                 <sup>
                                     <span>%</span>
                                 </sup>
                             </div>
                         </div>
                     </div>
-                    <p className="card-text">
-                        <ul className="list-unstyled">
-                            {this.props.data.cpu_temp && <li>
-                                <strong>Teplota CPU: </strong>
-                                <span className={cpuTempColorClass}>{this.props.data.cpu_temp}°C</span>
-                            </li>}
-                            <li><strong>Čas od zapnutia: </strong>{this.props.data.uptime}</li>
-                            <li><strong>Posledná záloha: </strong>{backuptime}</li>
-                            <li>
-                                <strong>Aktualizácie: </strong>
-                                <span className={updatesColorClass}>{updates}({security_updates})</span>
-                            </li>
-                        </ul>
-                    </p>
+
+                    <ul className="list-unstyled card-text">
+                        {this.state.data.cpu_temp && <li>
+                            <strong>Teplota CPU: </strong>
+                            <span className={cpuTempColorClass}>{this.state.data.cpu_temp}°C</span>
+                        </li>}
+                        <li><strong>Čas od zapnutia: </strong>{this.state.data.uptime}</li>
+                        <li><strong>Posledná záloha: </strong>{backuptime}</li>
+                        <li>
+                            <strong>Aktualizácie: </strong>
+                            <span className={updatesColorClass}>{updates}({security_updates})</span>
+                        </li>
+                    </ul>
+
                 </div>
                 <div className="card-footer text-muted">{time}</div>
             </div>

@@ -1,7 +1,8 @@
 import React from "react";
 import {Line} from 'react-chartjs-2';
 import LoadingSpinner from './loading.jsx';
-
+import Widget from './widget.jsx'
+import axios from "axios";
 
 const DISPLAY_FORMATS = {
     hour: 'HH:mm',
@@ -9,89 +10,140 @@ const DISPLAY_FORMATS = {
     second: 'HH:mm:ss',
 };
 
+async function getTemperatureData(room) {
+    const roomData = (await axios.get("/api/temperature/room/" + room.id + "/now/")).data;
+    const graphPromises = roomData.devices.map(device_info => axios.get("/api/temperature/list/?device=" + device_info.device));
+    const graphDatas = (await Promise.all(graphPromises)).map(response => response.data);
 
-class TemperatureWidget extends React.Component {
+    for (let i in roomData.devices) {
+        roomData.devices[i].graphData = graphDatas[i];
+    }
+
+    return roomData;
+}
+
+class TemperatureWidgetSet extends Widget {
+    constructor(props) {
+        super(props);
+        this.state = {
+            rooms: null,
+        };
+    }
+
+    tick() {
+        let self = this;
+        axios.get("/api/temperature/rooms/").then(response => {
+            self.setState({rooms: response.data});
+        });
+    }
+
     render() {
-        let room_widgets = [];
-        if (this.props.data.length === 0) {
-            room_widgets = <LoadingSpinner/>;
-        } else {
-            for (let i in this.props.data) {
-                let room = this.props.data[i].room;
-                let room_data = this.props.data[i].data;
-
-                room_widgets.push(<RoomData key={'temperature_data_' + room.id} room={room}
-                                            data={room_data}/>);
-            }
+        if (this.state.rooms === null) {
+            return <div className="col-sm-6 col-md-4">
+                <div className="card text-center">
+                    <div className="card-header">Teplota a vlhkost</div>
+                    <LoadingSpinner/>
+                </div>
+            </div>;
         }
-        return (<div className="col-md-4">
-            <div className="card">
-                <div className="card-header text-center">Teplota a vlhkosť</div>
-                {room_widgets}
-            </div>
-        </div>);
+
+        const widgets = this.state.rooms.map((room, index) => <TemperatureWidget key={'temperature_data_' + index}
+                                                                                 room={room}/>);
+        return <React.Fragment>
+            {widgets}
+        </React.Fragment>;
     }
 }
 
-class RoomData extends React.Component {
+class TemperatureWidget extends Widget {
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: null,
+        };
+    }
+
+    tick() {
+        let self = this;
+
+        getTemperatureData(self.props.room).then(response => {
+            self.setState({data: response});
+        });
+    }
+
+
     render() {
         let room = this.props.room;
-        let temperatureColorClass = this.props.data.temperature.value > this.props.data.temperature.high
+
+        if (this.state.data === null) {
+            return <div className="col-sm-6 col-md-4">
+                <div className="card text-center">
+                    <div className="card-header">{room.name}</div>
+                    <LoadingSpinner/>
+                </div>
+            </div>;
+        }
+
+        let time = new Date(this.state.data.time).toLocaleString();
+
+        let temperatureColorClass = this.state.data.temperature.value > this.state.data.temperature.high
             ? "text-danger"
-            : this.props.data.temperature.value < this.props.data.temperature.low
+            : this.state.data.temperature.value < this.state.data.temperature.low
                 ? "text-primary"
                 : "text-success";
-        let humidityColorClass = this.props.data.humidity.value > this.props.data.humidity.high
+        let humidityColorClass = this.state.data.humidity.value > this.state.data.humidity.high
             ? "text-danger"
-            : this.props.data.humidity.value < this.props.data.humidity.low
+            : this.state.data.humidity.value < this.state.data.humidity.low
                 ? "text-primary"
                 : "text-success";
 
-        let device_data = this.props.data.devices.map(device_info =>
+        let device_data = this.state.data.devices.map(device_info =>
             <DeviceData key={'temperature_room_data_' + device_info.device}
                         device={{id: device_info.device, name: device_info.device_name}}
                         temperature={{
                             value: device_info.temperature,
-                            low: this.props.data.temperature.low,
-                            high: this.props.data.temperature.high,
+                            low: this.state.data.temperature.low,
+                            high: this.state.data.temperature.high,
                         }}
                         humidity={{
                             value: device_info.humidity,
-                            low: this.props.data.humidity.low,
-                            high: this.props.data.humidity.high,
+                            low: this.state.data.humidity.low,
+                            high: this.state.data.humidity.high,
                         }}
                         data={device_info.graphData}
-                        needs_details={this.props.data.devices.length > 1}/>);
+                        needs_details={this.state.data.devices.length > 1}/>);
 
         return (
-            <React.Fragment>
-                <div className="card-body">
-                    <h5 className="card-title text-center">{room.name}</h5>
-                    <a className="temperature-tappable-header" data-toggle="collapse" role="button"
-                       href={"#collapse_" + room.id} aria-expanded="false" aria-controls={"collapse_" + room.id}>
-                        <div className="card-text row">
-                            <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
-                                {this.props.data.temperature.value.toFixed(1)}
-                                <sup>
-                                    <span>°C</span>
-                                </sup>
+            <div className="col-md-4">
+                <div className="card text-center">
+                    <div className="card-header text-center">{room.name}</div>
+                    <div className="card-body">
+                        <a className="temperature-tappable-header" data-toggle="collapse" role="button"
+                           href={"#collapse_" + room.id} aria-expanded="false" aria-controls={"collapse_" + room.id}>
+                            <div className="card-text row">
+                                <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
+                                    {this.state.data.temperature.value.toFixed(1)}
+                                    <sup>
+                                        <span>°C</span>
+                                    </sup>
+                                </div>
+                                <div className={"col-6 text-center temperature-widget-body " + humidityColorClass}>
+                                    {this.state.data.humidity.value.toFixed(1)}
+                                    <sup>
+                                        <span>%</span>
+                                    </sup>
+                                </div>
                             </div>
-                            <div className={"col-6 text-center temperature-widget-body " + humidityColorClass}>
-                                {this.props.data.humidity.value.toFixed(1)}
-                                <sup>
-                                    <span>%</span>
-                                </sup>
-                            </div>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
+                    <div className="collapse" id={"collapse_" + room.id}>
+                        {device_data}
+                    </div>
+                    <div className="card-footer text-muted">{time}</div>
                 </div>
-                <div className="collapse" id={"collapse_" + room.id}>
-                    {device_data}
-                </div>
-            </React.Fragment>);
+            </div>);
     }
 }
-
 
 class DeviceData extends React.Component {
     render() {
@@ -192,7 +244,7 @@ class DeviceData extends React.Component {
         let details = '';
         if (this.props.needs_details) {
             details = <React.Fragment>
-                <h6 className="card-title text-center">{device.name}</h6>
+                <h5 className="card-title text-center">{device.name}</h5>
                 <div className="card-text row">
                     <div className={"offset-2 col-4 text-center " + temperatureColorClass}>
                         {this.props.temperature.value}°C
@@ -213,4 +265,4 @@ class DeviceData extends React.Component {
     }
 }
 
-module.exports = TemperatureWidget;
+module.exports = TemperatureWidgetSet;
