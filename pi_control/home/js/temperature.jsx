@@ -10,105 +10,105 @@ const DISPLAY_FORMATS = {
     second: 'HH:mm:ss',
 };
 
-async function getTemperatureData() {
-    const rooms = (await axios.get("/api/temperature/rooms/")).data;
-    console.log(rooms);
+async function getTemperatureData(room) {
+    const roomData = (await axios.get("/api/temperature/room/" + room.id + "/now/")).data;
+    const graphPromises = roomData.devices.map(device_info => axios.get("/api/temperature/list/?device=" + device_info.device));
+    const graphDatas = (await Promise.all(graphPromises)).map(response => response.data);
 
-    const currentDataPromises = rooms.map(room => axios.get("/api/temperature/room/" + room.id + "/now/"));
-    const roomDatas = (await Promise.all(currentDataPromises)).map(response => response.data);
-    const graphPromises = roomDatas.map(roomData =>
-        Promise.all(roomData.devices.map(device_info => axios.get("/api/temperature/list/?device=" + device_info.device)))
-    );
-    const graphDatas = (await Promise.all(graphPromises)).map(response_list => response_list.map(response => response.data));
-
-    console.log(roomDatas, graphDatas);
-
-    let roomToCurrentData = new Map();
-    for (let i in roomDatas) {
-        let roomData = roomDatas[i];
-        for (let j in roomData.devices) {
-            roomData.devices[j].graphData = graphDatas[i][j];
-        }
-        roomToCurrentData.set(roomData.room.toString(), roomData);
+    for (let i in roomData.devices) {
+        roomData.devices[i].graphData = graphDatas[i];
     }
 
-    let result = [];
-    for (let i in rooms) {
-        let room = rooms[i];
-        result.push({
-            room: room,
-            data: roomToCurrentData.get(room.id),
-        })
-    }
-
-    return result;
+    return roomData;
 }
 
 class TemperatureWidgetSet extends Widget {
     constructor(props) {
         super(props);
         this.state = {
-            data: [],
+            rooms: null,
+        };
+    }
+
+    tick() {
+        let self = this;
+        axios.get("/api/temperature/rooms/").then(response => {
+            self.setState({rooms: response.data});
+        });
+    }
+
+    render() {
+        if (this.state.rooms === null) {
+            return <div className="col-sm-6 col-md-4">
+                <div className="card text-center">
+                    <div className="card-header">Teplota a vlhkost</div>
+                    <LoadingSpinner/>
+                </div>
+            </div>;
+        }
+
+        const widgets = this.state.rooms.map((room, index) => <TemperatureWidget key={'temperature_data_' + index}
+                                                                                 room={room}/>);
+        return <React.Fragment>
+            {widgets}
+        </React.Fragment>;
+    }
+}
+
+class TemperatureWidget extends Widget {
+    constructor(props) {
+        super(props);
+        this.state = {
+            data: null,
         };
     }
 
     tick() {
         let self = this;
 
-        getTemperatureData().then(response => {
+        getTemperatureData(self.props.room).then(response => {
             self.setState({data: response});
         });
     }
 
-    render() {
-        let room_widgets = [];
-        if (this.state.data.length === 0) {
-            room_widgets = <LoadingSpinner/>;
-        } else {
-            for (let i in this.state.data) {
-                let room = this.state.data[i].room;
-                let room_data = this.state.data[i].data;
 
-                room_widgets.push(<TemperatureWidget key={'temperature_data_' + room.id} room={room}
-                                                     data={room_data}/>);
-            }
-        }
-        return (
-            <React.Fragment>
-                {room_widgets}
-            </React.Fragment>);
-    }
-}
-
-class TemperatureWidget extends React.Component {
     render() {
         let room = this.props.room;
-        let temperatureColorClass = this.props.data.temperature.value > this.props.data.temperature.high
+
+        if (this.state.data === null) {
+            return <div className="col-sm-6 col-md-4">
+                <div className="card text-center">
+                    <div className="card-header">{room.name}</div>
+                    <LoadingSpinner/>
+                </div>
+            </div>;
+        }
+        let temperatureColorClass = this.state.data.temperature.value > this.state.data.temperature.high
             ? "text-danger"
-            : this.props.data.temperature.value < this.props.data.temperature.low
+            : this.state.data.temperature.value < this.state.data.temperature.low
                 ? "text-primary"
                 : "text-success";
-        let humidityColorClass = this.props.data.humidity.value > this.props.data.humidity.high
+        let humidityColorClass = this.state.data.humidity.value > this.state.data.humidity.high
             ? "text-danger"
-            : this.props.data.humidity.value < this.props.data.humidity.low
+            : this.state.data.humidity.value < this.state.data.humidity.low
                 ? "text-primary"
                 : "text-success";
 
-        let device_data = this.props.data.devices.map(device_info =>
+        let device_data = this.state.data.devices.map(device_info =>
             <DeviceData key={'temperature_room_data_' + device_info.device}
                         device={{id: device_info.device, name: device_info.device_name}}
                         temperature={{
                             value: device_info.temperature,
-                            low: this.props.data.temperature.low,
-                            high: this.props.data.temperature.high,
+                            low: this.state.data.temperature.low,
+                            high: this.state.data.temperature.high,
                         }}
                         humidity={{
                             value: device_info.humidity,
-                            low: this.props.data.humidity.low,
-                            high: this.props.data.humidity.high,
+                            low: this.state.data.humidity.low,
+                            high: this.state.data.humidity.high,
                         }}
                         data={device_info.graphData}
-                        needs_details={this.props.data.devices.length > 1}/>);
+                        needs_details={this.state.data.devices.length > 1}/>);
 
         return (
             <div className="col-md-4">
@@ -119,13 +119,13 @@ class TemperatureWidget extends React.Component {
                            href={"#collapse_" + room.id} aria-expanded="false" aria-controls={"collapse_" + room.id}>
                             <div className="card-text row">
                                 <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
-                                    {this.props.data.temperature.value.toFixed(1)}
+                                    {this.state.data.temperature.value.toFixed(1)}
                                     <sup>
                                         <span>°C</span>
                                     </sup>
                                 </div>
                                 <div className={"col-6 text-center temperature-widget-body " + humidityColorClass}>
-                                    {this.props.data.humidity.value.toFixed(1)}
+                                    {this.state.data.humidity.value.toFixed(1)}
                                     <sup>
                                         <span>%</span>
                                     </sup>
