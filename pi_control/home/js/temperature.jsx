@@ -83,6 +83,9 @@ class TemperatureWidget extends Widget {
                 </div>
             </div>;
         }
+
+        let time = new Date(this.state.data.time).toLocaleString();
+
         let temperatureColorClass = this.state.data.temperature.value > this.state.data.temperature.high
             ? "text-danger"
             : this.state.data.temperature.value < this.state.data.temperature.low
@@ -112,7 +115,7 @@ class TemperatureWidget extends Widget {
 
         return (
             <div className="col-md-4">
-                <div className="card">
+                <div className="card text-center">
                     <div className="card-header text-center">{room.name}</div>
                     <div className="card-body">
                         <a className="temperature-tappable-header" data-toggle="collapse" role="button"
@@ -136,6 +139,7 @@ class TemperatureWidget extends Widget {
                     <div className="collapse" id={"collapse_" + room.id}>
                         {device_data}
                     </div>
+                    <div className="card-footer text-muted">{time}</div>
                 </div>
             </div>);
     }
