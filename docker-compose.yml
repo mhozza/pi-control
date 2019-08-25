@@ -1,6 +1,6 @@
 version: '3.7'
 
-x-django: &django
+x-pi-control: &pi-control
   build: .
   image: mhozza/pi-control:latest
   volumes:
@@ -14,7 +14,7 @@ x-django: &django
 
 services:
   web:
-    <<: *django
+    <<: *pi-control
     ports:
       - "8000:8000"
     command: python manage.py runserver 0.0.0.0:8000
@@ -30,13 +30,13 @@ services:
   rabbitmq:
     image: rabbitmq
   celery:
-    <<: *django
-    command: celery -A pi_control worker -l debug
+    <<: *pi-control
+    command: watchmedo auto-restart --directory=/web --pattern=*.py --recursive -- celery -A pi_control worker -l debug
     depends_on:
       - rabbitmq
       - db
   celerybeat:
-    <<: *django
+    <<: *pi-control
     command: celery -A pi_control beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     depends_on:
       - rabbitmq
