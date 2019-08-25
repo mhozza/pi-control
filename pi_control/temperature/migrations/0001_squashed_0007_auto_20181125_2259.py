@@ -21,6 +21,68 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name="Room",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, verbose_name="room name")),
+                (
+                    "temperature_low",
+                    models.FloatField(default=21, verbose_name="lowest comfortable temperature"),
+                ),
+                (
+                    "temperature_high",
+                    models.FloatField(default=25, verbose_name="highest comfortable temperature"),
+                ),
+                (
+                    "humidity_low",
+                    models.FloatField(default=30, verbose_name="lowest comfortable humidity"),
+                ),
+                (
+                    "humidity_high",
+                    models.FloatField(default=50, verbose_name="highest comfortable humidity"),
+                ),
+            ],
+        ),
+        migrations.CreateModel(
+            name="MeasurementDevice",
+            fields=[
+                (
+                    "id",
+                    models.CharField(
+                        max_length=100, primary_key=True, serialize=False, verbose_name="device ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, verbose_name="device name")),
+                (
+                    "ip_address",
+                    models.GenericIPAddressField(
+                        blank=True, null=True, protocol="IPv4", verbose_name="device IP address"
+                    ),
+                ),
+                (
+                    "port",
+                    models.IntegerField(
+                        blank=True, default=80, null=True, verbose_name="device port"
+                    ),
+                ),
+                ("active", models.BooleanField(default=True)),
+                (
+                    "room",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="devices",
+                        to="temperature.Room",
+                    ),
+                ),
+            ],
+        ),
+        migrations.CreateModel(
             name="Entry",
             fields=[
                 (
@@ -29,9 +91,14 @@ class Migration(migrations.Migration):
                         auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
                     ),
                 ),
-                ("time", models.DateTimeField(auto_now_add=True, verbose_name="measurement time.")),
-                ("temperature", models.FloatField(verbose_name="temperature in Celsius.")),
-                ("humidity", models.FloatField(verbose_name="humidity in %.")),
+                (
+                    "time",
+                    models.DateTimeField(
+                        auto_now_add=True, db_index=True, verbose_name="measurement time"
+                    ),
+                ),
+                ("temperature", models.FloatField(verbose_name="temperature in °C")),
+                ("humidity", models.FloatField(verbose_name="humidity in %")),
                 (
                     "device",
                     models.ForeignKey(
@@ -44,44 +111,5 @@ class Migration(migrations.Migration):
                 "verbose_name": "temperature entry",
                 "verbose_name_plural": "temperature entries",
             },
-        ),
-        migrations.CreateModel(
-            name="MeasurementDevice",
-            fields=[
-                (
-                    "id",
-                    models.CharField(
-                        max_length=100, primary_key=True, serialize=False, verbose_name="device ID"
-                    ),
-                ),
-                ("name", models.CharField(max_length=100, verbose_name="device name")),
-            ],
-        ),
-        migrations.CreateModel(
-            name="Room",
-            fields=[
-                (
-                    "id",
-                    models.AutoField(
-                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
-                    ),
-                ),
-                ("name", models.CharField(max_length=100, verbose_name="room name")),
-                ("devices", models.ManyToManyField(to="temperature.MeasurementDevice")),
-            ],
-        ),
-        migrations.AddField(
-            model_name="measurementdevice",
-            name="ip_address",
-            field=models.GenericIPAddressField(
-                blank=True, null=True, protocol="IPv4", verbose_name="device IP address"
-            ),
-        ),
-        migrations.AddField(
-            model_name="measurementdevice",
-            name="port",
-            field=models.IntegerField(
-                blank=True, default=80, null=True, verbose_name="device port"
-            ),
         ),
     ]
