@@ -1,0 +1,46 @@
+version: '3.7'
+
+x-django: &django
+  build: .
+  image: mhozza/pi-control:latest
+  volumes:
+    - ./pi_control:/web
+  environment:
+    - DB_BACKEND=django.db.backends.postgresql
+    - DB_NAME=pi_control
+    - DB_USER=pi_control
+    - DB_HOST=db
+    - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672
+
+services:
+  web:
+    <<: *django
+    ports:
+      - "8000:8000"
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - db
+  db:
+    image: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=pi_control
+      - POSTGRES_DB=pi_control
+  rabbitmq:
+    image: rabbitmq
+  celery:
+    <<: *django
+    command: celery -A pi_control worker -l debug
+    depends_on:
+      - rabbitmq
+      - db
+  celerybeat:
+    <<: *django
+    command: celery -A pi_control beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    depends_on:
+      - rabbitmq
+      - db
+
+volumes:
+  db_data:
