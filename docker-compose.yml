@@ -1,7 +1,9 @@
 version: '3.7'
 
 x-pi-control: &pi-control
-  build: .
+  build:
+    context: .
+    dockerfile: ./docker/dev/Dockerfile
   image: mhozza/pi-control:latest
   volumes:
     - ./pi_control:/web
