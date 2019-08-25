@@ -203,6 +203,7 @@ if DEBUG:
 REST_FRAMEWORK = {"DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",)}
 
 # Celery
+CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
