@@ -33,6 +33,7 @@ social-auth-app-django
 social-auth-core
 urllib3
 vine
+whitenoise
 -e git+https://github.com/mhozza/fanfiction.ebook#egg=ff_ebook
 # Dev only
 watchdog
