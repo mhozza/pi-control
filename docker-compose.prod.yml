@@ -3,10 +3,13 @@ version: '3.7'
 x-pi-control: &pi-control
   build:
     context: .
-    dockerfile: ./docker/dev/Dockerfile
-  image: pi-control_local
+    dockerfile: ./docker/prod/Dockerfile
+  image: mhozza/pi-control:latest
   volumes:
     - ./pi_control:/web
+  devices:
+    # modprobe i2c-dev to enable i2c on your host.
+    - /dev/i2c-1:/dev/i2c-1
   environment:
     - DB_BACKEND=django.db.backends.postgresql
     - DB_NAME=pi_control
@@ -18,8 +21,8 @@ services:
   web:
     <<: *pi-control
     ports:
-      - "8000:8000"
-    command: python manage.py runserver 0.0.0.0:8000
+      # TODO change to 80 once it's ready.
+      - "8000:80"
     depends_on:
       - db
   db:
@@ -33,7 +36,7 @@ services:
     image: rabbitmq
   celery:
     <<: *pi-control
-    command: watchmedo auto-restart --directory=/web --pattern=*.py --recursive -- celery -A pi_control worker -l debug
+    command: celery -A pi_control worker -l debug
     depends_on:
       - rabbitmq
       - db
@@ -46,3 +49,4 @@ services:
 
 volumes:
   db_data:
+    
