@@ -18,8 +18,7 @@ WORKDIR /web
 
 COPY ./pi_control /web
 
-RUN python manage.py compilemessages && \
-    python manage.py collectstatic
+RUN python manage.py collectstatic
 
 ENV GUNICORN_WORKERS 2
 

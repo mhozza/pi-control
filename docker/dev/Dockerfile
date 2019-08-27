@@ -19,6 +19,4 @@ WORKDIR /web
 
 COPY ./pi_control /web
 
-RUN python manage.py compilemessages
-
 CMD python manage.py runserver 0.0.0.0:8000
