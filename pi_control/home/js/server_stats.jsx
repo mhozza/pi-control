@@ -86,7 +86,7 @@ class ServerStatsWidget extends Widget {
                     </div>
 
                     <ul className="list-unstyled card-text">
-                        {this.state.data.cpu_temp && <li>
+                        {this.state.data.cpu_temp !== null && <li>
                             <strong>Teplota CPU: </strong>
                             <span className={cpuTempColorClass}>{this.state.data.cpu_temp}°C</span>
                         </li>}

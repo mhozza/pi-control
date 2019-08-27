@@ -60,5 +60,5 @@ def get_cpu_temperature():
     if not CPU_TEMPERATURE_FILE:
         raise AssertionError("No cpu temperature filename set.")
     with open(CPU_TEMPERATURE_FILE) as f:
-        raw_temp = f.readline()
+        raw_temp = f.readline(100)
         return int(raw_temp) / 1000
