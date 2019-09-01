@@ -1,10 +1,6 @@
 version: '3.7'
 
 x-pi-control: &pi-control
-  #TODO: remove and use the image hosted on the docker hub.
-  build:
-    context: .
-    dockerfile: ./docker/prod/Dockerfile
   image: mhozza/pi-control:latest
   volumes:
     - ${CPU_TEMPERATURE_FILE-./docker/shared/fake_cpu_temperature.txt}:/sys/class/thermal/thermal_zone0/temp
@@ -22,8 +18,7 @@ services:
   web:
     <<: *pi-control
     ports:
-      # TODO change to 80 once it's ready.
-      - "8000:80"
+      - "${PORT-8000}:80"
     depends_on:
       - db
   db:
