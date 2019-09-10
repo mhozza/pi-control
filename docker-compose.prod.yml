@@ -13,14 +13,9 @@ x-pi-control: &pi-control
     - DB_HOST=db
     - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672
     - CPU_TEMPERATURE_FILE=/host_sys/temp
+  restart: always
 
 services:
-  web:
-    <<: *pi-control
-    ports:
-      - "${PORT-8000}:80"
-    depends_on:
-      - db
   db:
     image: postgres
     volumes:
@@ -28,8 +23,16 @@ services:
     environment:
       - POSTGRES_USER=pi_control
       - POSTGRES_DB=pi_control
+    restart: always
   rabbitmq:
     image: rabbitmq
+    restart: always
+  web:
+    <<: *pi-control
+    ports:
+      - "${PORT-8000}:80"
+    depends_on:
+      - db
   celery:
     <<: *pi-control
     command: celery -A pi_control worker -l debug
