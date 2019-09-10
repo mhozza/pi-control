@@ -3,7 +3,7 @@ version: '3.7'
 x-pi-control: &pi-control
   image: mhozza/pi-control:latest
   volumes:
-    - ${CPU_TEMPERATURE_FILE-./docker/shared/fake_cpu_temperature.txt}:/sys/class/thermal/thermal_zone0/temp
+    - ${CPU_TEMPERATURE_FILE-./docker/shared/fake_cpu_temperature.txt}:/host_sys/temp
   devices:
     - ${TEMPERATURE_SENSOR_DEVICE-/dev/zero}:/dev/i2c-1
   environment:
@@ -12,7 +12,7 @@ x-pi-control: &pi-control
     - DB_USER=pi_control
     - DB_HOST=db
     - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672
-    - CPU_TEMPERATURE_FILE=/sys/class/thermal/thermal_zone0/temp
+    - CPU_TEMPERATURE_FILE=/host_sys/temp
 
 services:
   web:

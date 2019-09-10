@@ -7,14 +7,14 @@ x-pi-control: &pi-control
   image: pi-control_local
   volumes:
     - ./pi_control:/web
-    - ${CPU_TEMPERATURE_FILE-./docker/shared/fake_cpu_temperature.txt}:/sys/class/thermal/thermal_zone0/temp
+    - ${CPU_TEMPERATURE_FILE-./docker/shared/fake_cpu_temperature.txt}:/host_sys/temp
   environment:
     - DB_BACKEND=django.db.backends.postgresql
     - DB_NAME=pi_control
     - DB_USER=pi_control
     - DB_HOST=db
     - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672
-    - CPU_TEMPERATURE_FILE=/sys/class/thermal/thermal_zone0/temp
+    - CPU_TEMPERATURE_FILE=/host_sys/temp
 
 services:
   web:
