@@ -191,7 +191,7 @@ LOGGING = {
         "file": {
             "level": "INFO",
             "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "../../debug.log"),
+            "filename": env("LOG_FILE", os.path.join(BASE_DIR, "../../debug.log")),
         },
         "console": {"level": "DEBUG", "class": "logging.StreamHandler"},
     },

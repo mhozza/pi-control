@@ -18,6 +18,8 @@ WORKDIR /web
 
 COPY ./pi_control /web
 
+ENV STATIC_ROOT /static
+
 RUN python manage.py collectstatic
 
 ENV GUNICORN_WORKERS 2
