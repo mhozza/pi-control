@@ -41,6 +41,7 @@ INTERNAL_IPS = ["127.0.0.1"]
 # Application definition
 
 INSTALLED_APPS = [
+    "whitenoise.runserver_nostatic",  # This needs to be first
     "home",
     "network",
     "pc_status",
@@ -70,6 +71,7 @@ if DEBUG:
 MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -153,9 +155,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "../.static")
+STATIC_ROOT = env("STATIC_ROOT", os.path.join(BASE_DIR, "../.static"))
 if not DEBUG:
-    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Social Auth
 LOGIN_URL = "login"
@@ -166,6 +168,8 @@ AUTHENTICATION_BACKENDS = (
     "social_core.backends.google.GoogleOAuth2",
     "django.contrib.auth.backends.ModelBackend",
 )
+if not DEBUG:
+    SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 SOCIAL_AUTH_URL_NAMESPACE = "social"
 SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.social_auth.social_details",
@@ -183,26 +187,18 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env("AUTH_SECRET", "ocvhSjJyjKfMROBh4z8EUTA9"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {"basic": {"format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"}},
     "handlers": {
-        "file": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "../../debug.log"),
-        },
-        "console": {"level": "DEBUG", "class": "logging.StreamHandler"},
+        "console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "basic"}
     },
-    "loggers": {"django": {"handlers": ["file"], "level": "WARNING", "propagate": True}},
+    "loggers": {"django": {"handlers": ["console"], "level": "WARNING", "propagate": True}},
 }
-
-if DEBUG:
-    # make all loggers use the console.
-    for logger in LOGGING["loggers"]:
-        LOGGING["loggers"][logger]["handlers"] = ["console"]
 
 # Rest framework
 REST_FRAMEWORK = {"DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",)}
 
 # Celery
+CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"

@@ -1,0 +1,50 @@
+version: '3.7'
+
+x-pi-control: &pi-control
+  build:
+    context: .
+    dockerfile: ./docker/dev/Dockerfile
+  image: pi-control_local
+  volumes:
+    - ./pi_control:/web
+    - ${CPU_TEMPERATURE_FILE-./docker/shared/fake_cpu_temperature.txt}:/host_sys/temp:ro
+  environment:
+    - DB_BACKEND=django.db.backends.postgresql
+    - DB_NAME=pi_control
+    - DB_USER=pi_control
+    - DB_HOST=db
+    - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672
+    - CPU_TEMPERATURE_FILE=/host_sys/temp
+
+services:
+  web:
+    <<: *pi-control
+    ports:
+      - "8000:8000"
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - db
+  db:
+    image: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=pi_control
+      - POSTGRES_DB=pi_control
+  rabbitmq:
+    image: rabbitmq
+  celery:
+    <<: *pi-control
+    command: watchmedo auto-restart --directory=/web --pattern=*.py --recursive -- celery -A pi_control worker -l debug
+    depends_on:
+      - rabbitmq
+      - db
+  celerybeat:
+    <<: *pi-control
+    command: celery -A pi_control beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    depends_on:
+      - rabbitmq
+      - db
+
+volumes:
+  db_data:
