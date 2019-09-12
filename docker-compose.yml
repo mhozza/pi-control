@@ -7,7 +7,7 @@ x-pi-control: &pi-control
   image: pi-control_local
   volumes:
     - ./pi_control:/web
-    - ${CPU_TEMPERATURE_FILE-./docker/shared/fake_cpu_temperature.txt}:/host_sys/temp
+    - ${CPU_TEMPERATURE_FILE-./docker/shared/fake_cpu_temperature.txt}:/host_sys/temp:r
   environment:
     - DB_BACKEND=django.db.backends.postgresql
     - DB_NAME=pi_control

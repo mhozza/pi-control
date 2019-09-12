@@ -3,7 +3,7 @@ version: '3.7'
 x-pi-control: &pi-control
   image: mhozza/pi-control:latest
   volumes:
-    - ${CPU_TEMPERATURE_FILE-./docker/shared/fake_cpu_temperature.txt}:/host_sys/temp
+    - ${CPU_TEMPERATURE_FILE-./docker/shared/fake_cpu_temperature.txt}:/host_sys/temp:r
   devices:
     - ${TEMPERATURE_SENSOR_DEVICE-/dev/zero}:/dev/i2c-1
   environment:
@@ -15,6 +15,9 @@ x-pi-control: &pi-control
     - CPU_TEMPERATURE_FILE=/host_sys/temp
     - DEBUG=False
     - LOG_FILE=/var/log/pi_control.log
+    - SECRET
+    - AUTH_KEY
+    - AUTH_SECRET
   restart: always
 
 services:
