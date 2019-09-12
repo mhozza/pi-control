@@ -187,12 +187,9 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env("AUTH_SECRET", "ocvhSjJyjKfMROBh4z8EUTA9"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {"basic": {"format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"}},
     "handlers": {
-        "console": {
-            "level": "DEBUG",
-            "class": "logging.StreamHandler",
-            "format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s",
-        }
+        "console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "basic"}
     },
     "loggers": {"django": {"handlers": ["console"], "level": "WARNING", "propagate": True}},
 }
