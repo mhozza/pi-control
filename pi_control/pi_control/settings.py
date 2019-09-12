@@ -188,20 +188,14 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {
-        "file": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": env("LOG_FILE", os.path.join(BASE_DIR, "../../debug.log")),
-        },
-        "console": {"level": "DEBUG", "class": "logging.StreamHandler"},
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s",
+        }
     },
-    "loggers": {"django": {"handlers": ["file"], "level": "WARNING", "propagate": True}},
+    "loggers": {"django": {"handlers": ["console"], "level": "WARNING", "propagate": True}},
 }
-
-if DEBUG:
-    # make all loggers use the console.
-    for logger in LOGGING["loggers"]:
-        LOGGING["loggers"][logger]["handlers"] = ["console"]
 
 # Rest framework
 REST_FRAMEWORK = {"DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",)}
