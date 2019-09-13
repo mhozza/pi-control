@@ -1,12 +1,15 @@
 version: '3.7'
 
 x-pi-control: &pi-control
+  build:
+    context: .
+    dockerfile: ./docker/prod/Dockerfile
   image: mhozza/pi-control:latest
   volumes:
     - ${CPU_TEMPERATURE_FILE-./docker/shared/fake_cpu_temperature.txt}:/host_sys/temp:ro
     - ${BACKUP_FILENAME-./docker/shared/fake_rpi.dump}:/backup/rpi.dump:ro
-  # devices:
-  #   - ${TEMPERATURE_SENSOR_DEVICE-/dev/zero}:/dev/i2c-1
+  devices:
+    - ${TEMPERATURE_SENSOR_DEVICE-/dev/zero}:/dev/i2c-1
   environment:
     - DB_BACKEND=django.db.backends.postgresql
     - DB_NAME=pi_control
