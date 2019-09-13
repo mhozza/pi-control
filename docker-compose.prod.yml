@@ -4,8 +4,9 @@ x-pi-control: &pi-control
   image: mhozza/pi-control:latest
   volumes:
     - ${CPU_TEMPERATURE_FILE-./docker/shared/fake_cpu_temperature.txt}:/host_sys/temp:ro
-  devices:
-    - ${TEMPERATURE_SENSOR_DEVICE-/dev/zero}:/dev/i2c-1
+    - ${BACKUP_FILENAME-./docker/shared/fake_rpi.dump}:/backup/rpi.dump:ro
+  # devices:
+  #   - ${TEMPERATURE_SENSOR_DEVICE-/dev/zero}:/dev/i2c-1
   environment:
     - DB_BACKEND=django.db.backends.postgresql
     - DB_NAME=pi_control
@@ -13,12 +14,13 @@ x-pi-control: &pi-control
     - DB_HOST=db
     - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672
     - CPU_TEMPERATURE_FILE=/host_sys/temp
+    - BACKUP_FILENAME=/backup/rpi.dump
     - DEBUG=False
     - SECRET
     - AUTH_KEY
     - AUTH_SECRET
   restart: always
-
+  
 services:
   db:
     image: postgres
