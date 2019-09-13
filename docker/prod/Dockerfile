@@ -18,6 +18,7 @@ WORKDIR /web
 
 COPY ./pi_control /web
 
+ENV DEBUG False
 ENV STATIC_ROOT /static
 
 RUN python manage.py collectstatic
