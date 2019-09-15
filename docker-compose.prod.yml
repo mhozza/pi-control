@@ -43,13 +43,13 @@ services:
       - db
   celery:
     <<: *pi-control
-    command: celery -A pi_control worker -l debug
+    command: celery -A pi_control worker
     depends_on:
       - rabbitmq
       - db
   celerybeat:
     <<: *pi-control
-    command: celery -A pi_control beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    command: celery -A pi_control beat --scheduler django_celery_beat.schedulers:DatabaseScheduler
     depends_on:
       - rabbitmq
       - db
