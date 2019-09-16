@@ -19,11 +19,12 @@ def file_checksum(fname):
         return hasher.digest()
 
 
-checksum = file_checksum(OUT_FNAME)
+# checksum = file_checksum(OUT_FNAME)
 
 os.system(
     f"docker run {IMAGE_NAME} {COMMAND} --volume='{CODE_PATH.resolve()}:/web:rw node_modules:/web/home/js/node_modules:rw'"
 )
+os.system(f"git add {OUT_FNAME}")
 
-if checksum != file_checksum(OUT_FNAME):
-    exit(1)
+# if checksum != file_checksum(OUT_FNAME):
+#     exit(1)
