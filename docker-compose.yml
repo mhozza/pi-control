@@ -4,10 +4,10 @@ x-pi-control: &pi-control
   build:
     context: .
     dockerfile: ./docker/dev/Dockerfile
-  image: pi-control_local
+  image: mhozza/pi-control:dev-latest
   volumes:
     - ./pi_control:/web
-    - /web/home/js/node_modules
+    - node_modules:/web/home/js/node_modules
     - ${CPU_TEMPERATURE_FILE-./docker/shared/fake_cpu_temperature.txt}:/host_sys/temp:ro
   environment:
     - DB_BACKEND=django.db.backends.postgresql
@@ -52,3 +52,4 @@ services:
 
 volumes:
   db_data:
+  node_modules:
