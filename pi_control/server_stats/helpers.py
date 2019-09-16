@@ -30,18 +30,6 @@ def get_last_backup_time():
     return os.path.getmtime(BACKUP_FILENAME)
 
 
-def get_update_counts():
-    try:
-        cmd = subprocess.Popen(
-            ["/usr/lib/update-notifier/apt-check"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT
-        )
-        out = cmd.stdout.read().decode()
-    except FileNotFoundError:
-        out = "0;0\n"
-    total, security = out.strip().split(";")
-    return int(total), int(security)
-
-
 def is_service_active(service):
     """Return True if service is running."""
     cmd = subprocess.Popen(
