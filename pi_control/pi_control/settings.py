@@ -133,16 +133,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-WEBPUSH_SETTINGS = {
-    "VAPID_PUBLIC_KEY": env(
-        "VAPID_PUBLIC_KEY",
-        "BCqW_ue9--d8vsSNAsAs1GP05rgtTHAHL8Jhyl6Q2Q1HFn9Y-fJYzbFS0-seUbx5rMI0FS4jjLaxQ946p1ZAU_c",
-    ),
-    "VAPID_PRIVATE_KEY": env("VAPID_PRIVATE_KEY", "olVttz_LPSJYEZpHKMcEVxckCZkmrS3oT_VvUS3VFMY"),
-    "VAPID_ADMIN_EMAIL": env("VAPID_ADMIN_EMAIL", "admin@malina.localhost"),
-}
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 

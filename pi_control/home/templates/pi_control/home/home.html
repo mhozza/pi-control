@@ -1,18 +1,18 @@
 {% extends "pi_control/base.html" %}
-{% load staticfiles sekizai_tags webpush_notifications %}
+{% load staticfiles sekizai_tags %}
 
 
 {% block content %}
 
 {% addtoblock "css" %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}"/>
-    <!-- Add icon library -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="{% static 'css/style.css' %}" />
+<!-- Add icon library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 {% endaddtoblock %}
 {% addtoblock "js" %}
-    <script type="text/javascript" src="{% static 'js/app.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/app.js' %}"></script>
 {% endaddtoblock %}
 
-    <div id="widgets"></div>
+<div id="widgets"></div>
 
 {% endblock %}

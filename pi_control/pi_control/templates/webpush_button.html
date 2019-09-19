@@ -1,7 +1,0 @@
-{% if user.is_authenticated or group %}
-    <span id="webpush-subscribe-button" {% if group %}data-group="{{ group }}"{% endif %}
-          data-url="{{ webpush_save_url }}"
-          class="nav-link">
-    <i class="fas fa-bell"></i>
-  </span>
-{% endif %}

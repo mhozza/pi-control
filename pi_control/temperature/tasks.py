@@ -8,7 +8,6 @@ from celery import shared_task
 from django.conf import settings
 from django.db.models import Avg, OuterRef, Subquery
 from django.utils import timezone
-from webpush import send_group_notification
 
 from .measure import measure_temperature_and_humidity
 from .models import Entry, MeasurementDevice

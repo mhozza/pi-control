@@ -4,5 +4,4 @@ from django.shortcuts import render
 
 @login_required()
 def home(request):
-    webpush = dict(group="all")
-    return render(request, "pi_control/home/home.html", dict(webpush=webpush))
+    return render(request, "pi_control/home/home.html")
