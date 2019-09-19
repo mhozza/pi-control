@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 x-pi-control: &pi-control
   build:
@@ -18,11 +18,12 @@ x-pi-control: &pi-control
     - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672
     - CPU_TEMPERATURE_FILE=/host_sys/temp
     - BACKUP_FILENAME=/backup/rpi.dump
+    - SERVER_NAME
     - SECRET
     - AUTH_KEY
     - AUTH_SECRET
   restart: always
-  
+
 services:
   db:
     image: postgres
@@ -56,4 +57,3 @@ services:
 
 volumes:
   db_data:
-    

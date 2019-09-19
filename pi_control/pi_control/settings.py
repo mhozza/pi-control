@@ -21,6 +21,11 @@ def bool_env(name, default):
     return env(name, default) == "True"
 
 
+def get_hostname():
+    with open("/etc/hostname") as f:
+        return f.read().strip()
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -34,6 +39,8 @@ SECRET_KEY = env("SECRET", "@jzqxp^%&b4=(u10%%i-hgz7$8!5ql+vairvmjyru%sj#m9k__")
 DEBUG = bool_env("DEBUG", True)
 
 ALLOWED_HOSTS = ["*"] if DEBUG else ["malina.hozza.eu"]
+
+SERVER_NAME = env("SERVER_NAME", get_hostname())
 
 # For debug-toolbar.
 INTERNAL_IPS = ["127.0.0.1"]

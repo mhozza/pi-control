@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -7,9 +8,6 @@ from rest_framework.response import Response
 from . import helpers
 
 logger = logging.getLogger(__name__)
-
-with open("/etc/hostname") as f:
-    SERVER_NAME = f.read().strip()
 
 
 @api_view(["GET"])
@@ -30,7 +28,7 @@ def get_server_stats(request):
 
     return Response(
         dict(
-            name=SERVER_NAME,
+            name=settings.SERVER_NAME,
             uptime=uptime,
             backuptime=backup_time,
             time=now,
