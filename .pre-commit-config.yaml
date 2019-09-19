@@ -4,11 +4,3 @@ repos:
     hooks:
       - id: black
         language_version: python3.7
-  - repo: local
-    hooks:
-      -   id: build-frontend
-          name: Build production app.js
-          entry: ./build_frontend.py
-          language: script
-          pass_filenames: false
-          files: \.jsx?$
