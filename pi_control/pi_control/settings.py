@@ -69,7 +69,6 @@ INSTALLED_APPS = [
     "django_celery_results",
     "crispy_forms",
     "ff_ebook_frontend",
-    "webpush",
 ]
 if DEBUG:
     INSTALLED_APPS.append("debug_toolbar")
