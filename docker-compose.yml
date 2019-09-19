@@ -4,9 +4,10 @@ x-pi-control: &pi-control
   build:
     context: .
     dockerfile: ./docker/dev/Dockerfile
-  image: pi-control_local
+  image: mhozza/pi-control:dev-latest
   volumes:
     - ./pi_control:/web
+    - node_modules:/web/home/js/node_modules
     - ${CPU_TEMPERATURE_FILE-./docker/shared/fake_cpu_temperature.txt}:/host_sys/temp:ro
   environment:
     - DB_BACKEND=django.db.backends.postgresql
@@ -18,13 +19,6 @@ x-pi-control: &pi-control
     - SERVER_NAME=malina
 
 services:
-  web:
-    <<: *pi-control
-    ports:
-      - "8000:8000"
-    command: python manage.py runserver 0.0.0.0:8000
-    depends_on:
-      - db
   db:
     image: postgres
     volumes:
@@ -34,9 +28,15 @@ services:
       - POSTGRES_DB=pi_control
   rabbitmq:
     image: rabbitmq
+  web:
+    <<: *pi-control
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
   celery:
     <<: *pi-control
-    command: watchmedo auto-restart --directory=/web --pattern=*.py --recursive -- celery -A pi_control worker -l debug --pidfile="/tmp/celeryd.pid"
+    command: watchmedo auto-restart --directory=/web --pattern=*.py --recursive -- celery -A pi_control worker -l info --pidfile="/tmp/celeryd.pid"
     depends_on:
       - rabbitmq
       - db
@@ -46,6 +46,10 @@ services:
     depends_on:
       - rabbitmq
       - db
+  webpack:
+    <<: *pi-control
+    command: npm run --prefix=/web/home/js dev
 
 volumes:
   db_data:
+  node_modules:
