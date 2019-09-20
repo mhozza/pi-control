@@ -43,7 +43,7 @@ ALLOWED_HOSTS = ["*"] if DEBUG else ["malina.hozza.eu"]
 SERVER_NAME = env("SERVER_NAME", get_hostname())
 
 # For debug-toolbar.
-INTERNAL_IPS = ["127.0.0.1"]
+DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": lambda request: DEBUG}
 
 # Application definition
 
@@ -123,6 +123,12 @@ DATABASES = {
     }
 }
 
+# Email
+EMAIL_HOST = env("EMAIL_HOST", "localhost")
+EMAIL_PORT = env("EMAIL_PORT", 25, int)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", "")
+
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
@@ -200,4 +206,5 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_RESULT_BACKEND = "django-db"
 
+# Crispy forms
 CRISPY_TEMPLATE_PACK = "bootstrap4"
