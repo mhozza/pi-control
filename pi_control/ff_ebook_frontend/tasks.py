@@ -10,7 +10,7 @@ FORMATS = ["mobi"]
 
 
 @shared_task
-def convert_ebook(url, email_from, email_to):
+def convert_ebook(url, email_to):
     fname = tempfile.mktemp(prefix="ebook")
     adapter = FindAdapter(url)
     munger = Munger(url, adapter, formats=FORMATS, clean=True, filename=fname)
@@ -21,10 +21,7 @@ def convert_ebook(url, email_from, email_to):
     # Send email
     fname_for_email = "{}_{}.mobi".format(slugify(story.author), slugify(story.title))
     message = EmailMessage(
-        subject=story.title,
-        body="{} by {}".format(story.title, story.author),
-        from_email=email_from,
-        to=[email_to],
+        subject=story.title, body="{} by {}".format(story.title, story.author), to=[email_to]
     )
     with open(output_filename, "rb") as f:
         content = f.read()
