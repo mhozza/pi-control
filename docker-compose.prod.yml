@@ -29,7 +29,7 @@ x-pi-control: &pi-control
 
 services:
   db:
-    image: postgres
+    image: postgres:11-alpine
     volumes:
       - db_data:/var/lib/postgresql/data
     environment:
@@ -37,7 +37,7 @@ services:
       - POSTGRES_DB=pi_control
     restart: always
   rabbitmq:
-    image: rabbitmq
+    image: rabbitmq:3.7-alpine
     restart: always
   web:
     <<: *pi-control
