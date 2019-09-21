@@ -110,3 +110,5 @@ ENV/
 **/node_modules/**
 
 celerybeat.pid
+
+qemu-arm-static
