@@ -15,6 +15,7 @@ django-debug-toolbar
 django-dotenv
 django-sekizai
 djangorestframework
+html5lib  # For better html parsing in ff_ebook.
 idna
 kombu
 oauthlib
