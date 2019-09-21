@@ -22,10 +22,12 @@ x-pi-control: &pi-control
     - SECRET
     - AUTH_KEY
     - AUTH_SECRET
+    - DEFAULT_FROM_EMAIL
     - EMAIL_HOST
     - EMAIL_PORT
     - EMAIL_HOST_USER
     - EMAIL_HOST_PASSWORD
+    - EMAIL_USE_TLS
   restart: always
 
 services:
