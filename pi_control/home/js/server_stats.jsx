@@ -15,7 +15,7 @@ class ServerStatsWidget extends Widget {
         let self = this;
 
         axios.get("/api/server_stats").then(response => {
-            self.setState({data: response.data});
+            self.setState({ data: response.data });
         });
     }
 
@@ -24,14 +24,12 @@ class ServerStatsWidget extends Widget {
             return <div className="col-sm-6 col-md-4">
                 <div className="card text-center">
                     <div className="card-header">Server</div>
-                    <LoadingSpinner/>
+                    <LoadingSpinner />
                 </div>
             </div>
         }
         let time = new Date(this.state.data.time).toLocaleString();
         let backuptime = new Date(this.state.data.backuptime).toLocaleString();
-        let updates = this.state.data.updates.total;
-        let security_updates = this.state.data.updates.security;
 
         let cpuColorClass = this.state.data.cpu > 50
             ? "text-danger"
@@ -48,8 +46,6 @@ class ServerStatsWidget extends Widget {
         let cpuTempColorClass = this.state.data.cpu_temp > 80
             ? "text-danger"
             : "text-success";
-
-        let updatesColorClass = updates === 0 ? "text-success" : security_updates > 0 ? "text-danger" : "text-warning";
 
         return (<div className="col-sm-6 col-md-4">
             <div className="card text-center">
@@ -92,10 +88,6 @@ class ServerStatsWidget extends Widget {
                         </li>}
                         <li><strong>Čas od zapnutia: </strong>{this.state.data.uptime}</li>
                         <li><strong>Posledná záloha: </strong>{backuptime}</li>
-                        <li>
-                            <strong>Aktualizácie: </strong>
-                            <span className={updatesColorClass}>{updates}({security_updates})</span>
-                        </li>
                     </ul>
 
                 </div>

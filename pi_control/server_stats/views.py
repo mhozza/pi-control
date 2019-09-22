@@ -24,7 +24,6 @@ def get_server_stats(request):
     except AssertionError as e:
         logger.error(e)
         cpu_temp = None
-    updates_total, updates_security = helpers.get_update_counts()
 
     return Response(
         dict(
@@ -35,7 +34,6 @@ def get_server_stats(request):
             cpu=helpers.get_cpu(),
             memory=helpers.get_memory(),
             swap=helpers.get_swap(),
-            updates=dict(total=updates_total, security=updates_security),
             cpu_temp=cpu_temp,
         )
     )
