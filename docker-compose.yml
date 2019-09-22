@@ -55,7 +55,21 @@ services:
   webpack:
     <<: *pi-control
     command: npm run --prefix=/web/home/js dev
+  wakeonlan:
+    <<: *pi-control
+    command: /opt/wakeonlan/wakeonlan_server.py
+    environment:
+      - PORT=8100
+      - LOG_LEVEL=INFO
+    ports:
+      - "9:9"
+      - "7:7"
 
 volumes:
   db_data:
   node_modules:
+# networks:
+#   default:
+#   hostnet:
+#     external: true
+#     name: host

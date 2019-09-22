@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED=0
 WORKDIR /build
 
 RUN apt-get update -y && \
-    apt-get install -y libpq5 libffi6 liblcms2-2 gettext iputils-ping calibre \
+    apt-get install -y libpq5 libffi6 liblcms2-2 gettext iputils-ping calibre wakeonlan \
     # Dev deps
     npm \
     # Build deps
@@ -16,6 +16,7 @@ COPY ./requirements.txt /build/requirements.txt
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
+COPY ./docker/shared/wakeonlan_server.py /opt/wakeonlan/wakeonlan_server.py
 COPY ./pi_control /web
 
 WORKDIR /web/home/js
