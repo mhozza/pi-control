@@ -1,11 +1,12 @@
 from celery import shared_task
+from wakeonlan import send_magic_packet
 
-from .pc_status import wakeup, make_sleep
+from .pc_status import make_sleep
 
 
 @shared_task
-def wake_pc(mac):
-    return wakeup(mac)
+def wake_pc(mac, ip):
+    return send_magic_packet(mac, ip=ip)
 
 
 @shared_task
