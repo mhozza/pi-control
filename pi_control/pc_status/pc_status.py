@@ -23,11 +23,6 @@ def check_connection(host, port):
     return False
 
 
-def wakeup(mac):
-    logger.info("Waking up {}.".format(mac))
-    return os.system("wakeonlan {}".format(mac))
-
-
 def make_sleep(pc_control_url, pc_control_key):
     sleep_command = "SUSPEND"
     payload = {"key": pc_control_key, "command": sleep_command}

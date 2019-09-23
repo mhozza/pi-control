@@ -32,7 +32,7 @@ def get_pc_status(request, name):
 )
 def wakeup(request, name):
     pc_config = get_object_or_404(Pc, id=name)
-    wake_pc_task.delay(pc_config.mac_address)
+    wake_pc_task.delay(mac=pc_config.mac_address, ip=pc_config.ip_address)
     return Response()
 
 
