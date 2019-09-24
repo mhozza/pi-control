@@ -6,7 +6,7 @@ from .pc_status import make_sleep
 
 @shared_task
 def wake_pc(mac, ip):
-    return send_magic_packet(mac, ip=ip)
+    return send_magic_packet(mac, ip_address=ip)
 
 
 @shared_task
