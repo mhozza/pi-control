@@ -40,29 +40,34 @@ services:
     restart: always
     logging:
       driver: syslog
+    container_name: malina_db
   rabbitmq:
     image: rabbitmq:3.7-alpine
     restart: always
     logging:
       driver: syslog
+    container_name: malina_rabbitmq
   web:
     <<: *pi-control
     ports:
       - "${PORT-8000}:80"
     depends_on:
       - db
+    container_name: malina_web
   celery:
     <<: *pi-control
     command: celery -A pi_control worker --pidfile="/tmp/celeryd.pid"
     depends_on:
       - rabbitmq
       - db
+    container_name: malina_celery
   celerybeat:
     <<: *pi-control
     command: celery -A pi_control beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --pidfile="/tmp/celerybeet.pid"
     depends_on:
       - rabbitmq
       - db
+    container_name: malina_celerybeat
 
 volumes:
   db_data:
