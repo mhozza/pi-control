@@ -26,6 +26,8 @@ x-pi-control: &pi-control
     - EMAIL_HOST_PASSWORD
     - EMAIL_USE_TLS
   restart: always
+  logging:
+    driver: syslog
 
 services:
   db:
@@ -36,9 +38,13 @@ services:
       - POSTGRES_USER=pi_control
       - POSTGRES_DB=pi_control
     restart: always
+    logging:
+      driver: syslog
   rabbitmq:
     image: rabbitmq:3.7-alpine
     restart: always
+    logging:
+      driver: syslog
   web:
     <<: *pi-control
     ports:
