@@ -1,6 +1,13 @@
 version: "3.7"
 
+x-logging: &logging
+  logging:
+    driver: syslog
+    options:
+      tag: "{{.Name}}"
+
 x-pi-control: &pi-control
+  <<: *logging
   image: mhozza/pi-control:latest
   volumes:
     - ${CPU_TEMPERATURE_FILE-./docker/shared/fake_cpu_temperature.txt}:/host_sys/temp:ro
@@ -26,11 +33,10 @@ x-pi-control: &pi-control
     - EMAIL_HOST_PASSWORD
     - EMAIL_USE_TLS
   restart: always
-  logging:
-    driver: syslog
 
 services:
   db:
+    <<: *logging
     image: postgres:11-alpine
     volumes:
       - db_data:/var/lib/postgresql/data
@@ -38,13 +44,10 @@ services:
       - POSTGRES_USER=pi_control
       - POSTGRES_DB=pi_control
     restart: always
-    logging:
-      driver: syslog
   rabbitmq:
+    <<: *logging
     image: rabbitmq:3.7-alpine
     restart: always
-    logging:
-      driver: syslog
   web:
     <<: *pi-control
     ports:
