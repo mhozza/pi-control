@@ -56,13 +56,13 @@ services:
       - db
   celery:
     <<: *pi-control
-    command: celery -A pi_control worker --pidfile="/tmp/celeryd.pid"
+    command: celery -A pi_control worker --pidfile=""
     depends_on:
       - rabbitmq
       - db
   celerybeat:
     <<: *pi-control
-    command: celery -A pi_control beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --pidfile="/tmp/celerybeet.pid"
+    command: celery -A pi_control beat --scheduler django_celery_beat.schedulers:DatabaseScheduler --pidfile=""
     depends_on:
       - rabbitmq
       - db
