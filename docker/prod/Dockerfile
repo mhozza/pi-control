@@ -33,5 +33,6 @@ ENV STATIC_ROOT /static
 RUN python manage.py collectstatic
 
 ENV GUNICORN_WORKERS 3
+ENV HOST=0.0.0.0
 
-CMD gunicorn --bind 0.0.0.0:80 --workers=${GUNICORN_WORKERS} pi_control.wsgi:application
+CMD gunicorn --bind ${HOST}:80 --workers=${GUNICORN_WORKERS} pi_control.wsgi:application

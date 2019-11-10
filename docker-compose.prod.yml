@@ -50,6 +50,8 @@ services:
     restart: always
   web:
     <<: *pi-control
+    environment:
+      - HOST="${HOST-0.0.0.0}"
     ports:
       - "${PORT-8000}:80"
     depends_on:
