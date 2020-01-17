@@ -1,0 +1,5 @@
+.git
+.env
+.gitignore
+.dockerignore
+db.sqlite3
