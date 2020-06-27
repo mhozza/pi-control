@@ -2,7 +2,8 @@ FROM python:3.7-slim
 
 ENV PYTHONUNBUFFERED=0
 
-COPY ./requirements.txt /build/requirements.txt
+COPY ./pyproject.toml /build/
+COPY ./poetry.lock /build/
 
 WORKDIR /build
 
@@ -11,9 +12,9 @@ RUN apt-get update -y && \
     # Build deps
     gcc libffi-dev libpq-dev liblcms2-dev git npm && \
     # Python deps
-    pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir gunicorn && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir --upgrade pip poetry gunicorn && \
+    poetry config virtualenvs.create false && \
+    poetry install --no-interaction --no-root --no-dev
 
 COPY ./pi_control /web
 
@@ -23,7 +24,8 @@ RUN npm install . && npm run --prefix=/web/home/js build
 
 RUN apt-get purge -y --auto-remove gcc libffi-dev libpq-dev liblcms2-dev git npm && \
     apt-get clean -y && \
-    rm -r /web/home/js
+    rm -r /web/home/js && \
+    rm -r /build
 
 WORKDIR /web
 

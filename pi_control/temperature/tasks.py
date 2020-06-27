@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from random import randint
 
 from asgiref.sync import async_to_sync, sync_to_async
+from channels.db import database_sync_to_async
 from celery import shared_task
 from django.conf import settings
 from django.db.models import Avg, OuterRef, Subquery
@@ -21,9 +22,14 @@ async def delay_measure(delay, measurement_device):
     return await sync_to_async(measure_temperature_and_humidity)(measurement_device)
 
 
+@database_sync_to_async
+def get_last_entry_time(device):
+    return Entry.objects.filter(device=device).latest("time").time
+
+
 async def log_temperature_for_device(device):
     try:
-        last_entry_time = Entry.objects.filter(device=device).latest("time").time
+        last_entry_time = await get_last_entry_time(device)
         if timezone.now() - last_entry_time < timezone.timedelta(
             minutes=MIN_MEASUREMENT_TIME_DIFFERENCE_MINUTES
         ):
@@ -49,12 +55,19 @@ async def log_temperature_for_device(device):
             raise e
         temperature, humidity = randint(15, 30), randint(20, 70)
 
-    Entry.objects.create(temperature=temperature, humidity=humidity, device=device)
+    await database_sync_to_async(Entry.objects.create)(
+        temperature=temperature, humidity=humidity, device=device
+    )
+
+
+@database_sync_to_async
+def get_devices():
+    return list(MeasurementDevice.objects.active())
 
 
 @async_to_sync
 async def log_all_temperatures():
-    devices = MeasurementDevice.objects.active()
+    devices = await get_devices()
     await asyncio.gather(*[log_temperature_for_device(device) for device in devices])
 
 

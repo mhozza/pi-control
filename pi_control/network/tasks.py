@@ -1,6 +1,6 @@
+import asyncio
 import logging
 
-from asgiref.sync import async_to_sync
 from celery import shared_task
 from django.utils import timezone
 
@@ -27,5 +27,5 @@ def log_ping():
     except Entry.DoesNotExist:
         logger.info("First entry.")
 
-    ping_time = async_to_sync(measure_ping)()
+    ping_time = asyncio.run(measure_ping())
     Entry.objects.create(ping=ping_time)

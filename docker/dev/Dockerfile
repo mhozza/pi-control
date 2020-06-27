@@ -11,10 +11,14 @@ RUN apt-get update -y && \
     # Build deps
     gcc libffi-dev libpq-dev liblcms2-dev git
 
-COPY ./requirements.txt /build/requirements.txt
+COPY ./pyproject.toml /build/
+COPY ./poetry.lock /build/
 
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+WORKDIR /build
+
+RUN pip install --no-cache-dir --upgrade pip poetry && \
+    poetry config virtualenvs.create false && \
+    poetry install --no-interaction --no-root
 
 COPY ./pi_control /web
 
