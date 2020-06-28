@@ -1,31 +1,55 @@
-FROM python:3.8-slim
+FROM python:3.8-slim as base
 
 ENV PYTHONUNBUFFERED=0
+
+RUN apt-get update -y && \
+    pip install --no-cache-dir --upgrade pip
+
+FROM base as builder
+
+RUN apt-get install -y curl
+
+RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python \
+    && ln -s /root/.poetry/bin/poetry /usr/local/bin/poetry
 
 COPY ./pyproject.toml /build/
 COPY ./poetry.lock /build/
 
 WORKDIR /build
 
-RUN apt-get update -y && \
-    apt-get install -y libpq5 libffi6 liblcms2-2 gettext iputils-ping calibre \
-    # Build deps
-    gcc libffi-dev libpq-dev liblcms2-dev git npm && \
-    # Python deps
-    pip install --no-cache-dir --upgrade pip poetry gunicorn && \
-    poetry config virtualenvs.create false && \
-    poetry install --no-interaction --no-root --no-dev
+RUN set -x \
+    && poetry export --without-hashes -f requirements.txt > requirements.txt
 
-COPY ./pi_control /web
+
+FROM base as installer
+
+# Build deps
+RUN apt-get install -y gcc libffi-dev libpq-dev liblcms2-dev libssl-dev git
+
+COPY --from=builder /build/requirements.txt /
+
+RUN set -x \
+    && pip install --root /install --no-warn-script-location -r requirements.txt
+
+
+FROM node:14-slim as jsbuilder
+
+COPY ./pi_control/home/js /web/home/js
 
 WORKDIR /web/home/js
 
-RUN npm install . && npm run --prefix=/web/home/js build
+RUN npm install . && npm run --prefix=/web/home/js build --verbose
 
-RUN apt-get purge -y --auto-remove gcc libffi-dev libpq-dev liblcms2-dev git npm && \
-    apt-get clean -y && \
-    rm -r /web/home/js && \
-    rm -r /build
+
+FROM base
+
+RUN apt-get install -y libpq5 libffi6 liblcms2-2 gettext iputils-ping calibre && \
+    # Python deps
+    pip install gunicorn
+
+COPY --from=installer /install /
+COPY ./pi_control /web
+COPY --from=jsbuilder /web/home/static/js/app.js /web/home/static/js/app.js 
 
 WORKDIR /web
 
