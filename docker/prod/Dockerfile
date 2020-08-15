@@ -32,11 +32,9 @@ RUN set -x \
     && pip install --root /install --no-warn-script-location -r requirements.txt
 
 
-FROM node:14-slim as jsbuilder
+FROM --platform=$BUILDPLATFORM node:14-slim as jsbuilder
 
 COPY ./pi_control/home/js /web/home/js
-
-WORKDIR /web/home/js
 
 RUN npm install . && npm run --prefix=/web/home/js build --verbose
 
