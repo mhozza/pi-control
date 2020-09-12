@@ -51,11 +51,6 @@ COPY --from=jsbuilder /web/home/static/js/app.js /web/home/static/js/app.js
 
 WORKDIR /web
 
-# TODO remove git once not needed by the workaround.
-RUN apt-get install -y git
-# FIXME: Workaround for missing ffe_ebook package. 
-RUN pip install -e git+https://github.com/mhozza/fanfiction.ebook#egg=ff_ebook
-
 ENV DEBUG False
 ENV STATIC_ROOT /static
 
