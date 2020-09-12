@@ -6,7 +6,7 @@ authors = ["Michal Hozza <mhozza@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 amqp = "^2.6.0"
 asgiref = "^3.2.10"
 billiard = "^3.6.3"
@@ -43,7 +43,7 @@ urllib3 = "^1.25.9"
 vine = "^1.3.0"
 wakeonlan = "^1.1.6"
 whitenoise = "^5.1.0"
-ff-ebook = {git = "https://github.com/mhozza/fanfiction.ebook"}
+ff-ebook = "^0.3.0"
 
 [tool.poetry.dev-dependencies]
 watchdog = "^0.10.3"
@@ -54,7 +54,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.black]
 line-length = 100
-target-version = ['py36', 'py37', 'py38']
+target-version = ['py38']
 exclude = '''
 /(
     \.eggs
