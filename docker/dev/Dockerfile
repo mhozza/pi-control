@@ -28,7 +28,7 @@ RUN npm install .
 
 WORKDIR /web
 
-RUN apt-get purge -y --auto-remove gcc libffi-dev libpq-dev liblcms2-dev git && \
-    apt-get clean -y
+# RUN apt-get purge -y --auto-remove gcc libffi-dev libpq-dev liblcms2-dev git && \
+#     apt-get clean -y
 
 CMD python manage.py runserver 0.0.0.0:8000
