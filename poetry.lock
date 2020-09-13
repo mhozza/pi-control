@@ -389,12 +389,11 @@ description = "Django Sekizai"
 name = "django-sekizai"
 optional = false
 python-versions = "*"
-version = "1.1.0"
+version = "2.0.0"
 
 [package.dependencies]
-django = ">=1.11"
-django-classy-tags = ">=0.9.0"
-six = "*"
+django = ">=2.2"
+django-classy-tags = ">=1"
 
 [[package]]
 category = "main"
@@ -456,7 +455,7 @@ description = "File identification library for Python"
 name = "identify"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
-version = "1.5.1"
+version = "1.5.2"
 
 [package.extras]
 license = ["editdistance"]
@@ -1018,7 +1017,7 @@ test = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 
 [metadata]
-content-hash = "5e449270d28f53c3e10c7425d0ae284787b3597968256e71190c6c846bd0f143"
+content-hash = "56582cfdfa32c607185992d4b8b3bb957637c523eacf91e68e427f4f4a9719fb"
 lock-version = "1.0"
 python-versions = "^3.8"
 
@@ -1186,7 +1185,8 @@ django-dotenv = [
     {file = "django_dotenv-1.4.2-py2.py3-none-any.whl", hash = "sha256:a9b1b40a70bd321acd231926acedb9bd2c5e873e33a1873b34a7276d196a765e"},
 ]
 django-sekizai = [
-    {file = "django-sekizai-1.1.0.tar.gz", hash = "sha256:e2f6e666d4dd9d3ecc27284acb85ef709e198014f5d5af8c6d54ed04c2d684d9"},
+    {file = "django-sekizai-2.0.0.tar.gz", hash = "sha256:e829f09b0d6bf01ee5cde05de1fb3faf2fbc5df66dc4dc280fbaac224ca4336f"},
+    {file = "django_sekizai-2.0.0-py3-none-any.whl", hash = "sha256:5c5e16845d37ce822fc655ce79ec02715191b3d03330b550997bcb842cf24fdf"},
 ]
 django-timezone-field = [
     {file = "django-timezone-field-4.0.tar.gz", hash = "sha256:7e3620fe2211c2d372fad54db8f86ff884098d018d56fda4dca5e64929e05ffc"},
@@ -1209,8 +1209,8 @@ hyperlink = [
     {file = "hyperlink-20.0.1.tar.gz", hash = "sha256:47fcc7cd339c6cb2444463ec3277bdcfe142c8b1daf2160bdd52248deec815af"},
 ]
 identify = [
-    {file = "identify-1.5.1-py2.py3-none-any.whl", hash = "sha256:587748963462930dfd1a3863aee2ea74fd7accaf6b30fa7bf8936af181820c9d"},
-    {file = "identify-1.5.1.tar.gz", hash = "sha256:e8806705ef7800786a37f3ea476663023fe165995e60491a8616412a935c77ba"},
+    {file = "identify-1.5.2-py2.py3-none-any.whl", hash = "sha256:e5cc8ba10ca658c278f841813c5f1556804141c93f82a7e620a938528a0c3f32"},
+    {file = "identify-1.5.2.tar.gz", hash = "sha256:56e70094705056ac75e66eb9f068beb323f4a31b24eb649cb1cf3126d138e35c"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
