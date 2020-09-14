@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from glob import glob
+from os import path
 
 
 def env(name, default=None, type=str):
@@ -214,4 +216,6 @@ CELERY_RESULT_BACKEND = "django-db"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 # Scrabbler
-SCRABBLER_DICTIONARIES = {"SK_NODIA": f"{BASE_DIR}/scrabbler_frontend/dict/words_sk.dic.txt"}
+SCRABBLER_DICTIONARIES = {
+    path.splitext(path.basename(f))[0]: f for f in glob(f"{BASE_DIR}/scrabbler_frontend/dict/*.dic")
+}
