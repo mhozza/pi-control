@@ -769,7 +769,7 @@ description = "Scrabbler."
 name = "scrabbler"
 optional = false
 python-versions = ">=3.8,<4.0"
-version = "0.2.0"
+version = "0.2.1"
 
 [package.dependencies]
 string_algorithms = ">=0.5.0,<0.6.0"
@@ -1053,7 +1053,7 @@ test = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 
 [metadata]
-content-hash = "ad89d4a96cbff1c35b46cd17c58c6692be553dc20f23ee6f1b35b388ab566b2a"
+content-hash = "f204c2740cc97a9ae6f43562f7bdfa7572c634bfc9ca948c92ae9c714dcba0b6"
 lock-version = "1.0"
 python-versions = "^3.8"
 
@@ -1422,8 +1422,8 @@ requests-oauthlib = [
     {file = "requests_oauthlib-1.3.0-py3.7.egg", hash = "sha256:fa6c47b933f01060936d87ae9327fead68768b69c6c9ea2109c48be30f2d4dbc"},
 ]
 scrabbler = [
-    {file = "scrabbler-0.2.0-py3-none-any.whl", hash = "sha256:e49c084abe404513a8b9c804ec67ba074fb68fa6a511c35061a22d9ad477d1c6"},
-    {file = "scrabbler-0.2.0.tar.gz", hash = "sha256:4ce5ad704f9162a93513ba863c8f4c8fb71fdfc314d1471074d8ee96b6a76462"},
+    {file = "scrabbler-0.2.1-py3-none-any.whl", hash = "sha256:65b5c88b203fdc924a8ce59fe978f4f62841e83e2fa37f651622a6ce2f08dbde"},
+    {file = "scrabbler-0.2.1.tar.gz", hash = "sha256:2ce4f60029dd2cdceeea9d163c9024ed1382e75509efe78ca41f71bb1cf403e8"},
 ]
 service-identity = [
     {file = "service_identity-18.1.0-py2.py3-none-any.whl", hash = "sha256:001c0707759cb3de7e49c078a7c0c9cd12594161d3bf06b9c254fdcb1a60dc36"},

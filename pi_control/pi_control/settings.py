@@ -55,6 +55,9 @@ INSTALLED_APPS = [
     "server_stats",
     "temperature",
     "pi_control",
+    "ff_ebook_frontend",
+    "scrabbler_frontend",
+    # Third party apps.
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -68,7 +71,6 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "django_celery_results",
     "crispy_forms",
-    "ff_ebook_frontend",
 ]
 if DEBUG:
     INSTALLED_APPS.append("debug_toolbar")
@@ -210,3 +212,6 @@ CELERY_RESULT_BACKEND = "django-db"
 
 # Crispy forms
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+# Scrabbler
+SCRABBLER_DICTIONARIES = {"SK_NODIA": f"{BASE_DIR}/scrabbler_frontend/dict/words_sk.dic.txt"}
