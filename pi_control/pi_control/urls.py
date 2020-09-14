@@ -37,7 +37,7 @@ urlpatterns = [
     path("api/temperature/", include("temperature.urls")),
     path("api/", include(router.urls)),
     path("ebook/", BuildEbookView.as_view(), name="build-ebook"),
-    path("scrabble/", ScrabblerView.as_view(), name="scrabbler_frontend"),
+    path("scrabble/", ScrabblerView.as_view(), name="scrabbler"),
     path("admin/", admin.site.urls),
 ]
 
