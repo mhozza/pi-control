@@ -27,7 +27,7 @@ class ScrabblerForm(forms.Form):
     limit = forms.IntegerField(label="Limit", max_value=50, initial=20)
     prefix = forms.CharField(label="Prefix", max_length=100, required=False)
     use_all_letters = forms.BooleanField(label="Pouzi vsetky pismena", initial=True, required=False)
-    wildcard = forms.BooleanField(label="Wildchar", initial=False, required=False)
+    wildcard = forms.BooleanField(label="Wildcard (?)", initial=True, required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
