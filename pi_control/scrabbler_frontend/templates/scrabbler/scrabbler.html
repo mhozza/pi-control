@@ -1,0 +1,21 @@
+{% extends "pi_control/base.html" %}
+{% load static sekizai_tags %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {% crispy form %}
+    </form>
+
+    <hr/>
+
+    {% if words %}
+        <h2>{{ words | length }} vysledkov</h2>
+    {% endif %}
+    <ul class="list-unstyled">
+        {% for word in words %}
+            <li>{{ word }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

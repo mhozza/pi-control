@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from glob import glob
+from os import path
 
 
 def env(name, default=None, type=str):
@@ -55,6 +57,9 @@ INSTALLED_APPS = [
     "server_stats",
     "temperature",
     "pi_control",
+    "ff_ebook_frontend",
+    "scrabbler_frontend",
+    # Third party apps.
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -68,7 +73,6 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "django_celery_results",
     "crispy_forms",
-    "ff_ebook_frontend",
 ]
 if DEBUG:
     INSTALLED_APPS.append("debug_toolbar")
@@ -210,3 +214,8 @@ CELERY_RESULT_BACKEND = "django-db"
 
 # Crispy forms
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+# Scrabbler
+SCRABBLER_DICTIONARIES = {
+    path.splitext(path.basename(f))[0]: f for f in glob(f"{BASE_DIR}/scrabbler_frontend/dict/*.dic")
+}

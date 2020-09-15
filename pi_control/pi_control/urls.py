@@ -21,6 +21,7 @@ from rest_framework import routers
 
 from ff_ebook_frontend.views import BuildEbookView
 from home import views as home_views
+from scrabbler_frontend.views import ScrabblerView
 
 router = routers.DefaultRouter()
 
@@ -36,6 +37,7 @@ urlpatterns = [
     path("api/temperature/", include("temperature.urls")),
     path("api/", include(router.urls)),
     path("ebook/", BuildEbookView.as_view(), name="build-ebook"),
+    path("scrabble/", ScrabblerView.as_view(), name="scrabbler"),
     path("admin/", admin.site.urls),
 ]
 
