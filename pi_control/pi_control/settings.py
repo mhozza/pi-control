@@ -59,8 +59,8 @@ INSTALLED_APPS = [
     "pi_control",
     "ff_ebook_frontend",
     "scrabbler_frontend",
+    "pi_control.apps.CustomAdminConfig",
     # Third party apps.
-    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
