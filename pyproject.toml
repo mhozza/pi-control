@@ -63,7 +63,7 @@ wakeonlan = ">=1.1.6"
 whitenoise = ">=5.1.0"
 ff-ebook = ">=0.3.0"
 channels = ">=2.4.0"
-scrabbler = "^0.2.3"
+cachetools = "^4.1.1"
 
 [tool.poetry.dev-dependencies]
 watchdog = {extras = ["watchmedo"], version = ">=0.10.3"}

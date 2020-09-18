@@ -196,10 +196,8 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {"basic": {"format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"}},
-    "handlers": {
-        "console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "basic"}
-    },
-    "loggers": {"django": {"handlers": ["console"], "level": "WARNING", "propagate": True}},
+    "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "basic"}},
+    "root": {"handlers": ["console"], "level": "WARNING", "propagate": True},
 }
 
 # Rest framework
@@ -216,6 +214,4 @@ CELERY_RESULT_BACKEND = "django-db"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 # Scrabbler
-SCRABBLER_DICTIONARIES = {
-    path.splitext(path.basename(f))[0]: f for f in glob(f"{BASE_DIR}/scrabbler_frontend/dict/*.dic")
-}
+SCRABBLER_URL = env("SCRABBLER_URL", "http://localhost:9000")

@@ -136,6 +136,14 @@ d = ["aiohttp (>=3.3.2)", "aiohttp-cors"]
 
 [[package]]
 category = "main"
+description = "Extensible memoizing collections and decorators"
+name = "cachetools"
+optional = false
+python-versions = "~=3.5"
+version = "4.1.1"
+
+[[package]]
+category = "main"
 description = "Distributed Task Queue."
 name = "celery"
 optional = false
@@ -765,17 +773,6 @@ rsa = ["oauthlib (>=3.0.0)"]
 
 [[package]]
 category = "main"
-description = "Scrabbler."
-name = "scrabbler"
-optional = false
-python-versions = ">=3.8,<4.0"
-version = "0.2.3"
-
-[package.dependencies]
-string_algorithms = ">=0.5.0,<0.6.0"
-
-[[package]]
-category = "main"
 description = "Service identity verification for pyOpenSSL & cryptography."
 name = "service-identity"
 optional = false
@@ -861,14 +858,6 @@ name = "sqlparse"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "0.3.1"
-
-[[package]]
-category = "main"
-description = "Collection of various string algorithms, including KMP, Aho-Corasick, Trie, SuffixArrays"
-name = "string-algorithms"
-optional = false
-python-versions = "*"
-version = "0.5.0"
 
 [[package]]
 category = "main"
@@ -1053,7 +1042,7 @@ test = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 
 [metadata]
-content-hash = "8185e2e75ccbef60c64615e929d569942ab303123b40bf8ffe3ad078d6538013"
+content-hash = "0dad282e6e5f613e65849ba0104ef43575fc596dcfe976fb56bb3e89fd79f87e"
 lock-version = "1.0"
 python-versions = "^3.8"
 
@@ -1098,6 +1087,10 @@ billiard = [
 black = [
     {file = "black-20.8b1-py3-none-any.whl", hash = "sha256:70b62ef1527c950db59062cda342ea224d772abdf6adc58b86a45421bab20a6b"},
     {file = "black-20.8b1.tar.gz", hash = "sha256:1c02557aa099101b9d21496f8a914e9ed2222ef70336404eeeac8edba836fbea"},
+]
+cachetools = [
+    {file = "cachetools-4.1.1-py3-none-any.whl", hash = "sha256:513d4ff98dd27f85743a8dc0e92f55ddb1b49e060c2d5961512855cda2c01a98"},
+    {file = "cachetools-4.1.1.tar.gz", hash = "sha256:bbaa39c3dede00175df2dc2b03d0cf18dd2d32a7de7beb68072d13043c9edb20"},
 ]
 celery = [
     {file = "celery-4.4.7-py2.py3-none-any.whl", hash = "sha256:a92e1d56e650781fb747032a3997d16236d037c8199eacd5217d1a72893bca45"},
@@ -1429,10 +1422,6 @@ requests-oauthlib = [
     {file = "requests_oauthlib-1.3.0-py2.py3-none-any.whl", hash = "sha256:7f71572defaecd16372f9006f33c2ec8c077c3cfa6f5911a9a90202beb513f3d"},
     {file = "requests_oauthlib-1.3.0-py3.7.egg", hash = "sha256:fa6c47b933f01060936d87ae9327fead68768b69c6c9ea2109c48be30f2d4dbc"},
 ]
-scrabbler = [
-    {file = "scrabbler-0.2.3-py3-none-any.whl", hash = "sha256:3ac8de44b2e697f41cf8d889f0e7607673fbead1e93b08ba182df6176c06f835"},
-    {file = "scrabbler-0.2.3.tar.gz", hash = "sha256:d7f01d97d8e0a266e1c9904a95cc33e8d14b30f2d36adfef1a80408c29f73a28"},
-]
 service-identity = [
     {file = "service_identity-18.1.0-py2.py3-none-any.whl", hash = "sha256:001c0707759cb3de7e49c078a7c0c9cd12594161d3bf06b9c254fdcb1a60dc36"},
     {file = "service_identity-18.1.0.tar.gz", hash = "sha256:0858a54aabc5b459d1aafa8a518ed2081a285087f349fe3e55197989232e2e2d"},
@@ -1458,10 +1447,6 @@ soupsieve = [
 sqlparse = [
     {file = "sqlparse-0.3.1-py2.py3-none-any.whl", hash = "sha256:022fb9c87b524d1f7862b3037e541f68597a730a8843245c349fc93e1643dc4e"},
     {file = "sqlparse-0.3.1.tar.gz", hash = "sha256:e162203737712307dfe78860cc56c8da8a852ab2ee33750e33aeadf38d12c548"},
-]
-string-algorithms = [
-    {file = "string_algorithms-0.5.0-py2.py3-none-any.whl", hash = "sha256:98b1770aa124c2e2af12f844c22a31d460c63eef69e47f8af49e674bf930acbc"},
-    {file = "string_algorithms-0.5.0.tar.gz", hash = "sha256:f59e8996b1d0840343c3d4cbe9504c5b39ee763aa1667c1ea47266885718411b"},
 ]
 text-unidecode = [
     {file = "text-unidecode-1.3.tar.gz", hash = "sha256:bad6603bb14d279193107714b288be206cac565dfa49aa5b105294dd5c4aab93"},

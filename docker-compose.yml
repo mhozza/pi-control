@@ -16,6 +16,7 @@ x-pi-control: &pi-control
     - DB_HOST=db
     - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672
     - CPU_TEMPERATURE_FILE=/host_sys/temp
+    - SCRABBLER_URL=http://scrabbler
     - SERVER_NAME=malina
     - DEFAULT_FROM_EMAIL
     - EMAIL_HOST
@@ -40,6 +41,9 @@ services:
       - "8000:8000"
     depends_on:
       - db
+  scrabbler:
+    image: mhozza/scrabbler-service:0.1.5
+    command: scrabbler_service/scrabbler_service.py --lazy-init -p 80 --debug
   celery:
     <<: *pi-control
     command: watchmedo auto-restart --directory=/web --pattern=*.py --recursive -- celery -A pi_control worker -l info --pidfile=""

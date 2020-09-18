@@ -9,7 +9,11 @@
     </form>
 
     <hr/>
-
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            Error. Please check logs.
+        </div>
+    {% endif %}
     {% if words %}
         <h2>{{ words | length }} vysledkov</h2>
     {% endif %}

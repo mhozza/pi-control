@@ -4,7 +4,6 @@ from crispy_forms.bootstrap import InlineRadios
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Field, Layout, Row, Submit
 from django import forms
-from django.conf import settings
 from django.forms import RadioSelect
 
 
@@ -14,9 +13,7 @@ class Mode(Enum):
 
 
 class ScrabblerForm(forms.Form):
-    dictionary = forms.ChoiceField(
-        label="Slovnik", choices=((k, k) for k in sorted(settings.SCRABBLER_DICTIONARIES.keys()))
-    )
+    dictionary = forms.ChoiceField(label="Slovnik")
     word = forms.CharField(label="Slovo", max_length=100)
     mode = forms.ChoiceField(
         label="Mod",
@@ -29,8 +26,10 @@ class ScrabblerForm(forms.Form):
     use_all_letters = forms.BooleanField(label="Pouzi vsetky pismena", initial=True, required=False)
     wildcard = forms.BooleanField(label="Wildcard (?)", initial=True, required=False)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, dictionaries, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["dictionary"].choices = [(k, k) for k in sorted(dictionaries)]
+
         self.helper = FormHelper()
         self.helper.layout = Layout(
             Row(
