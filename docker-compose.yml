@@ -42,7 +42,7 @@ services:
     depends_on:
       - db
   scrabbler:
-    image: mhozza/scrabbler-service:0.1.5
+    image: mhozza/scrabbler-service:0.1.6
     command: scrabbler_service/scrabbler_service.py --lazy-init -p 80 --debug
   celery:
     <<: *pi-control
