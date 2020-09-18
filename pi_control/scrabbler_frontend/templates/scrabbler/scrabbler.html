@@ -17,9 +17,9 @@
     {% if words %}
         <h2>{{ words | length }} vysledkov</h2>
     {% endif %}
-    <ul class="list-unstyled">
+    <ul class="list-unstyled row">
         {% for word in words %}
-            <li>{{ word }}</li>
+            <li class="col-md-4 col-lg-3">{{ word }}</li>
         {% endfor %}
     </ul>
 {% endblock %}
