@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 
+import logging
+
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
@@ -8,6 +10,8 @@ from .forms import Mode, ScrabblerForm
 from .scrabbler_client import ScrabblerClient
 
 scrabbler = ScrabblerClient()
+
+logger = logging.getLogger(__name__)
 
 
 class ScrabblerView(FormView):
@@ -21,7 +25,7 @@ class ScrabblerView(FormView):
         return kwargs
 
     def form_valid(self, form):
-        if form.cleaned_data["mode"] == Mode.REGEX:
+        if form.cleaned_data["mode"] == str(Mode.REGEX.value[0]):
             words = scrabbler.find_regex(
                 regex=form.cleaned_data["word"],
                 dictionary=form.cleaned_data["dictionary"],

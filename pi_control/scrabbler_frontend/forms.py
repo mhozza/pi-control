@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, unique
 
 from crispy_forms.bootstrap import InlineRadios
 from crispy_forms.helper import FormHelper
@@ -7,9 +7,10 @@ from django import forms
 from django.forms import RadioSelect
 
 
+@unique
 class Mode(Enum):
-    PERMUTATIONS = 0
-    REGEX = 1
+    PERMUTATIONS = (0, "Permutacie")
+    REGEX = (1, "Regex")
 
 
 class ScrabblerForm(forms.Form):
@@ -18,8 +19,8 @@ class ScrabblerForm(forms.Form):
     mode = forms.ChoiceField(
         label="Mod",
         widget=RadioSelect,
-        initial=Mode.PERMUTATIONS,
-        choices=((Mode.PERMUTATIONS, "Permutacie"), (Mode.REGEX, "Regex")),
+        initial=Mode.PERMUTATIONS.value[0],
+        choices=(Mode.PERMUTATIONS.value, Mode.REGEX.value),
     )
     limit = forms.IntegerField(label="Limit", max_value=50, initial=20)
     prefix = forms.CharField(label="Prefix", max_length=100, required=False)
