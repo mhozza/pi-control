@@ -1,7 +1,5 @@
 from __future__ import absolute_import
 
-import logging
-
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
@@ -10,8 +8,6 @@ from .forms import Mode, ScrabblerForm
 from .scrabbler_client import ScrabblerClient
 
 scrabbler = ScrabblerClient()
-
-logger = logging.getLogger(__name__)
 
 
 class ScrabblerView(FormView):
