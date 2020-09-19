@@ -56,8 +56,8 @@ services:
     depends_on:
       - db
   scrabbler:
-    image: mhozza/scrabbler-service:0.1.6
-    command: scrabbler_service/scrabbler_service.py -p 80 --debug
+    image: mhozza/scrabbler-service:0.2.0
+    command: scrabbler_service/scrabbler_service.py -p 80 --debug --hot-init
   celery:
     <<: *pi-control
     command: celery -A pi_control worker --pidfile=""
