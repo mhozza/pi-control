@@ -42,7 +42,7 @@ services:
     depends_on:
       - db
   scrabbler:
-    image: mhozza/scrabbler-service-kt:0.0.2
+    image: mhozza/scrabbler-service-kt:0.0.3
   celery:
     <<: *pi-control
     command: watchmedo auto-restart --directory=/web --pattern=*.py --recursive -- celery -A pi_control worker -l info --pidfile=""
