@@ -56,7 +56,7 @@ services:
     depends_on:
       - db
   scrabbler:
-    image: mhozza/scrabbler-service-kt:0.0.3
+    image: mhozza/scrabbler-service-kt:0.1.0
   celery:
     <<: *pi-control
     command: celery -A pi_control worker --pidfile=""

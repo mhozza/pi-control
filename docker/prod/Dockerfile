@@ -1,4 +1,4 @@
-FROM python:3.8-slim as base
+FROM python:3.9-slim as base
 
 ENV PYTHONUNBUFFERED=0
 
@@ -47,7 +47,7 @@ RUN apt-get install -y libpq5 libffi6 liblcms2-2 gettext iputils-ping calibre &&
 
 COPY --from=installer /install /
 COPY ./pi_control /web
-COPY --from=jsbuilder /web/home/static/js/app.js /web/home/static/js/app.js 
+COPY --from=jsbuilder /web/home/static/js/app.js /web/home/static/js/app.js
 
 WORKDIR /web
 

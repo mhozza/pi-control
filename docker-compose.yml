@@ -33,6 +33,7 @@ services:
     environment:
       - POSTGRES_USER=pi_control
       - POSTGRES_DB=pi_control
+      - POSTGRES_HOST_AUTH_METHOD=trust
   rabbitmq:
     image: rabbitmq:3.7-alpine
   web:
@@ -42,7 +43,7 @@ services:
     depends_on:
       - db
   scrabbler:
-    image: mhozza/scrabbler-service-kt:0.0.3
+    image: mhozza/scrabbler-service-kt:0.1.0
   celery:
     <<: *pi-control
     command: watchmedo auto-restart --directory=/web --pattern=*.py --recursive -- celery -A pi_control worker -l info --pidfile=""
