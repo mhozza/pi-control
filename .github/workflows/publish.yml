@@ -25,5 +25,5 @@ jobs:
           push: true
           tags: |
             mhozza/pi-control:latest
-            mhozza/pi-control:$(date +%s)
+          # mhozza/pi-control:$(date +%s)
             
