@@ -14,7 +14,7 @@ RUN apt-get update -y && \
 COPY ./pyproject.toml /build/
 COPY ./poetry.lock /build/
 
-RUN pip install --no-cache-dir --upgrade pip poetry && \
+RUN pip install --no-cache-dir poetry && \
     poetry config virtualenvs.create false && \
     poetry install --no-interaction --no-root
 

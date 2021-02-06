@@ -2,8 +2,7 @@ FROM python:3.9-slim as base
 
 ENV PYTHONUNBUFFERED=0
 
-RUN apt-get update -y && \
-    pip install --no-cache-dir --upgrade pip
+RUN apt-get update -y
 
 FROM base as builder
 
