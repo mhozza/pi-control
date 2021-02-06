@@ -31,12 +31,11 @@ RUN set -x \
     && pip install --root /install --no-warn-script-location -r requirements.txt
 
 
-FROM --platform=$BUILDPLATFORM node:14-slim as jsbuilder
+FROM --platform=$BUILDPLATFORM node:15-slim as jsbuilder
 
 COPY ./pi_control/home/js /web/home/js
 
-RUN npm install . && npm run --prefix=/web/home/js build --verbose
-
+RUN npm install && npm run --prefix=/web/home/js build --verbose && npm prune --production
 
 FROM base
 
