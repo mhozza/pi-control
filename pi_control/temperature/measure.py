@@ -4,6 +4,7 @@ import os
 import socket
 import time
 from fcntl import ioctl
+import requests
 
 
 class AM2320:
@@ -90,7 +91,7 @@ class AM2320:
         return (temp, humi)
 
 
-class NetworkTemperatureSensor:
+class NetworkTemperatureSensorV0:
     BUFFER_SIZE = 256
 
     def __init__(self, ip, port):
@@ -108,12 +109,29 @@ class NetworkTemperatureSensor:
         return data["temperature"] / 10.0, data["humidity"] / 10.0
 
 
+class NetworkTemperatureSensorV1:
+    def __init__(self, ip, port):
+        self.url = f"http://{ip}:{port}/temperature"
+
+    def read_sensor(self):
+        response = requests.get(self.url)
+        data = response.json()
+        return data["temperature"], data["humidity"]
+
+
 am2320 = AM2320(i2cbus=1)
 
 
 def measure_temperature_and_humidity(device):
     if device:
         if device.ip_address and device.port:
-            device = NetworkTemperatureSensor(device.ip_address, device.port)
+            if device.api == 0:
+                device = NetworkTemperatureSensorV0(device.ip_address, device.port)
+            elif device.api == 1:
+                device = NetworkTemperatureSensorV1(device.ip_address, device.port)
+            else:
+                raise NotImplementedError(
+                    f"Invalid API version for device {device.name} " f"(API v{device.api})."
+                )
             return device.read_sensor()
     return am2320.read_sensor()

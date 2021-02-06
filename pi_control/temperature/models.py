@@ -48,6 +48,7 @@ class MeasurementDevice(models.Model):
     port = models.IntegerField(default=80, blank=True, null=True, verbose_name="device port")
     room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True, related_name="devices")
     active = models.BooleanField(default=True)
+    api = models.IntegerField(default=0, verbose_name="Device API version.")
 
     objects = DeviceManager()
 
