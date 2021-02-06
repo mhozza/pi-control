@@ -35,6 +35,8 @@ FROM --platform=$BUILDPLATFORM node:15-slim as jsbuilder
 
 COPY ./pi_control/home/js /web/home/js
 
+WORKDIR /web/home/js
+
 RUN npm install && npm run --prefix=/web/home/js build --verbose && npm prune --production
 
 FROM base

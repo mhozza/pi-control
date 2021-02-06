@@ -22,7 +22,7 @@ COPY ./pi_control /web
 
 WORKDIR /web/home/js
 
-RUN npm install .
+RUN npm install
 
 WORKDIR /web
 
