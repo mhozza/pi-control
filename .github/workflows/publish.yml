@@ -2,16 +2,23 @@ name: Publish on DockerHub
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
+    tags:
+      - "v*"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
   build_and_push:
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Docker meta
+        id: docker_meta
+        uses: crazy-max/ghaction-docker-meta@v1
+        with:
+          images: mhozza/pi-control
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -28,7 +35,5 @@ jobs:
           file: ./docker/prod/Dockerfile
           platforms: linux/amd64,linux/arm/v7
           push: true
-          tags: |
-            mhozza/pi-control:latest
-          # mhozza/pi-control:$(date +%s)
-            
+          tags: ${{ steps.docker_meta.outputs.tags }}
+          labels: ${{ steps.docker_meta.outputs.labels }}
