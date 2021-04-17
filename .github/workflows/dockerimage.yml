@@ -3,12 +3,12 @@ name: Docker Image CI
 on: [push]
 
 jobs:
-  build_prod:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Build the Docker image
-      run: docker build . --file docker/prod/Dockerfile --tag mhozza/pi-control:$(date +%s)
+  #build_prod:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #  - uses: actions/checkout@v1
+  #  - name: Build the Docker image
+  #    run: docker build . --file docker/prod/Dockerfile --tag mhozza/pi-control:$(date +%s)
   build_dev:
     runs-on: ubuntu-latest
     steps:
