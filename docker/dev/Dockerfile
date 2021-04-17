@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED=0
 WORKDIR /build
 
 RUN apt-get update -y && \
-    apt-get install -y libpq5 libffi6 liblcms2-2 gettext iputils-ping calibre \
+    apt-get install -y libpq5 libffi6 liblcms2-2 gettext iputils-ping calibre rustc\
     # Dev deps
     npm \
     # Build deps

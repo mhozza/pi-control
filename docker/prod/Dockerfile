@@ -24,9 +24,7 @@ RUN set -x \
 FROM base as installer
 
 # Build deps
-RUN apt-get install -y gcc libffi-dev libpq-dev liblcms2-dev libssl-dev git
-# Install rust, required for building cryptography.
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh 
+RUN apt-get install -y gcc libffi-dev libpq-dev liblcms2-dev libssl-dev git rustc
 
 COPY --from=builder /build/requirements.txt /
 
