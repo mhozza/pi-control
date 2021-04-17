@@ -3,6 +3,7 @@ FROM python:3.9-slim as base
 ENV PYTHONUNBUFFERED=0
 
 RUN apt-get update -y
+RUN pip install -U pip
 
 FROM base as builder
 
