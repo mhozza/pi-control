@@ -23,8 +23,11 @@ RUN set -x \
 
 FROM base as installer
 
+# Disable using Rust to build cryptography (v3.4.7 only).
+ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
+
 # Build deps
-RUN apt-get install -y gcc libffi-dev libpq-dev liblcms2-dev libssl-dev git rustc
+RUN apt-get install -y gcc libffi-dev libpq-dev liblcms2-dev libssl-dev git
 
 COPY --from=builder /build/requirements.txt /
 
