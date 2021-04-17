@@ -29,7 +29,6 @@ class ServerStatsWidget extends Widget {
             </div>
         }
         let time = new Date(this.state.data.time).toLocaleString();
-        let backuptime = new Date(this.state.data.backuptime).toLocaleString();
 
         let cpuColorClass = this.state.data.cpu > 50
             ? "text-danger"
@@ -87,7 +86,6 @@ class ServerStatsWidget extends Widget {
                             <span className={cpuTempColorClass}>{this.state.data.cpu_temp}°C</span>
                         </li>}
                         <li><strong>Čas od zapnutia: </strong>{this.state.data.uptime}</li>
-                        <li><strong>Posledná záloha: </strong>{backuptime}</li>
                     </ul>
 
                 </div>
