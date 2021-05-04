@@ -16,7 +16,7 @@ def get_server_stats(request):
     uptime = str(timezone.timedelta(seconds=helpers.get_uptime()))
     try:
         backup_time = timezone.datetime.fromtimestamp(helpers.get_last_backup_time())
-    except AssertionError as e:
+    except (AssertionError, FileNotFoundError) as e:
         logger.error(e)
         backup_time = None
     try:
