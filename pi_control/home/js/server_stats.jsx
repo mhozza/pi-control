@@ -1,9 +1,9 @@
 import React from "react";
-import LoadingSpinner from './loading.jsx';
-import Widget from './widget.jsx'
+import {LoadingSpinner} from './loading.jsx';
+import {Widget} from './widget.jsx'
 import axios from "axios";
 
-class ServerStatsWidget extends Widget {
+export class ServerStatsWidget extends Widget {
     constructor(props) {
         super(props);
         this.state = {
@@ -94,5 +94,3 @@ class ServerStatsWidget extends Widget {
         </div>);
     }
 }
-
-module.exports = ServerStatsWidget;

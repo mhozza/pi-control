@@ -1,8 +1,8 @@
 import React from "react";
 import axios from 'axios';
 import cookie from "cookie";
-import LoadingSpinner from './loading.jsx';
-import Widget from './widget.jsx'
+import {LoadingSpinner} from './loading.jsx';
+import {Widget} from './widget.jsx'
 
 const csrf_cookie = cookie.parse(document.cookie)['csrftoken'];
 
@@ -10,7 +10,7 @@ if (csrf_cookie) {
     axios.defaults.headers.post['X-CSRFToken'] = csrf_cookie;
 }
 
-class PcStatusWidgetSet extends Widget {
+export class PcStatusWidgetSet extends Widget {
     constructor(props) {
         super(props);
         this.state = {
@@ -147,5 +147,3 @@ class PcStatusWidget extends Widget {
         </div>);
     }
 }
-
-module.exports = PcStatusWidgetSet;

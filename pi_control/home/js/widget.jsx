@@ -1,6 +1,6 @@
 import React from 'react';
 
-class Widget extends React.Component {
+export class Widget extends React.Component {
     componentDidMount() {
         this.tick();
         this.timerID = setInterval(() => this.tick(), 15000);
@@ -13,5 +13,3 @@ class Widget extends React.Component {
     tick() {
     }
 }
-
-module.exports = Widget;

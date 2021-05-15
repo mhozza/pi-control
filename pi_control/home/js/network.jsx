@@ -1,7 +1,7 @@
 import React from "react";
 import {Line} from 'react-chartjs-2';
-import LoadingSpinner from './loading.jsx';
-import Widget from './widget.jsx'
+import {LoadingSpinner} from './loading.jsx';
+import {Widget} from './widget.jsx'
 import axios from "axios";
 
 
@@ -12,7 +12,7 @@ const DISPLAY_FORMATS = {
 };
 
 
-class PingWidget extends Widget {
+export class PingWidget extends Widget {
     constructor(props) {
         super(props);
         this.state = {
@@ -101,5 +101,3 @@ class PingWidget extends Widget {
 
     }
 }
-
-module.exports = PingWidget;

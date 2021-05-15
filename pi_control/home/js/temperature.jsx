@@ -1,7 +1,7 @@
 import React from "react";
 import {Line} from 'react-chartjs-2';
-import LoadingSpinner from './loading.jsx';
-import Widget from './widget.jsx'
+import {LoadingSpinner} from './loading.jsx';
+import {Widget} from './widget.jsx'
 import axios from "axios";
 
 const DISPLAY_FORMATS = {
@@ -22,7 +22,7 @@ async function getTemperatureData(room) {
     return roomData;
 }
 
-class TemperatureWidgetSet extends Widget {
+export class TemperatureWidgetSet extends Widget {
     constructor(props) {
         super(props);
         this.state = {
@@ -264,5 +264,3 @@ class DeviceData extends React.Component {
         );
     }
 }
-
-module.exports = TemperatureWidgetSet;
