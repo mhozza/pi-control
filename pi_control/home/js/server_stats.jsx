@@ -1,6 +1,6 @@
 import React from "react";
 import {LoadingSpinner} from './loading.jsx';
-import {Widget} from './widget.jsx'
+import {Widget} from './widget.tsx'
 import axios from "axios";
 
 export class ServerStatsWidget extends Widget {

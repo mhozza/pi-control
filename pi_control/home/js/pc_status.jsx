@@ -2,7 +2,7 @@ import React from "react";
 import axios from 'axios';
 import cookie from "cookie";
 import {LoadingSpinner} from './loading.jsx';
-import {Widget} from './widget.jsx'
+import {Widget} from './widget.tsx'
 
 const csrf_cookie = cookie.parse(document.cookie)['csrftoken'];
 
