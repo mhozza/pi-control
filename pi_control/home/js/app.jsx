@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {TemperatureWidgetSet} from './temperature.jsx';
-import {PcStatusWidgetSet} from './pc_status.jsx';
+import {PcStatusWidgetSet} from './pc_status.tsx';
 import {PingWidget} from './network.jsx'
 import {ServerStatsWidget} from './server_stats.jsx';
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export class Widget extends React.Component {
+export class Widget<P = {}, S = {}, SS = any> extends React.Component<P, S, SS> {
     timerID: NodeJS.Timeout;
 
     componentDidMount() {

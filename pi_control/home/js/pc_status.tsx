@@ -1,8 +1,8 @@
-import React from "react";
+import * as React from "react";
 import axios from 'axios';
-import cookie from "cookie";
-import {LoadingSpinner} from './loading.tsx';
-import {Widget} from './widget.tsx'
+import * as cookie from "cookie";
+import {LoadingSpinner} from './loading';
+import {Widget} from './widget';
 
 const csrf_cookie = cookie.parse(document.cookie)['csrftoken'];
 
@@ -10,14 +10,15 @@ if (csrf_cookie) {
     axios.defaults.headers.post['X-CSRFToken'] = csrf_cookie;
 }
 
-export class PcStatusWidgetSet extends Widget {
-    constructor(props) {
-        super(props);
-        this.state = {
-            pcs: null,
-        };
-    }
+interface PcStatusWidgetSetState {
+    pcs: string[];
+}
 
+export class PcStatusWidgetSet extends Widget {
+    state: PcStatusWidgetSetState = {
+        pcs: null
+    }
+    
     tick() {
         let self = this;
 
@@ -44,16 +45,34 @@ export class PcStatusWidgetSet extends Widget {
     }
 }
 
-class PcStatusWidget extends Widget {
-    constructor(props) {
-        super(props);
-        this.state = {
-            loading: false,
-            data: null,
-        };
-        this.handleWakeupButtonClick = this.handleWakeupButtonClick.bind(this);
-        this.handleSleepButtonClick = this.handleSleepButtonClick.bind(this);
-    }
+interface PcStatus {
+    name: string;
+    online: boolean;
+    ssh: boolean;
+    time: string;
+}
+
+interface PcStatusWidgetProps {
+    pc: string;
+}
+
+interface PcStatusWidgetState {
+    loading: boolean;
+    data: PcStatus;
+}
+
+class PcStatusWidget extends Widget<PcStatusWidgetProps, PcStatusWidgetState> {
+    state: PcStatusWidgetState = {
+        loading: false,
+        data: null,
+    };
+
+    // constructor(props) {
+    //     super(props);
+    //     this.state = 
+    //     this.handleWakeupButtonClick = this.handleWakeupButtonClick.bind(this);
+    //     this.handleSleepButtonClick = this.handleSleepButtonClick.bind(this);
+    // }
 
     tick() {
         let self = this;
@@ -65,7 +84,7 @@ class PcStatusWidget extends Widget {
         });
     }
 
-    handleWakeupButtonClick(event) {
+    handleWakeupButtonClick(event: React.MouseEvent) {
         let self = this;
         axios.post("/api/pc_status/wakeup/" + self.state.data.name).then(response => {
             console.log(self, this, event, response);
@@ -73,7 +92,7 @@ class PcStatusWidget extends Widget {
         });
     }
 
-    handleSleepButtonClick(event) {
+    handleSleepButtonClick(event: React.MouseEvent) {
         let self = this;
         axios.post("/api/pc_status/sleep/" + self.state.data.name).then(response => {
             console.log(self, this, event, response);

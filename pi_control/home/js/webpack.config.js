@@ -12,6 +12,9 @@ module.exports = (env, args) => {
       path: __dirname + '/../static/js/',
       filename: 'app.js'
     },
+    resolve: {
+      extensions: [".js", ".jsx", ".json", ".ts", ".tsx"],
+    },
     module: {
       rules: [
         {
