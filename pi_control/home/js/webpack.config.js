@@ -20,8 +20,16 @@ module.exports = (env, args) => {
           use: {
             loader: 'babel-loader'
           }
+        },
+        {
+          test: /\.tsx$/,
+          exclude: /(node_modules|bower_components)/,
+          use: {
+            loader: 'ts-loader'
+          }
         }
       ]
     }
+    
   };
 };
