@@ -5,7 +5,7 @@ module.exports = (env, args) => {
   return {
     context: __dirname,
     devtool: debug
-      ? 'inline-sourcemap'
+      ? 'inline-source-map'
       : false,
     entry: './app.jsx',
     output: {
