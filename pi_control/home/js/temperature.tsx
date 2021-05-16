@@ -1,9 +1,10 @@
-import React from "react";
-import { Line } from 'react-chartjs-2';
-import { LoadingSpinner } from './loading.tsx';
-import { Widget } from './widget.tsx'
+import * as React from "react";
+import {Line} from 'react-chartjs-2';
+import {LoadingSpinner} from './loading';
+import {Widget} from './widget'
 import axios from "axios";
 import 'chartjs-adapter-date-fns';
+import { ChartData, ChartOptions } from "chart.js";
 
 const DISPLAY_FORMATS = {
     hour: 'HH:mm',
@@ -11,8 +12,42 @@ const DISPLAY_FORMATS = {
     second: 'HH:mm:ss',
 };
 
-async function getTemperatureData(room) {
-    const roomData = (await axios.get("/api/temperature/room/" + room.id + "/now/")).data;
+interface Room {
+    id: number;
+    name: string;
+}
+
+interface Entry {
+    time: string;
+    temperature: number;
+    humidity: number;
+    device: string;
+}
+
+interface Measurement {
+    device: string;
+    device_name: string;
+    temperature: number;
+    humidity: number;
+    graphData: Entry[];
+}
+
+interface BoundedValue {
+    value: number;
+    high: number;
+    low: number;
+}
+
+interface RoomData {
+    time: string;
+    room: number;
+    temperature: BoundedValue;
+    humidity: BoundedValue;
+    devices: Measurement[];
+}
+
+async function getTemperatureData(room: Room) {
+    const roomData = (await axios.get("/api/temperature/room/" + room.id + "/now/")).data as RoomData;
     const graphPromises = roomData.devices.map(device_info => axios.get("/api/temperature/list/?device=" + device_info.device));
     const graphDatas = (await Promise.all(graphPromises)).map(response => response.data);
 
@@ -23,18 +58,19 @@ async function getTemperatureData(room) {
     return roomData;
 }
 
-export class TemperatureWidgetSet extends Widget {
-    constructor(props) {
-        super(props);
-        this.state = {
-            rooms: null,
-        };
-    }
+interface TemperatureWidgetSetState {
+    rooms: Room[]
+}
 
+export class TemperatureWidgetSet extends Widget {
+    state : TemperatureWidgetSetState = {
+        rooms: null,
+    };
+    
     tick() {
         let self = this;
         axios.get("/api/temperature/rooms/").then(response => {
-            self.setState({ rooms: response.data });
+            self.setState({rooms: response.data});
         });
     }
 
@@ -43,32 +79,37 @@ export class TemperatureWidgetSet extends Widget {
             return <div className="col-sm-6 col-md-4">
                 <div className="card text-center">
                     <div className="card-header">Teplota a vlhkost</div>
-                    <LoadingSpinner />
+                    <LoadingSpinner/>
                 </div>
             </div>;
         }
 
         const widgets = this.state.rooms.map((room, index) => <TemperatureWidget key={'temperature_data_' + index}
-            room={room} />);
+                                                                                 room={room}/>);
         return <React.Fragment>
             {widgets}
         </React.Fragment>;
     }
 }
 
-class TemperatureWidget extends Widget {
-    constructor(props) {
-        super(props);
-        this.state = {
-            data: null,
-        };
-    }
+interface TemperatureWidgetProps {
+    room: Room;
+}
 
+interface TemperatureWidgetState {
+    data: RoomData;
+}
+
+class TemperatureWidget extends Widget<TemperatureWidgetProps> {
+    state: TemperatureWidgetState = {
+        data: null,
+    };
+    
     tick() {
         let self = this;
 
         getTemperatureData(self.props.room).then(response => {
-            self.setState({ data: response });
+            self.setState({data: response});
         });
     }
 
@@ -80,7 +121,7 @@ class TemperatureWidget extends Widget {
             return <div className="col-sm-6 col-md-4">
                 <div className="card text-center">
                     <div className="card-header">{room.name}</div>
-                    <LoadingSpinner />
+                    <LoadingSpinner/>
                 </div>
             </div>;
         }
@@ -100,19 +141,19 @@ class TemperatureWidget extends Widget {
 
         let device_data = this.state.data.devices.map(device_info =>
             <DeviceData key={'temperature_room_data_' + device_info.device}
-                device={{ id: device_info.device, name: device_info.device_name }}
-                temperature={{
-                    value: device_info.temperature,
-                    low: this.state.data.temperature.low,
-                    high: this.state.data.temperature.high,
-                }}
-                humidity={{
-                    value: device_info.humidity,
-                    low: this.state.data.humidity.low,
-                    high: this.state.data.humidity.high,
-                }}
-                data={device_info.graphData}
-                needs_details={this.state.data.devices.length > 1} />);
+                        device={{id: device_info.device, name: device_info.device_name}}
+                        temperature={{
+                            value: device_info.temperature,
+                            low: this.state.data.temperature.low,
+                            high: this.state.data.temperature.high,
+                        }}
+                        humidity={{
+                            value: device_info.humidity,
+                            low: this.state.data.humidity.low,
+                            high: this.state.data.humidity.high,
+                        }}
+                        data={device_info.graphData}
+                        needs_details={this.state.data.devices.length > 1}/>);
 
         return (
             <div className="col-md-4">
@@ -120,7 +161,7 @@ class TemperatureWidget extends Widget {
                     <div className="card-header text-center">{room.name}</div>
                     <div className="card-body">
                         <a className="temperature-tappable-header" data-toggle="collapse" role="button"
-                            href={"#collapse_" + room.id} aria-expanded="false" aria-controls={"collapse_" + room.id}>
+                           href={"#collapse_" + room.id} aria-expanded="false" aria-controls={"collapse_" + room.id}>
                             <div className="card-text row">
                                 <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
                                     {this.state.data.temperature.value.toFixed(1)}
@@ -146,7 +187,20 @@ class TemperatureWidget extends Widget {
     }
 }
 
-class DeviceData extends React.Component {
+interface Device {
+    id: string;
+    name: string;
+}
+
+interface DeviceDataProps {
+    device: Device;
+    temperature: BoundedValue;
+    humidity: BoundedValue;
+    data: Entry[];
+    needs_details: boolean;
+}
+
+class DeviceData extends React.Component<DeviceDataProps> {
     render() {
         let labels = this.props.data.map(x => x.time);
         let temperature_dataset = this.props.data.map(x => x.temperature);
@@ -164,7 +218,7 @@ class DeviceData extends React.Component {
                 ? "text-primary"
                 : "text-success";
 
-        let chartData = {
+        let chartData: ChartData = {
             labels: labels,
             datasets: [
                 {
@@ -186,7 +240,7 @@ class DeviceData extends React.Component {
                 }
             ]
         };
-        let chartOptions = {
+        let chartOptions: ChartOptions = {
             responsive: true,
             plugins: {
                 legend: {
@@ -216,10 +270,8 @@ class DeviceData extends React.Component {
                         display: true,
                         text: 'Teplota'
                     },
-                    ticks: {
-                        suggestedMin: 20,
-                        suggestedMax: 30
-                    }
+                    suggestedMin: 20,
+                    suggestedMax: 30
                 },
                 y2: {
                     type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
@@ -229,10 +281,8 @@ class DeviceData extends React.Component {
                         display: true,
                         text: 'Vlhkosť'
                     },
-                    ticks: {
-                        suggestedMin: 30,
-                        suggestedMax: 50
-                    },
+                    suggestedMin: 30,
+                    suggestedMax: 50,
                     // grid line settings
                     grid: {
                         drawOnChartArea: false, // only want the grid lines for one axis to show up
@@ -241,7 +291,7 @@ class DeviceData extends React.Component {
             }
         };
 
-        let details = '';
+        let details: string|React.ReactFragment = '';
         if (this.props.needs_details) {
             details = <React.Fragment>
                 <h5 className="card-title text-center">{device.name}</h5>
@@ -259,7 +309,7 @@ class DeviceData extends React.Component {
         return (
             <React.Fragment>
                 {details}
-                <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100} />
+                <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100}/>
             </React.Fragment>
         );
     }
