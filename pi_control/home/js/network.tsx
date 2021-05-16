@@ -1,9 +1,10 @@
-import React from "react";
+import * as React from "react";
 import { Line } from 'react-chartjs-2';
-import { LoadingSpinner } from './loading.tsx';
-import { Widget } from './widget.tsx'
+import { LoadingSpinner } from './loading';
+import { Widget } from './widget'
 import axios from "axios";
 import 'chartjs-adapter-date-fns';
+import { ChartData, ChartOptions } from "chart.js";
 
 
 const DISPLAY_FORMATS = {
@@ -12,14 +13,19 @@ const DISPLAY_FORMATS = {
     second: 'HH:mm:ss',
 };
 
+interface PingData {
+    time: string;
+    ping: number;
+}
+
+interface PingWidgetState {
+    data: PingData[];
+}
 
 export class PingWidget extends Widget {
-    constructor(props) {
-        super(props);
-        this.state = {
-            data: [],
-        };
-    }
+    state: PingWidgetState = {
+        data: []
+    };
 
     tick() {
         let self = this;
@@ -37,7 +43,7 @@ export class PingWidget extends Widget {
             let labels = this.state.data.map(x => x.time);
             let ping_dataset = this.state.data.map(x => x.ping);
 
-            let chartData = {
+            let chartData: ChartData = {
                 labels: labels,
                 datasets: [
                     {
@@ -50,7 +56,7 @@ export class PingWidget extends Widget {
                     }
                 ]
             };
-            let chartOptions = {
+            let chartOptions: ChartOptions = {
                 responsive: true,
                 plugins: {
                     legend: {
@@ -69,7 +75,7 @@ export class PingWidget extends Widget {
                             source: 'data',
                             autoSkip: true
                         },
-                        scaleLabel: {
+                        title: {
                             display: false,
                         }
                     },
@@ -81,10 +87,8 @@ export class PingWidget extends Widget {
                             display: true,
                             text: 'Ping (ms)'
                         },
-                        ticks: {
-                            beginAtZero: true,
-                            suggestedMax: 50
-                        }
+                        beginAtZero: true,
+                        suggestedMax: 50,
                     }
 
                 }
