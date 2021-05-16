@@ -7,7 +7,7 @@ module.exports = (env, args) => {
     devtool: debug
       ? 'inline-source-map'
       : false,
-    entry: './app.jsx',
+    entry: './app.tsx',
     output: {
       path: __dirname + '/../static/js/',
       filename: 'app.js'

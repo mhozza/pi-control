@@ -1,9 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import {TemperatureWidgetSet} from './temperature.tsx';
-import {PcStatusWidgetSet} from './pc_status.tsx';
-import {PingWidget} from './network.tsx'
-import {ServerStatsWidget} from './server_stats.tsx';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import {TemperatureWidgetSet} from './temperature';
+import {PcStatusWidgetSet} from './pc_status';
+import {PingWidget} from './network'
+import {ServerStatsWidget} from './server_stats';
 
 
 class Widgets extends React.Component {
