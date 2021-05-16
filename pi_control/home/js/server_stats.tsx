@@ -1,15 +1,28 @@
-import React from "react";
-import {LoadingSpinner} from './loading.tsx';
-import {Widget} from './widget.tsx'
+import * as React from "react";
+import {LoadingSpinner} from './loading';
+import {Widget} from './widget'
 import axios from "axios";
 
+
+interface ServerStatsData {
+    time: string;
+    cpu: number;
+    memory: number;
+    swap: number;
+    cpu_temp: number;
+    name: string;
+    uptime: string;
+}
+
+interface ServerStatsWidgetState {
+    data: ServerStatsData
+}
+
 export class ServerStatsWidget extends Widget {
-    constructor(props) {
-        super(props);
-        this.state = {
-            data: null,
-        };
-    }
+    
+    state: ServerStatsWidgetState = {
+        data: null,
+    };
 
     tick() {
         let self = this;

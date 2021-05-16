@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {TemperatureWidgetSet} from './temperature.tsx';
 import {PcStatusWidgetSet} from './pc_status.tsx';
 import {PingWidget} from './network.tsx'
-import {ServerStatsWidget} from './server_stats.jsx';
+import {ServerStatsWidget} from './server_stats.tsx';
 
 
 class Widgets extends React.Component {
