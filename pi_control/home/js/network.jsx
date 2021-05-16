@@ -1,8 +1,9 @@
 import React from "react";
-import {Line} from 'react-chartjs-2';
-import {LoadingSpinner} from './loading.tsx';
-import {Widget} from './widget.tsx'
+import { Line } from 'react-chartjs-2';
+import { LoadingSpinner } from './loading.tsx';
+import { Widget } from './widget.tsx'
 import axios from "axios";
+import 'chartjs-adapter-date-fns';
 
 
 const DISPLAY_FORMATS = {
@@ -24,14 +25,14 @@ export class PingWidget extends Widget {
         let self = this;
 
         axios.get("/api/network/list").then(response => {
-            self.setState({data: response.data});
+            self.setState({ data: response.data });
         });
     }
 
     render() {
         let content;
         if (this.state.data.length === 0) {
-            content = <LoadingSpinner/>;
+            content = <LoadingSpinner />;
         } else {
             let labels = this.state.data.map(x => x.time);
             let ping_dataset = this.state.data.map(x => x.ping);
@@ -51,11 +52,13 @@ export class PingWidget extends Widget {
             };
             let chartOptions = {
                 responsive: true,
-                legend: {
-                    display: false
+                plugins: {
+                    legend: {
+                        display: false
+                    }
                 },
                 scales: {
-                    xAxes: [{
+                    x: {
                         type: 'time',
                         time: {
                             tooltipFormat: 'HH:mm:ss',
@@ -69,27 +72,25 @@ export class PingWidget extends Widget {
                         scaleLabel: {
                             display: false,
                         }
-                    }],
-
-                    yAxes: [
-                        {
-                            type: 'linear',
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
                             display: true,
-                            position: 'left',
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Ping (ms)'
-                            },
-                            ticks: {
-                                beginAtZero: true,
-                                suggestedMax: 50
-                            }
+                            text: 'Ping (ms)'
+                        },
+                        ticks: {
+                            beginAtZero: true,
+                            suggestedMax: 50
                         }
-                    ]
+                    }
+
                 }
             };
             content =
-                <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100}/>;
+                <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100} />;
         }
 
         return <div className="col-md-4">

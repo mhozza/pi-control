@@ -1,8 +1,9 @@
 import React from "react";
-import {Line} from 'react-chartjs-2';
-import {LoadingSpinner} from './loading.tsx';
-import {Widget} from './widget.tsx'
+import { Line } from 'react-chartjs-2';
+import { LoadingSpinner } from './loading.tsx';
+import { Widget } from './widget.tsx'
 import axios from "axios";
+import 'chartjs-adapter-date-fns';
 
 const DISPLAY_FORMATS = {
     hour: 'HH:mm',
@@ -33,7 +34,7 @@ export class TemperatureWidgetSet extends Widget {
     tick() {
         let self = this;
         axios.get("/api/temperature/rooms/").then(response => {
-            self.setState({rooms: response.data});
+            self.setState({ rooms: response.data });
         });
     }
 
@@ -42,13 +43,13 @@ export class TemperatureWidgetSet extends Widget {
             return <div className="col-sm-6 col-md-4">
                 <div className="card text-center">
                     <div className="card-header">Teplota a vlhkost</div>
-                    <LoadingSpinner/>
+                    <LoadingSpinner />
                 </div>
             </div>;
         }
 
         const widgets = this.state.rooms.map((room, index) => <TemperatureWidget key={'temperature_data_' + index}
-                                                                                 room={room}/>);
+            room={room} />);
         return <React.Fragment>
             {widgets}
         </React.Fragment>;
@@ -67,7 +68,7 @@ class TemperatureWidget extends Widget {
         let self = this;
 
         getTemperatureData(self.props.room).then(response => {
-            self.setState({data: response});
+            self.setState({ data: response });
         });
     }
 
@@ -79,7 +80,7 @@ class TemperatureWidget extends Widget {
             return <div className="col-sm-6 col-md-4">
                 <div className="card text-center">
                     <div className="card-header">{room.name}</div>
-                    <LoadingSpinner/>
+                    <LoadingSpinner />
                 </div>
             </div>;
         }
@@ -99,19 +100,19 @@ class TemperatureWidget extends Widget {
 
         let device_data = this.state.data.devices.map(device_info =>
             <DeviceData key={'temperature_room_data_' + device_info.device}
-                        device={{id: device_info.device, name: device_info.device_name}}
-                        temperature={{
-                            value: device_info.temperature,
-                            low: this.state.data.temperature.low,
-                            high: this.state.data.temperature.high,
-                        }}
-                        humidity={{
-                            value: device_info.humidity,
-                            low: this.state.data.humidity.low,
-                            high: this.state.data.humidity.high,
-                        }}
-                        data={device_info.graphData}
-                        needs_details={this.state.data.devices.length > 1}/>);
+                device={{ id: device_info.device, name: device_info.device_name }}
+                temperature={{
+                    value: device_info.temperature,
+                    low: this.state.data.temperature.low,
+                    high: this.state.data.temperature.high,
+                }}
+                humidity={{
+                    value: device_info.humidity,
+                    low: this.state.data.humidity.low,
+                    high: this.state.data.humidity.high,
+                }}
+                data={device_info.graphData}
+                needs_details={this.state.data.devices.length > 1} />);
 
         return (
             <div className="col-md-4">
@@ -119,7 +120,7 @@ class TemperatureWidget extends Widget {
                     <div className="card-header text-center">{room.name}</div>
                     <div className="card-body">
                         <a className="temperature-tappable-header" data-toggle="collapse" role="button"
-                           href={"#collapse_" + room.id} aria-expanded="false" aria-controls={"collapse_" + room.id}>
+                            href={"#collapse_" + room.id} aria-expanded="false" aria-controls={"collapse_" + room.id}>
                             <div className="card-text row">
                                 <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
                                     {this.state.data.temperature.value.toFixed(1)}
@@ -172,7 +173,7 @@ class DeviceData extends React.Component {
                     borderColor: 'rgba(220, 53, 69, .8)',
                     pointRadius: 0,
                     fill: false,
-                    yAxisID: 'y-axis-1',
+                    yAxisID: 'y1',
                     cubicInterpolationMode: 'monotone'
                 }, {
                     label: 'Vlhkosť',
@@ -180,18 +181,20 @@ class DeviceData extends React.Component {
                     borderColor: 'rgba(0, 123, 255, .8)',
                     pointRadius: 0,
                     fill: false,
-                    yAxisID: 'y-axis-2',
+                    yAxisID: 'y2',
                     cubicInterpolationMode: 'monotone'
                 }
             ]
         };
         let chartOptions = {
             responsive: true,
-            legend: {
-                display: false
+            plugins: {
+                legend: {
+                    display: false
+                }
             },
             scales: {
-                xAxes: [{
+                x: {
                     type: 'time',
                     time: {
                         tooltipFormat: 'HH:mm',
@@ -201,43 +204,40 @@ class DeviceData extends React.Component {
                         source: 'data',
                         autoSkip: true
                     },
-                    scaleLabel: {
+                    title: {
                         display: false,
                     }
-                }],
-                yAxes: [
-                    {
-                        type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                },
+                y1: {
+                    type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                    display: true,
+                    position: 'left',
+                    title: {
                         display: true,
-                        position: 'left',
-                        id: 'y-axis-1',
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Teplota'
-                        },
-                        ticks: {
-                            suggestedMin: 20,
-                            suggestedMax: 30
-                        }
-                    }, {
-                        type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-                        display: true,
-                        position: 'right',
-                        id: 'y-axis-2',
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Vlhkosť'
-                        },
-                        ticks: {
-                            suggestedMin: 30,
-                            suggestedMax: 50
-                        },
-                        // grid line settings
-                        gridLines: {
-                            drawOnChartArea: false, // only want the grid lines for one axis to show up
-                        }
+                        text: 'Teplota'
+                    },
+                    ticks: {
+                        suggestedMin: 20,
+                        suggestedMax: 30
                     }
-                ]
+                },
+                y2: {
+                    type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                    display: true,
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'Vlhkosť'
+                    },
+                    ticks: {
+                        suggestedMin: 30,
+                        suggestedMax: 50
+                    },
+                    // grid line settings
+                    grid: {
+                        drawOnChartArea: false, // only want the grid lines for one axis to show up
+                    }
+                }
             }
         };
 
@@ -259,7 +259,7 @@ class DeviceData extends React.Component {
         return (
             <React.Fragment>
                 {details}
-                <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100}/>
+                <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100} />
             </React.Fragment>
         );
     }
