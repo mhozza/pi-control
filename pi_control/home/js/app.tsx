@@ -17,4 +17,10 @@ class Widgets extends React.Component {
     }
 }
 
-ReactDOM.render(<Widgets/>, document.getElementById('widgets'));
+class App extends React.Component {
+    render() {
+        return <Widgets/>
+    }
+}
+
+ReactDOM.render(<App/>, document.getElementById('root'));
