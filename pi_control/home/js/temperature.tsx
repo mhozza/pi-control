@@ -5,6 +5,12 @@ import {Widget} from './widget'
 import axios from "axios";
 import 'chartjs-adapter-date-fns';
 import { ChartData, ChartOptions } from "chart.js";
+import { Link, useParams, RouteComponentProps} from 'react-router-dom';
+import * as am4core from "@amcharts/amcharts4/core";
+import * as am4charts from "@amcharts/amcharts4/charts";
+import am4themes_animated from "@amcharts/amcharts4/themes/animated";
+am4core.useTheme(am4themes_animated);
+
 
 const DISPLAY_FORMATS = {
     hour: 'HH:mm',
@@ -46,8 +52,8 @@ interface RoomData {
     devices: Measurement[];
 }
 
-async function getTemperatureData(room: Room) {
-    const roomData = (await axios.get("/api/temperature/room/" + room.id + "/now/")).data as RoomData;
+async function getTemperatureData(roomId: number) {
+    const roomData = (await axios.get("/api/temperature/room/" + roomId + "/now/")).data as RoomData;
     const graphPromises = roomData.devices.map(device_info => axios.get("/api/temperature/list/?device=" + device_info.device));
     const graphDatas = (await Promise.all(graphPromises)).map(response => response.data);
 
@@ -106,10 +112,8 @@ class TemperatureWidget extends Widget<TemperatureWidgetProps> {
     };
     
     tick() {
-        let self = this;
-
-        getTemperatureData(self.props.room).then(response => {
-            self.setState({data: response});
+        getTemperatureData(this.props.room.id).then(response => {
+            this.setState({data: response});
         });
     }
 
@@ -158,7 +162,7 @@ class TemperatureWidget extends Widget<TemperatureWidgetProps> {
         return (
             <div className="col-md-4">
                 <div className="card text-center">
-                    <div className="card-header text-center">{room.name}</div>
+                    <div className="card-header text-center">{room.name} <Link to={`/temperature/${room.id}`}>Show more</Link></div>
                     <div className="card-body">
                         <a className="temperature-tappable-header" data-toggle="collapse" role="button"
                            href={"#collapse_" + room.id} aria-expanded="false" aria-controls={"collapse_" + room.id}>
@@ -305,12 +309,143 @@ class DeviceData extends React.Component<DeviceDataProps> {
                 </div>
             </React.Fragment>;
         }
-
+        
         return (
             <React.Fragment>
-                {details}
-                <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100}/>
+                {details}                
+                <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100}/>                
             </React.Fragment>
         );
+    }
+}
+
+interface TemperatureDetailParams {
+    id: string;
+}
+
+export class TemperatureDetail extends React.Component<RouteComponentProps<TemperatureDetailParams>> {
+    readonly room: number = +this.props.match.params.id;
+
+    state: TemperatureWidgetState = {
+        data: null,
+    };
+        
+    componentDidMount() {
+        getTemperatureData(this.room).then(response => {
+            this.setState({data: response});
+        });
+    }
+
+    render() {       
+        if (this.state.data === null) {
+            return <LoadingSpinner/>;
+        }
+
+        let device_data = this.state.data.devices.map(device_info =>
+            <TemperatureDetailGraph key={'temperature_room_data_' + device_info.device}
+                        device={{id: device_info.device, name: device_info.device_name}}                        
+                        data={device_info.graphData}/>);
+
+        return <div>
+            <Link to="/">Back</Link>
+            {device_data}
+        </div>
+    }
+}
+
+interface TemperatureDetailGraphProps {
+    device: Device;
+    data: Entry[];
+}
+
+class TemperatureDetailGraph extends React.Component<TemperatureDetailGraphProps> {
+    chart: am4charts.XYChart;
+    readonly divId = `chartdiv_${this.props.device.id}`;
+
+    componentDidMount() {
+        let chart = am4core.create(this.divId, am4charts.XYChart);
+
+        // RM start
+        // let labels = this.props.data.map(x => x.time);
+        // let temperature_dataset = this.props.data.map(x => x.temperature);
+        // let humidity_dataset = this.props.data.map(x => x.humidity);
+        // let device = this.props.device;
+
+        // let temperatureColorClass = this.props.temperature.value > this.props.temperature.high
+        //     ? "text-danger"
+        //     : this.props.temperature.value < this.props.temperature.low
+        //         ? "text-primary"
+        //         : "text-success";
+        // let humidityColorClass = this.props.humidity.value > this.props.humidity.high
+        //     ? "text-danger"
+        //     : this.props.humidity.value < this.props.humidity.low
+        //         ? "text-primary"
+        //         : "text-success";
+
+        // let chartData: ChartData = {
+        //     labels: labels,
+        //     datasets: [
+        //         {
+        //             label: 'Teplota',
+        //             data: temperature_dataset,
+        //             borderColor: 'rgba(220, 53, 69, .8)',
+        //             pointRadius: 0,
+        //             fill: false,
+        //             yAxisID: 'y1',
+        //             cubicInterpolationMode: 'monotone'
+        //         }, {
+        //             label: 'Vlhkosť',
+        //             data: humidity_dataset,
+        //             borderColor: 'rgba(0, 123, 255, .8)',
+        //             pointRadius: 0,
+        //             fill: false,
+        //             yAxisID: 'y2',
+        //             cubicInterpolationMode: 'monotone'
+        //         }
+        //     ]
+        // };
+        // RM end
+    
+        // ... chart code goes here ...
+        chart.paddingRight = 20;
+
+        let data = [];
+        for (let x of this.props.data) {        
+          data.push({ date: new Date(x.time), name: "name", value: x.temperature });
+        }
+    
+        chart.data = data;
+    
+        let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+        dateAxis.renderer.grid.template.location = 0;
+    
+        let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+        valueAxis.tooltip.disabled = true;
+        valueAxis.renderer.minWidth = 35;
+    
+        let series = chart.series.push(new am4charts.LineSeries());
+        series.dataFields.dateX = "date";
+        series.dataFields.valueY = "value";
+    
+        series.tooltipText = "{valueY.value}";
+        chart.cursor = new am4charts.XYCursor();
+    
+        let scrollbarX = new am4charts.XYChartScrollbar();
+        scrollbarX.series.push(series);
+        chart.scrollbarX = scrollbarX;
+        // ... end of chart code ...
+
+    
+        this.chart = chart;
+      }
+    
+      componentWillUnmount() {
+        if (this.chart) {
+          this.chart.dispose();
+        }
+      }
+
+    render() {
+        return <div id={this.divId} style={{ width: "100%", height: "500px" }}></div>
     }
 }

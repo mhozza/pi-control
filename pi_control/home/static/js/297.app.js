@@ -1,0 +1,1 @@
+(self.webpackChunkmalina_frontend=self.webpackChunkmalina_frontend||[]).push([[297],{5382:()=>{},2095:()=>{},1219:()=>{}}]);
