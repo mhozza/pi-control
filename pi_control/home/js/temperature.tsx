@@ -164,8 +164,8 @@ class TemperatureWidget extends Widget<TemperatureWidgetProps> {
                 <div className="card text-center">
                     <div className="card-header text-center">{room.name} <Link to={`/temperature/${room.id}`}><i className="fa fa-arrows-alt" aria-hidden="true"></i></Link></div>
                     <div className="card-body">
-                        <a className="temperature-tappable-header" data-toggle="collapse" role="button"
-                           href={"#collapse_" + room.id} aria-expanded="false" aria-controls={"collapse_" + room.id}>
+                        <a className="temperature-tappable-header" data-bs-toggle="collapse" role="button"
+                           href={`#collapse_${room.id}`} aria-expanded="false" aria-controls={`collapse_${room.id}`}>
                             <div className="card-text row">
                                 <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
                                     {this.state.data.temperature.value.toFixed(1)}
@@ -182,7 +182,7 @@ class TemperatureWidget extends Widget<TemperatureWidgetProps> {
                             </div>
                         </a>
                     </div>
-                    <div className="collapse" id={"collapse_" + room.id}>
+                    <div className="collapse" id={`collapse_${room.id}`}>
                         {device_data}
                     </div>
                     <div className="card-footer text-muted">{time}</div>
