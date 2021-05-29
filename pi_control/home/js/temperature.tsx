@@ -1,11 +1,11 @@
 import * as React from "react";
-import {Line} from 'react-chartjs-2';
-import {LoadingSpinner} from './loading';
-import {Widget} from './widget'
+import { Line } from 'react-chartjs-2';
+import { LoadingSpinner } from './loading';
+import { Widget } from './widget'
 import axios from "axios";
 import 'chartjs-adapter-date-fns';
 import { ChartData, ChartOptions } from "chart.js";
-import { Link, useParams, RouteComponentProps} from 'react-router-dom';
+import { Link, useParams, RouteComponentProps } from 'react-router-dom';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
@@ -69,14 +69,14 @@ interface TemperatureWidgetSetState {
 }
 
 export class TemperatureWidgetSet extends Widget {
-    state : TemperatureWidgetSetState = {
+    state: TemperatureWidgetSetState = {
         rooms: null,
     };
-    
+
     tick() {
         let self = this;
         axios.get("/api/temperature/rooms/").then(response => {
-            self.setState({rooms: response.data});
+            self.setState({ rooms: response.data });
         });
     }
 
@@ -85,13 +85,13 @@ export class TemperatureWidgetSet extends Widget {
             return <div className="col-sm-6 col-md-4">
                 <div className="card text-center">
                     <div className="card-header">Teplota a vlhkost</div>
-                    <LoadingSpinner/>
+                    <LoadingSpinner />
                 </div>
             </div>;
         }
 
         const widgets = this.state.rooms.map((room, index) => <TemperatureWidget key={'temperature_data_' + index}
-                                                                                 room={room}/>);
+            room={room} />);
         return <React.Fragment>
             {widgets}
         </React.Fragment>;
@@ -110,10 +110,10 @@ class TemperatureWidget extends Widget<TemperatureWidgetProps> {
     state: TemperatureWidgetState = {
         data: null,
     };
-    
+
     tick() {
         getTemperatureData(this.props.room.id).then(response => {
-            this.setState({data: response});
+            this.setState({ data: response });
         });
     }
 
@@ -125,7 +125,7 @@ class TemperatureWidget extends Widget<TemperatureWidgetProps> {
             return <div className="col-sm-6 col-md-4">
                 <div className="card text-center">
                     <div className="card-header">{room.name}</div>
-                    <LoadingSpinner/>
+                    <LoadingSpinner />
                 </div>
             </div>;
         }
@@ -145,27 +145,27 @@ class TemperatureWidget extends Widget<TemperatureWidgetProps> {
 
         let device_data = this.state.data.devices.map(device_info =>
             <DeviceData key={'temperature_room_data_' + device_info.device}
-                        device={{id: device_info.device, name: device_info.device_name}}
-                        temperature={{
-                            value: device_info.temperature,
-                            low: this.state.data.temperature.low,
-                            high: this.state.data.temperature.high,
-                        }}
-                        humidity={{
-                            value: device_info.humidity,
-                            low: this.state.data.humidity.low,
-                            high: this.state.data.humidity.high,
-                        }}
-                        data={device_info.graphData}
-                        needs_details={this.state.data.devices.length > 1}/>);
+                device={{ id: device_info.device, name: device_info.device_name }}
+                temperature={{
+                    value: device_info.temperature,
+                    low: this.state.data.temperature.low,
+                    high: this.state.data.temperature.high,
+                }}
+                humidity={{
+                    value: device_info.humidity,
+                    low: this.state.data.humidity.low,
+                    high: this.state.data.humidity.high,
+                }}
+                data={device_info.graphData}
+                needs_details={this.state.data.devices.length > 1} />);
 
         return (
             <div className="col-md-4">
                 <div className="card text-center">
-                    <div className="card-header text-center">{room.name} <Link to={`/temperature/${room.id}`}><i className="fa fa-arrows-alt" aria-hidden="true"></i></Link></div>
+                    <div className="card-header"><span className="">{room.name}</span> <Link to={`/temperature/${room.id}`} className="btn btn-link"><i className="bi bi-arrows-fullscreen"></i></Link></div>
                     <div className="card-body">
                         <a className="temperature-tappable-header" data-bs-toggle="collapse" role="button"
-                           href={`#collapse_${room.id}`} aria-expanded="false" aria-controls={`collapse_${room.id}`}>
+                            href={`#collapse_${room.id}`} aria-expanded="false" aria-controls={`collapse_${room.id}`}>
                             <div className="card-text row">
                                 <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
                                     {this.state.data.temperature.value.toFixed(1)}
@@ -295,7 +295,7 @@ class DeviceData extends React.Component<DeviceDataProps> {
             }
         };
 
-        let details: string|React.ReactFragment = '';
+        let details: string | React.ReactFragment = '';
         if (this.props.needs_details) {
             details = <React.Fragment>
                 <h5 className="card-title text-center">{device.name}</h5>
@@ -309,11 +309,11 @@ class DeviceData extends React.Component<DeviceDataProps> {
                 </div>
             </React.Fragment>;
         }
-        
+
         return (
             <React.Fragment>
-                {details}                
-                <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100}/>                
+                {details}
+                <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100} />
             </React.Fragment>
         );
     }
@@ -329,25 +329,34 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
     state: TemperatureWidgetState = {
         data: null,
     };
-        
+
     componentDidMount() {
         getTemperatureData(this.room).then(response => {
-            this.setState({data: response});
+            this.setState({ data: response });
         });
     }
 
-    render() {       
+    render() {
         if (this.state.data === null) {
-            return <LoadingSpinner/>;
+            return <LoadingSpinner />;
         }
 
         let device_data = this.state.data.devices.map(device_info =>
             <TemperatureDetailGraph key={'temperature_room_data_' + device_info.device}
-                        device={{id: device_info.device, name: device_info.device_name}}                        
-                        data={device_info.graphData}/>);
+                device={{ id: device_info.device, name: device_info.device_name }}
+                data={device_info.graphData} />);
 
-        return <div>
-            <Link to="/">Back</Link>
+        return <div className="container">
+            <nav className="navbar sticky-top navbar-light bg-light">
+            <div className="container-fluid">
+                <ul className="navbar-nav">
+                <li className="nav-item">
+                  <Link to="/" className="btn btn-primary">Back</Link>
+                </li>
+                </ul>
+            </div>
+            </nav>
+
             {device_data}
         </div>
     }
@@ -364,14 +373,14 @@ class TemperatureDetailGraph extends React.Component<TemperatureDetailGraphProps
 
     componentDidMount() {
         let chart = am4core.create(this.divId, am4charts.XYChart);
-        
+
         chart.paddingRight = 20;
-        
-        chart.data = this.props.data.map(x => {return { date: new Date(x.time), temperature: x.temperature, humidity: x.humidity }});
-    
+
+        chart.data = this.props.data.map(x => { return { date: new Date(x.time), temperature: x.temperature, humidity: x.humidity } });
+
         let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
         dateAxis.renderer.grid.template.location = 0;
-    
+
         let temperatureAxes = chart.yAxes.push(new am4charts.ValueAxis());
         temperatureAxes.tooltip.disabled = true;
         temperatureAxes.renderer.minWidth = 35;
@@ -382,11 +391,11 @@ class TemperatureDetailGraph extends React.Component<TemperatureDetailGraphProps
         humidityAxes.renderer.minWidth = 35;
         humidityAxes.title.text = "Vlhkost (%)";
         humidityAxes.renderer.opposite = true;
-                
+
         let temperatureSeries = chart.series.push(new am4charts.LineSeries());
         temperatureSeries.dataFields.dateX = "date";
         temperatureSeries.dataFields.valueY = "temperature";
-        temperatureSeries.tooltipText = "{valueY.value}";                
+        temperatureSeries.tooltipText = "{valueY.value}";
         temperatureSeries.stroke = am4core.color("rgba(220, 53, 69, .8)");
         temperatureSeries.fill = am4core.color("rgba(220, 53, 69, .7)");
         temperatureSeries.smoothing = "monotoneX";
@@ -399,22 +408,22 @@ class TemperatureDetailGraph extends React.Component<TemperatureDetailGraphProps
         humiditySeries.fill = am4core.color("rgba(0, 123, 255, .7)");
         humiditySeries.smoothing = "monotoneX";
         humiditySeries.yAxis = humidityAxes;
-                
+
         chart.cursor = new am4charts.XYCursor();
-    
+
         let scrollbarX = new am4charts.XYChartScrollbar();
         scrollbarX.series.push(temperatureSeries);
         scrollbarX.series.push(humiditySeries);
         chart.scrollbarX = scrollbarX;
-    
+
         this.chart = chart;
-      }
-    
-      componentWillUnmount() {
+    }
+
+    componentWillUnmount() {
         if (this.chart) {
-          this.chart.dispose();
+            this.chart.dispose();
         }
-      }
+    }
 
     render() {
         return <div id={this.divId} style={{ width: "100%", height: "500px" }}></div>
