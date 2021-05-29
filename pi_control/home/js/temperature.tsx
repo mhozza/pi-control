@@ -162,7 +162,7 @@ class TemperatureWidget extends Widget<TemperatureWidgetProps> {
         return (
             <div className="col-md-4">
                 <div className="card text-center">
-                    <div className="card-header text-center">{room.name} <Link to={`/temperature/${room.id}`}>Show more</Link></div>
+                    <div className="card-header text-center">{room.name} <Link to={`/temperature/${room.id}`}><i className="fa fa-arrows-alt" aria-hidden="true"></i></Link></div>
                     <div className="card-body">
                         <a className="temperature-tappable-header" data-toggle="collapse" role="button"
                            href={"#collapse_" + room.id} aria-expanded="false" aria-controls={"collapse_" + room.id}>
@@ -226,7 +226,7 @@ class DeviceData extends React.Component<DeviceDataProps> {
             labels: labels,
             datasets: [
                 {
-                    label: 'Teplota',
+                    label: 'Teplota (°C)',
                     data: temperature_dataset,
                     borderColor: 'rgba(220, 53, 69, .8)',
                     pointRadius: 0,
@@ -234,7 +234,7 @@ class DeviceData extends React.Component<DeviceDataProps> {
                     yAxisID: 'y1',
                     cubicInterpolationMode: 'monotone'
                 }, {
-                    label: 'Vlhkosť',
+                    label: 'Vlhkosť (%)',
                     data: humidity_dataset,
                     borderColor: 'rgba(0, 123, 255, .8)',
                     pointRadius: 0,
@@ -364,77 +364,48 @@ class TemperatureDetailGraph extends React.Component<TemperatureDetailGraphProps
 
     componentDidMount() {
         let chart = am4core.create(this.divId, am4charts.XYChart);
-
-        // RM start
-        // let labels = this.props.data.map(x => x.time);
-        // let temperature_dataset = this.props.data.map(x => x.temperature);
-        // let humidity_dataset = this.props.data.map(x => x.humidity);
-        // let device = this.props.device;
-
-        // let temperatureColorClass = this.props.temperature.value > this.props.temperature.high
-        //     ? "text-danger"
-        //     : this.props.temperature.value < this.props.temperature.low
-        //         ? "text-primary"
-        //         : "text-success";
-        // let humidityColorClass = this.props.humidity.value > this.props.humidity.high
-        //     ? "text-danger"
-        //     : this.props.humidity.value < this.props.humidity.low
-        //         ? "text-primary"
-        //         : "text-success";
-
-        // let chartData: ChartData = {
-        //     labels: labels,
-        //     datasets: [
-        //         {
-        //             label: 'Teplota',
-        //             data: temperature_dataset,
-        //             borderColor: 'rgba(220, 53, 69, .8)',
-        //             pointRadius: 0,
-        //             fill: false,
-        //             yAxisID: 'y1',
-        //             cubicInterpolationMode: 'monotone'
-        //         }, {
-        //             label: 'Vlhkosť',
-        //             data: humidity_dataset,
-        //             borderColor: 'rgba(0, 123, 255, .8)',
-        //             pointRadius: 0,
-        //             fill: false,
-        //             yAxisID: 'y2',
-        //             cubicInterpolationMode: 'monotone'
-        //         }
-        //     ]
-        // };
-        // RM end
-    
-        // ... chart code goes here ...
+        
         chart.paddingRight = 20;
-
-        let data = [];
-        for (let x of this.props.data) {        
-          data.push({ date: new Date(x.time), name: "name", value: x.temperature });
-        }
-    
-        chart.data = data;
+        
+        chart.data = this.props.data.map(x => {return { date: new Date(x.time), temperature: x.temperature, humidity: x.humidity }});
     
         let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
         dateAxis.renderer.grid.template.location = 0;
     
-        let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-        valueAxis.tooltip.disabled = true;
-        valueAxis.renderer.minWidth = 35;
-    
-        let series = chart.series.push(new am4charts.LineSeries());
-        series.dataFields.dateX = "date";
-        series.dataFields.valueY = "value";
-    
-        series.tooltipText = "{valueY.value}";
+        let temperatureAxes = chart.yAxes.push(new am4charts.ValueAxis());
+        temperatureAxes.tooltip.disabled = true;
+        temperatureAxes.renderer.minWidth = 35;
+        temperatureAxes.title.text = "Teplota (°C)";
+
+        let humidityAxes = chart.yAxes.push(new am4charts.ValueAxis());
+        humidityAxes.tooltip.disabled = true;
+        humidityAxes.renderer.minWidth = 35;
+        humidityAxes.title.text = "Vlhkost (%)";
+        humidityAxes.renderer.opposite = true;
+                
+        let temperatureSeries = chart.series.push(new am4charts.LineSeries());
+        temperatureSeries.dataFields.dateX = "date";
+        temperatureSeries.dataFields.valueY = "temperature";
+        temperatureSeries.tooltipText = "{valueY.value}";                
+        temperatureSeries.stroke = am4core.color("rgba(220, 53, 69, .8)");
+        temperatureSeries.fill = am4core.color("rgba(220, 53, 69, .7)");
+        temperatureSeries.smoothing = "monotoneX";
+
+        let humiditySeries = chart.series.push(new am4charts.LineSeries());
+        humiditySeries.dataFields.dateX = "date";
+        humiditySeries.dataFields.valueY = "humidity";
+        humiditySeries.tooltipText = "{valueY.value}";
+        humiditySeries.stroke = am4core.color("rgba(0, 123, 255, .8)");
+        humiditySeries.fill = am4core.color("rgba(0, 123, 255, .7)");
+        humiditySeries.smoothing = "monotoneX";
+        humiditySeries.yAxis = humidityAxes;
+                
         chart.cursor = new am4charts.XYCursor();
     
         let scrollbarX = new am4charts.XYChartScrollbar();
-        scrollbarX.series.push(series);
+        scrollbarX.series.push(temperatureSeries);
+        scrollbarX.series.push(humiditySeries);
         chart.scrollbarX = scrollbarX;
-        // ... end of chart code ...
-
     
         this.chart = chart;
       }
