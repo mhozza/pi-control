@@ -8,7 +8,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 class Widgets extends React.Component {
     render() {
-        return <div className="row">
+        return <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3">
             <TemperatureWidgetSet/>
             <PcStatusWidgetSet/>
             <ServerStatsWidget/>

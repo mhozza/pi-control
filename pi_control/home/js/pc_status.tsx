@@ -29,7 +29,7 @@ export class PcStatusWidgetSet extends Widget {
 
     render() {
         if (this.state.pcs === null) {
-            return <div className="col-sm-6 col-md-4">
+            return <div className="col">
                 <div className="card text-center">
                     <div className="card-header">PC</div>
                     <LoadingSpinner/>

@@ -34,7 +34,7 @@ export class ServerStatsWidget extends Widget {
 
     render() {
         if (this.state.data === null) {
-            return <div className="col-sm-6 col-md-4">
+            return <div className="col">
                 <div className="card text-center">
                     <div className="card-header">Server</div>
                     <LoadingSpinner />
@@ -59,7 +59,7 @@ export class ServerStatsWidget extends Widget {
             ? "text-danger"
             : "text-success";
 
-        return (<div className="col-sm-6 col-md-4">
+        return (<div className="col">
             <div className="card text-center">
                 <div className="card-header">{this.state.data.name}</div>
                 <div className="card-body">

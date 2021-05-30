@@ -82,7 +82,7 @@ export class TemperatureWidgetSet extends Widget {
 
     render() {
         if (this.state.rooms === null) {
-            return <div className="col-sm-6 col-md-4">
+            return <div className="col">
                 <div className="card text-center">
                     <div className="card-header">Teplota a vlhkost</div>
                     <LoadingSpinner />
@@ -122,7 +122,7 @@ class TemperatureWidget extends Widget<TemperatureWidgetProps> {
         let room = this.props.room;
 
         if (this.state.data === null) {
-            return <div className="col-sm-6 col-md-4">
+            return <div className="col">
                 <div className="card text-center">
                     <div className="card-header">{room.name}</div>
                     <LoadingSpinner />
@@ -160,9 +160,16 @@ class TemperatureWidget extends Widget<TemperatureWidgetProps> {
                 needs_details={this.state.data.devices.length > 1} />);
 
         return (
-            <div className="col-md-4">
+            <div className="col">
                 <div className="card text-center">
-                    <div className="card-header"><span className="">{room.name}</span> <Link to={`/temperature/${room.id}`} className="btn btn-link"><i className="bi bi-arrows-fullscreen"></i></Link></div>
+                    <div className="card-header align-middle">
+                        <div className="row align-items-center">
+                            <div className="col-8 offset-2 d-inline-block">{room.name}</div>
+                            <div className="col-2 text-end">
+                                <Link to={`/temperature/${room.id}`} className="btn btn-link"><i className="bi bi-arrows-fullscreen"></i></Link>
+                            </div>
+                        </div>
+                    </div>
                     <div className="card-body">
                         <a className="temperature-tappable-header" data-bs-toggle="collapse" role="button"
                             href={`#collapse_${room.id}`} aria-expanded="false" aria-controls={`collapse_${room.id}`}>
@@ -348,13 +355,13 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
 
         return <div className="container">
             <nav className="navbar sticky-top navbar-light bg-light">
-            <div className="container-fluid">
-                <ul className="navbar-nav">
-                <li className="nav-item">
-                  <Link to="/" className="btn btn-primary">Back</Link>
-                </li>
-                </ul>
-            </div>
+                <div className="container-fluid">
+                    <ul className="navbar-nav">
+                        <li className="nav-item">
+                            <Link to="/" className="btn btn-primary">Back</Link>
+                        </li>
+                    </ul>
+                </div>
             </nav>
 
             {device_data}
