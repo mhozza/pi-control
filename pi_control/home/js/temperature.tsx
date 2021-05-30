@@ -330,11 +330,31 @@ interface TemperatureDetailParams {
     id: string;
 }
 
+interface TemperatureDetailState {
+    data: RoomData;
+    start: number;
+    end: number;
+}
+
+const DAY = 3600000 * 24;
+const WEEK = DAY * 7;
+const THIRTY_DAYS = DAY * 30;
+const NINETY_DAYS = DAY * 90;
+
+enum RangeType {
+    Custom,
+    LastWeek,
+    Last30Days,
+    Last90Days,
+}
+
 export class TemperatureDetail extends React.Component<RouteComponentProps<TemperatureDetailParams>> {
     readonly room: number = +this.props.match.params.id;
 
-    state: TemperatureWidgetState = {
+    state: TemperatureDetailState = {
         data: null,
+        start: Date.now() - WEEK,
+        end: Date.now(),
     };
 
     componentDidMount() {
@@ -343,9 +363,23 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
         });
     }
 
+    setRange() {
+        // TODO
+    }
+
     render() {
         if (this.state.data === null) {
             return <LoadingSpinner />;
+        }
+
+        let rangeType = RangeType.Custom;
+        
+        if (this.state.end - this.state.start == WEEK) {
+            rangeType = RangeType.LastWeek
+        } else if (this.state.end - this.state.start == THIRTY_DAYS) {
+            rangeType = RangeType.Last30Days
+        } else if (this.state.end - this.state.start == NINETY_DAYS) {
+            rangeType = RangeType.Last90Days
         }
 
         let device_data = this.state.data.devices.map(device_info =>
@@ -353,14 +387,44 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
                 device={{ id: device_info.device, name: device_info.device_name }}
                 data={device_info.graphData} />);
 
+        
+
         return <div className="container">
             <nav className="navbar sticky-top navbar-light bg-light">
                 <div className="container-fluid">
                     <ul className="navbar-nav">
                         <li className="nav-item">
-                            <Link to="/" className="btn btn-primary">Back</Link>
+                            <Link to="/" className="btn btn-primary">Späť</Link>
                         </li>
                     </ul>
+                    <form className="d-flex">
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="radio" name="duration" id="durationWeek" value="week" checked={rangeType == RangeType.LastWeek} />
+                            <label className="form-check-label" htmlFor="durationWeek">
+                                1 týždeň
+                            </label>
+                        </div>
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="radio" name="duration" id="durationMonth" value="month" checked={rangeType == RangeType.Last30Days} />
+                            <label className="form-check-label" htmlFor="durationMonth">
+                                30 dni
+                            </label>
+                        </div>
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="radio" name="duration" id="durationQuarter" value="quarter" checked={rangeType == RangeType.Last90Days} />
+                            <label className="form-check-label" htmlFor="durationQuarter">
+                                90 dni
+                            </label>
+                        </div>
+                        <div className="form-check form-check-inline">
+                            <input className="form-check-input" type="radio" name="duration" id="durationCustom" value="custom" checked={rangeType == RangeType.Custom} />
+                            <label className="form-check-label" htmlFor="durationCustom">
+                                Vlastne
+                            </label>
+                        </div>
+                        <input className="form-control form-control-sm me-2" type="text" placeholder="Start" value={new Date(this.state.start).toString()} disabled={rangeType != RangeType.Custom} />
+                        <input className="form-control form-control-sm me-2" type="text" placeholder="End" value={new Date(this.state.end).toString()} disabled={rangeType != RangeType.Custom} />
+                    </form>
                 </div>
             </nav>
 
