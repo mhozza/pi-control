@@ -9,6 +9,7 @@ import { Link, useParams, RouteComponentProps } from 'react-router-dom';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
+import { isThisISOWeek } from "date-fns";
 am4core.useTheme(am4themes_animated);
 
 
@@ -52,9 +53,18 @@ interface RoomData {
     devices: Measurement[];
 }
 
-async function getTemperatureData(roomId: number) {
-    const roomData = (await axios.get("/api/temperature/room/" + roomId + "/now/")).data as RoomData;
-    const graphPromises = roomData.devices.map(device_info => axios.get("/api/temperature/list/?device=" + device_info.device));
+async function getTemperatureData(roomId: number, start?: number, end?: number) {    
+    const roomData = (await axios.get(`/api/temperature/room/${roomId}/now/`)).data as RoomData;
+    
+    let temperatureListUrl = "/api/temperature/list/"
+    if (start) {
+        temperatureListUrl += new Date(start).toISOString() + "/"
+        if (end) {
+            temperatureListUrl += new Date(end).toISOString() + "/"
+        }
+    }
+
+    const graphPromises = roomData.devices.map(device_info => axios.get(`${temperatureListUrl}?device=${device_info.device}`));
     const graphDatas = (await Promise.all(graphPromises)).map(response => response.data);
 
     for (let i in roomData.devices) {
@@ -334,6 +344,7 @@ interface TemperatureDetailState {
     data: RoomData;
     start: number;
     end: number;
+    isCustom: boolean;
 }
 
 const DAY = 3600000 * 24;
@@ -350,21 +361,52 @@ enum RangeType {
 
 export class TemperatureDetail extends React.Component<RouteComponentProps<TemperatureDetailParams>> {
     readonly room: number = +this.props.match.params.id;
+    readonly startTimeField: React.RefObject<HTMLInputElement> = React.createRef();
+    readonly endTimeField: React.RefObject<HTMLInputElement> = React.createRef();
 
     state: TemperatureDetailState = {
         data: null,
         start: Date.now() - WEEK,
         end: Date.now(),
+        isCustom: false,
     };
 
     componentDidMount() {
-        getTemperatureData(this.room).then(response => {
+        getTemperatureData(this.room, this.state.start, this.state.end).then(response => {
             this.setState({ data: response });
         });
     }
 
-    setRange() {
-        // TODO
+    setRangeFromPreset = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const rangeType: RangeType = +e.currentTarget.value;
+        const startTimeField = this.startTimeField.current
+        const endTimeField = this.endTimeField.current
+
+        let end: any = Date.now()
+        let start
+        let isCustom = false
+
+        switch (rangeType) {
+            case RangeType.LastWeek:
+                start = Date.now() - WEEK
+                break
+            case RangeType.Last30Days:
+                start = Date.now() - THIRTY_DAYS
+                break
+            case RangeType.Last90Days:
+                start = Date.now() - NINETY_DAYS
+                break
+            case RangeType.Last30Days:
+                start = Date.parse(startTimeField.value)
+                end = Date.parse(endTimeField.value)
+                isCustom = true
+            // TODO: fix custom date range entry.
+        }
+
+        this.setState({ start: start, end: end, isCustom: isCustom })
+        getTemperatureData(this.room, start, end).then(response => {
+            this.setState({ data: response });
+        });
     }
 
     render() {
@@ -373,13 +415,14 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
         }
 
         let rangeType = RangeType.Custom;
-        
-        if (this.state.end - this.state.start == WEEK) {
-            rangeType = RangeType.LastWeek
-        } else if (this.state.end - this.state.start == THIRTY_DAYS) {
-            rangeType = RangeType.Last30Days
-        } else if (this.state.end - this.state.start == NINETY_DAYS) {
-            rangeType = RangeType.Last90Days
+        if (!this.state.isCustom && Math.abs(this.state.end - Date.now()) < 1000 * 60 * 5) {
+            if (this.state.end - this.state.start == WEEK) {
+                rangeType = RangeType.LastWeek
+            } else if (this.state.end - this.state.start == THIRTY_DAYS) {
+                rangeType = RangeType.Last30Days
+            } else if (this.state.end - this.state.start == NINETY_DAYS) {
+                rangeType = RangeType.Last90Days
+            }
         }
 
         let device_data = this.state.data.devices.map(device_info =>
@@ -387,49 +430,59 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
                 device={{ id: device_info.device, name: device_info.device_name }}
                 data={device_info.graphData} />);
 
-        
-
         return <div className="container">
             <nav className="navbar sticky-top navbar-light bg-light">
-                <div className="container-fluid">
-                    <ul className="navbar-nav">
-                        <li className="nav-item">
-                            <Link to="/" className="btn btn-primary">Späť</Link>
+                <div className="container-fluid row">
+                    <ul className="navbar-nav col-lg-1 col-md-2">
+                        <li className="nav-item w-100">
+                            <Link to="/" className="btn btn-primary w-100">Späť</Link>
                         </li>
                     </ul>
-                    <form className="d-flex">
-                        <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="duration" id="durationWeek" value="week" checked={rangeType == RangeType.LastWeek} />
-                            <label className="form-check-label" htmlFor="durationWeek">
-                                1 týždeň
+                    <form className="d-flex col-lg-11 col-md-10 row">
+                        <div className="col-lg-1 col-md-3">
+                            <div className="form-check form-check-inline">
+                                <input className="form-check-input" type="radio" name="duration" id="durationWeek" value={RangeType.LastWeek} checked={rangeType == RangeType.LastWeek} onChange={this.setRangeFromPreset} />
+                                <label className="form-check-label" htmlFor="durationWeek">
+                                    1 týždeň
                             </label>
+                            </div>
                         </div>
-                        <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="duration" id="durationMonth" value="month" checked={rangeType == RangeType.Last30Days} />
-                            <label className="form-check-label" htmlFor="durationMonth">
-                                30 dni
+                        <div className="col-lg-1 col-md-3">
+                            <div className="form-check form-check-inline">
+                                <input className="form-check-input" type="radio" name="duration" id="durationMonth" value={RangeType.Last30Days} checked={rangeType == RangeType.Last30Days} onChange={this.setRangeFromPreset} />
+                                <label className="form-check-label" htmlFor="durationMonth">
+                                    30 dni
                             </label>
+                            </div>
                         </div>
-                        <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="duration" id="durationQuarter" value="quarter" checked={rangeType == RangeType.Last90Days} />
-                            <label className="form-check-label" htmlFor="durationQuarter">
-                                90 dni
+                        <div className="col-lg-1 col-md-3">
+                            <div className="form-check form-check-inline">
+                                <input className="form-check-input" type="radio" name="duration" id="durationQuarter" value={RangeType.Last90Days} checked={rangeType == RangeType.Last90Days} onChange={this.setRangeFromPreset} />
+                                <label className="form-check-label" htmlFor="durationQuarter">
+                                    90 dni
                             </label>
+                            </div>
                         </div>
-                        <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="duration" id="durationCustom" value="custom" checked={rangeType == RangeType.Custom} />
-                            <label className="form-check-label" htmlFor="durationCustom">
-                                Vlastne
+                        <div className="col-lg-1 col-md-3">
+                            <div className="form-check form-check-inline">
+                                <input className="form-check-input" type="radio" name="duration" id="durationCustom" value={RangeType.Custom} checked={rangeType == RangeType.Custom} onChange={this.setRangeFromPreset} />
+                                <label className="form-check-label" htmlFor="durationCustom">
+                                    Vlastne
                             </label>
+                            </div>
                         </div>
-                        <input className="form-control form-control-sm me-2" type="text" placeholder="Start" value={new Date(this.state.start).toString()} disabled={rangeType != RangeType.Custom} />
-                        <input className="form-control form-control-sm me-2" type="text" placeholder="End" value={new Date(this.state.end).toString()} disabled={rangeType != RangeType.Custom} />
+                        <div className="col-lg-4 col-md-6">
+                            <input className="form-control form-control-sm " type="text" placeholder="Start" ref={this.startTimeField} value={new Date(this.state.start).toString()} disabled={rangeType != RangeType.Custom} onChange={this.setRangeFromPreset} />
+                        </div>
+                        <div className="col-lg-4 col-md-6">
+                            <input className="form-control form-control-sm" type="text" placeholder="End" ref={this.endTimeField} value={new Date(this.state.end).toString()} disabled={rangeType != RangeType.Custom} onChange={this.setRangeFromPreset} />
+                        </div>
                     </form>
-                </div>
-            </nav>
+                </div >
+            </nav >
 
             {device_data}
-        </div>
+        </div >
     }
 }
 
@@ -442,12 +495,16 @@ class TemperatureDetailGraph extends React.Component<TemperatureDetailGraphProps
     chart: am4charts.XYChart;
     readonly divId = `chartdiv_${this.props.device.id}`;
 
+    setChartData(chart: am4charts.XYChart, data: Entry[]) {
+        chart.data = data.map(x => { return { date: new Date(x.time), temperature: x.temperature, humidity: x.humidity } });
+    }
+
     componentDidMount() {
         let chart = am4core.create(this.divId, am4charts.XYChart);
 
         chart.paddingRight = 20;
 
-        chart.data = this.props.data.map(x => { return { date: new Date(x.time), temperature: x.temperature, humidity: x.humidity } });
+        this.setChartData(chart, this.props.data);
 
         let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
         dateAxis.renderer.grid.template.location = 0;
@@ -489,6 +546,12 @@ class TemperatureDetailGraph extends React.Component<TemperatureDetailGraphProps
 
         this.chart = chart;
     }
+
+    componentDidUpdate(oldProps: TemperatureDetailGraphProps) {
+        if (oldProps.data !== this.props.data) {
+          this.setChartData(this.chart, this.props.data);
+        }
+      }
 
     componentWillUnmount() {
         if (this.chart) {
