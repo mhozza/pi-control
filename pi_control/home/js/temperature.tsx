@@ -9,7 +9,8 @@ import { Link, useParams, RouteComponentProps } from 'react-router-dom';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-import { isThisISOWeek } from "date-fns";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 am4core.useTheme(am4themes_animated);
 
 
@@ -361,8 +362,9 @@ enum RangeType {
 
 export class TemperatureDetail extends React.Component<RouteComponentProps<TemperatureDetailParams>> {
     readonly room: number = +this.props.match.params.id;
-    readonly startTimeField: React.RefObject<HTMLInputElement> = React.createRef();
-    readonly endTimeField: React.RefObject<HTMLInputElement> = React.createRef();
+    
+    customStartDate: Date = new Date(Date.now() - WEEK);
+    customEndDate: Date = new Date(Date.now());
 
     state: TemperatureDetailState = {
         data: null,
@@ -376,12 +378,23 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
             this.setState({ data: response });
         });
     }
+  
+    setStartDate = (date: Date) => {
+        this.customStartDate = date;
+        this.setRange(RangeType.Custom);
+    }
+
+    setEndDate = (date: Date) => {
+        this.customEndDate = date;
+        this.setRange(RangeType.Custom);
+    }
 
     setRangeFromPreset = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const rangeType: RangeType = +e.currentTarget.value;
-        const startTimeField = this.startTimeField.current
-        const endTimeField = this.endTimeField.current
+        const rangeType: RangeType = +e.currentTarget.value;                
+        this.setRange(rangeType);
+    }
 
+    setRange = (rangeType: RangeType) => {
         let end: any = Date.now()
         let start
         let isCustom = false
@@ -396,36 +409,42 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
             case RangeType.Last90Days:
                 start = Date.now() - NINETY_DAYS
                 break
-            case RangeType.Last30Days:
-                start = Date.parse(startTimeField.value)
-                end = Date.parse(endTimeField.value)
+            case RangeType.Custom:
+                start = this.customStartDate.valueOf()
+                end = this.customEndDate.valueOf()
                 isCustom = true
             // TODO: fix custom date range entry.
         }
+
+        start = new Date(start).setHours(0,0,0,0)
+        end = new Date(end).setHours(23,59,59,999)
+        this.customStartDate = new Date(start);
+        this.customEndDate = new Date(end);
 
         this.setState({ start: start, end: end, isCustom: isCustom })
         getTemperatureData(this.room, start, end).then(response => {
             this.setState({ data: response });
         });
     }
-
+    
     render() {
         if (this.state.data === null) {
             return <LoadingSpinner />;
         }
 
-        let rangeType = RangeType.Custom;
-        if (!this.state.isCustom && Math.abs(this.state.end - Date.now()) < 1000 * 60 * 5) {
-            if (this.state.end - this.state.start == WEEK) {
+        let rangeType = RangeType.Custom;        
+
+        if (!this.state.isCustom && equalInDays(this.state.end, Date.now())) {
+            if (equalInDays(this.state.end - this.state.start, WEEK)) {
                 rangeType = RangeType.LastWeek
-            } else if (this.state.end - this.state.start == THIRTY_DAYS) {
+            } else if (equalInDays(this.state.end - this.state.start, THIRTY_DAYS)) {
                 rangeType = RangeType.Last30Days
-            } else if (this.state.end - this.state.start == NINETY_DAYS) {
+            } else if (equalInDays(this.state.end - this.state.start, NINETY_DAYS)) {
                 rangeType = RangeType.Last90Days
             }
         }
 
-        let device_data = this.state.data.devices.map(device_info =>
+        const device_data = this.state.data.devices.map(device_info =>
             <TemperatureDetailGraph key={'temperature_room_data_' + device_info.device}
                 device={{ id: device_info.device, name: device_info.device_name }}
                 data={device_info.graphData} />);
@@ -471,12 +490,12 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
                             </label>
                             </div>
                         </div>
-                        <div className="col-lg-4 col-md-6">
-                            <input className="form-control form-control-sm " type="text" placeholder="Start" ref={this.startTimeField} value={new Date(this.state.start).toString()} disabled={rangeType != RangeType.Custom} onChange={this.setRangeFromPreset} />
+                        <div className="col-lg-3 col-md-6">
+                            <DatePicker className="form-control form-control-sm " dateFormat="yyyy-MM-dd" selected={new Date(this.state.start)} disabled={rangeType != RangeType.Custom} onChange={this.setStartDate} />
                         </div>
-                        <div className="col-lg-4 col-md-6">
-                            <input className="form-control form-control-sm" type="text" placeholder="End" ref={this.endTimeField} value={new Date(this.state.end).toString()} disabled={rangeType != RangeType.Custom} onChange={this.setRangeFromPreset} />
-                        </div>
+                        <div className="col-lg-3 col-md-6">
+                            <DatePicker className="form-control form-control-sm " dateFormat="yyyy-MM-dd" selected={new Date(this.state.end)} disabled={rangeType != RangeType.Custom} onChange={this.setEndDate} />
+                        </div>                        
                     </form>
                 </div >
             </nav >
@@ -562,4 +581,8 @@ class TemperatureDetailGraph extends React.Component<TemperatureDetailGraphProps
     render() {
         return <div id={this.divId} style={{ width: "100%", height: "500px" }}></div>
     }
+}
+
+function equalInDays(timeStamp1: number, timestamp2: number) {
+    return Math.trunc(timeStamp1 / DAY) == Math.trunc(timestamp2 / DAY);
 }
