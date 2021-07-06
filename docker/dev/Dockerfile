@@ -2,6 +2,8 @@ FROM python:3.9-slim
 
 ENV PYTHONUNBUFFERED=0
 
+RUN groupadd -r pi-dev && useradd -m -r -g pi-dev pi-dev
+
 WORKDIR /build
 
 RUN apt-get update -y && \
@@ -21,13 +23,14 @@ RUN pip install --no-cache-dir poetry && \
 
 COPY ./pi_control /web
 
+RUN chown -R pi-dev:pi-dev /web 
+
+USER pi-dev:pi-dev
+
 WORKDIR /web/home/js
 
 RUN npm install
 
 WORKDIR /web
-
-# RUN apt-get purge -y --auto-remove gcc libffi-dev libpq-dev liblcms2-dev git && \
-#     apt-get clean -y
 
 CMD python manage.py runserver 0.0.0.0:8000
