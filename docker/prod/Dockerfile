@@ -45,6 +45,8 @@ RUN npm install && npm run --prefix=/web/home/js build --verbose && npm prune --
 
 FROM base
 
+RUN groupadd -r pi && useradd -m -r -g pi pi
+
 RUN apt-get install -y libpq5 libffi6 liblcms2-2 gettext iputils-ping calibre && \
     # Python deps
     pip install gunicorn
@@ -62,5 +64,7 @@ RUN python manage.py collectstatic
 
 ENV GUNICORN_WORKERS 3
 ENV HOST=0.0.0.0
+
+USER pi
 
 CMD gunicorn --bind ${HOST}:80 --workers=${GUNICORN_WORKERS} pi_control.wsgi:application
