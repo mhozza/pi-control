@@ -54,9 +54,9 @@ interface RoomData {
     devices: Measurement[];
 }
 
-async function getTemperatureData(roomId: number, start?: number, end?: number) {    
+async function getTemperatureData(roomId: number, start?: number, end?: number) {
     const roomData = (await axios.get(`/api/temperature/room/${roomId}/now/`)).data as RoomData;
-    
+
     let temperatureListUrl = "/api/temperature/list/"
     if (start) {
         temperatureListUrl += new Date(start).toISOString() + "/"
@@ -362,7 +362,7 @@ enum RangeType {
 
 export class TemperatureDetail extends React.Component<RouteComponentProps<TemperatureDetailParams>> {
     readonly room: number = +this.props.match.params.id;
-    
+
     customStartDate: Date = new Date(Date.now() - WEEK);
     customEndDate: Date = new Date(Date.now());
 
@@ -378,7 +378,7 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
             this.setState({ data: response });
         });
     }
-  
+
     setStartDate = (date: Date) => {
         this.customStartDate = date;
         this.setRange(RangeType.Custom);
@@ -390,7 +390,7 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
     }
 
     setRangeFromPreset = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const rangeType: RangeType = +e.currentTarget.value;                
+        const rangeType: RangeType = +e.currentTarget.value;
         this.setRange(rangeType);
     }
 
@@ -413,11 +413,10 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
                 start = this.customStartDate.valueOf()
                 end = this.customEndDate.valueOf()
                 isCustom = true
-            // TODO: fix custom date range entry.
         }
 
-        start = new Date(start).setHours(0,0,0,0)
-        end = new Date(end).setHours(23,59,59,999)
+        start = new Date(start).setHours(0, 0, 0, 0)
+        end = new Date(end).setHours(23, 59, 59, 999)
         this.customStartDate = new Date(start);
         this.customEndDate = new Date(end);
 
@@ -426,13 +425,13 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
             this.setState({ data: response });
         });
     }
-    
+
     render() {
         if (this.state.data === null) {
             return <LoadingSpinner />;
         }
 
-        let rangeType = RangeType.Custom;        
+        let rangeType = RangeType.Custom;
 
         if (!this.state.isCustom && equalInDays(this.state.end, Date.now())) {
             if (equalInDays(this.state.end - this.state.start, WEEK)) {
@@ -450,58 +449,43 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
                 data={device_info.graphData} />);
 
         return <div className="container">
-            <nav className="navbar sticky-top navbar-light bg-light">
-                <div className="container-fluid row">
-                    <ul className="navbar-nav col-lg-1 col-md-2">
-                        <li className="nav-item w-100">
-                            <Link to="/" className="btn btn-primary w-100">Späť</Link>
-                        </li>
-                    </ul>
-                    <form className="d-flex col-lg-11 col-md-10 row">
-                        <div className="col-lg-1 col-md-3">
-                            <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="radio" name="duration" id="durationWeek" value={RangeType.LastWeek} checked={rangeType == RangeType.LastWeek} onChange={this.setRangeFromPreset} />
-                                <label className="form-check-label" htmlFor="durationWeek">
-                                    1 týždeň
-                            </label>
-                            </div>
-                        </div>
-                        <div className="col-lg-1 col-md-3">
-                            <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="radio" name="duration" id="durationMonth" value={RangeType.Last30Days} checked={rangeType == RangeType.Last30Days} onChange={this.setRangeFromPreset} />
-                                <label className="form-check-label" htmlFor="durationMonth">
-                                    30 dni
-                            </label>
-                            </div>
-                        </div>
-                        <div className="col-lg-1 col-md-3">
-                            <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="radio" name="duration" id="durationQuarter" value={RangeType.Last90Days} checked={rangeType == RangeType.Last90Days} onChange={this.setRangeFromPreset} />
-                                <label className="form-check-label" htmlFor="durationQuarter">
-                                    90 dni
-                            </label>
-                            </div>
-                        </div>
-                        <div className="col-lg-1 col-md-3">
-                            <div className="form-check form-check-inline">
-                                <input className="form-check-input" type="radio" name="duration" id="durationCustom" value={RangeType.Custom} checked={rangeType == RangeType.Custom} onChange={this.setRangeFromPreset} />
-                                <label className="form-check-label" htmlFor="durationCustom">
-                                    Vlastne
-                            </label>
-                            </div>
-                        </div>
-                        <div className="col-lg-3 col-md-6">
-                            <DatePicker className="form-control form-control-sm " dateFormat="yyyy-MM-dd" selected={new Date(this.state.start)} disabled={rangeType != RangeType.Custom} onChange={this.setStartDate} />
-                        </div>
-                        <div className="col-lg-3 col-md-6">
-                            <DatePicker className="form-control form-control-sm " dateFormat="yyyy-MM-dd" selected={new Date(this.state.end)} disabled={rangeType != RangeType.Custom} onChange={this.setEndDate} />
-                        </div>                        
-                    </form>
-                </div >
-            </nav >
+            <nav className="navbar navbar-expand-md navbar-light sticky-top bg-light d-flex p-2 align-items-md-center">
+                <Link to="/" className="btn btn-primary me-3">Späť</Link>
+                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+                    <span className="navbar-toggler-icon"></span>
+                </button>
+                <div className="collapse navbar-collapse mt-1 mt-md-0" id="navbarTogglerDemo01">
+                    <div className="form-check form-check-inline">
+                        <input className="form-check-input" type="radio" name="duration" id="durationWeek" value={RangeType.LastWeek} checked={rangeType == RangeType.LastWeek} onChange={this.setRangeFromPreset} />
+                        <label className="form-check-label" htmlFor="durationWeek">
+                            1 týždeň
+                        </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                        <input className="form-check-input" type="radio" name="duration" id="durationMonth" value={RangeType.Last30Days} checked={rangeType == RangeType.Last30Days} onChange={this.setRangeFromPreset} />
+                        <label className="form-check-label" htmlFor="durationMonth">
+                            30 dni
+                        </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                        <input className="form-check-input" type="radio" name="duration" id="durationQuarter" value={RangeType.Last90Days} checked={rangeType == RangeType.Last90Days} onChange={this.setRangeFromPreset} />
+                        <label className="form-check-label" htmlFor="durationQuarter">
+                            90 dni
+                        </label>
+                    </div>
+                    <div className="form-check form-check-inline">
+                        <input className="form-check-input" type="radio" name="duration" id="durationCustom" value={RangeType.Custom} checked={rangeType == RangeType.Custom} onChange={this.setRangeFromPreset} />
+                        <label className="form-check-label" htmlFor="durationCustom">
+                            Vlastné
+                        </label>
+                    </div>
+                    <DatePicker className="form-control form-control-sm" wrapperClassName="w-100" dateFormat="yyyy-MM-dd" selected={new Date(this.state.start)} disabled={rangeType != RangeType.Custom} onChange={this.setStartDate} />
+                    <DatePicker className="form-control form-control-sm" wrapperClassName="w-100" dateFormat="yyyy-MM-dd" selected={new Date(this.state.end)} disabled={rangeType != RangeType.Custom} onChange={this.setEndDate} />
+                </div>
+            </nav>
 
             {device_data}
-        </div >
+        </div>
     }
 }
 
@@ -568,9 +552,9 @@ class TemperatureDetailGraph extends React.Component<TemperatureDetailGraphProps
 
     componentDidUpdate(oldProps: TemperatureDetailGraphProps) {
         if (oldProps.data !== this.props.data) {
-          this.setChartData(this.chart, this.props.data);
+            this.setChartData(this.chart, this.props.data);
         }
-      }
+    }
 
     componentWillUnmount() {
         if (this.chart) {
