@@ -97,7 +97,7 @@ export class PingWidget extends Widget {
                 <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100} />;
         }
 
-        return <div className="col-md-4">
+        return <div className="col">
             <div className="card">
                 <div className="card-header text-center">Latencia siete</div>
                 {content}

@@ -112,3 +112,6 @@ ENV/
 celerybeat.pid
 
 qemu-arm-static
+
+app.js
+*.app.js
