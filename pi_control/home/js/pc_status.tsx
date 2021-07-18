@@ -67,12 +67,11 @@ class PcStatusWidget extends Widget<PcStatusWidgetProps, PcStatusWidgetState> {
         data: null,
     };
 
-    // constructor(props) {
-    //     super(props);
-    //     this.state = 
-    //     this.handleWakeupButtonClick = this.handleWakeupButtonClick.bind(this);
-    //     this.handleSleepButtonClick = this.handleSleepButtonClick.bind(this);
-    // }
+    constructor(props: PcStatusWidgetProps) {
+        super(props);
+        this.handleWakeupButtonClick = this.handleWakeupButtonClick.bind(this);
+        this.handleSleepButtonClick = this.handleSleepButtonClick.bind(this);
+    }
 
     tick() {
         let self = this;
@@ -115,18 +114,18 @@ class PcStatusWidget extends Widget<PcStatusWidgetProps, PcStatusWidgetState> {
         let button;
         if (this.state.data.online) {
             if (this.state.loading) {
-                button = <button onClick={this.handleSleepButtonClick} className="btn btn-primary btn-block">
+                button = <button onClick={this.handleSleepButtonClick} className="btn btn-primary w-100">
                     <i className="fa fa-refresh fa-spin"/> Uspi</button>;
             } else {
-                button = <button onClick={this.handleSleepButtonClick} className="btn btn-primary btn-block">
+                button = <button onClick={this.handleSleepButtonClick} className="btn btn-primary w-100">
                     Uspi</button>
             }
         } else {
             if (this.state.loading) {
-                button = <button onClick={this.handleWakeupButtonClick} className="btn btn-primary btn-block">
+                button = <button onClick={this.handleWakeupButtonClick} className="btn btn-primary w-100">
                     <i className="fa fa-refresh fa-spin"/> Zapni</button>;
             } else {
-                button = <button onClick={this.handleWakeupButtonClick} className="btn btn-primary btn-block">
+                button = <button onClick={this.handleWakeupButtonClick} className="btn btn-primary w-100">
                     Zapni</button>
             }
         }
