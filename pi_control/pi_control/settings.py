@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     "temperature",
     "pi_control",
     "ff_ebook_frontend",
-    "scrabbler_frontend",
     # Third party apps.
     "django.contrib.admin",
     "django.contrib.auth",
@@ -212,6 +211,3 @@ CELERY_RESULT_BACKEND = "django-db"
 
 # Crispy forms
 CRISPY_TEMPLATE_PACK = "bootstrap4"
-
-# Scrabbler
-SCRABBLER_URL = env("SCRABBLER_URL", "http://localhost:9000")
