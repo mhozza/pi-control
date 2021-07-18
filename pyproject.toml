@@ -37,7 +37,7 @@ defusedxml = ">=0.6.0"
 Django = "^3.2"
 django-celery-beat = ">=2.0.0"
 django-celery-results = ">=1.2.1"
-django-classy-tags = ">=1.0.0"
+django-classy-tags = ">=1.0.1"
 django-crispy-forms = ">=1.9.1"
 django-debug-toolbar = ">=2.2"
 django-dotenv = ">=1.4.2"
@@ -73,5 +73,5 @@ bump2version = "^1.0.1"
 
 
 [build-system]
-requires = ["poetry_core>=1.0.0"]
+requires = ["poetry_core>=1.0.1"]
 build-backend = "poetry.core.masonry.api"
