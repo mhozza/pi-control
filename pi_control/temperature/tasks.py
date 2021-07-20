@@ -51,9 +51,8 @@ async def log_temperature_for_device(device):
         humidity = sorted(humidity_measurements)[1]
     except Exception as e:
         logger.error("Cannot read from temperature sensor! {}".format(e))
-        if not settings.DEBUG:
-            raise e
-        temperature, humidity = randint(15, 30), randint(20, 70)
+        if settings.DEBUG:
+            temperature, humidity = randint(15, 30), randint(20, 70)
 
     await database_sync_to_async(Entry.objects.create)(
         temperature=temperature, humidity=humidity, device=device
