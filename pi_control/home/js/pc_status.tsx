@@ -1,8 +1,8 @@
 import * as React from "react";
 import axios from 'axios';
 import * as cookie from "cookie";
-import {LoadingSpinner} from './loading';
-import {Widget} from './widget';
+import { LoadingSpinner } from './loading';
+import { Widget } from './widget';
 
 const csrf_cookie = cookie.parse(document.cookie)['csrftoken'];
 
@@ -18,12 +18,12 @@ export class PcStatusWidgetSet extends Widget {
     state: PcStatusWidgetSetState = {
         pcs: null
     }
-    
+
     tick() {
         let self = this;
 
         axios.get("/api/pc_status/list").then(response => {
-            self.setState({pcs: response.data});
+            self.setState({ pcs: response.data });
         });
     }
 
@@ -32,12 +32,12 @@ export class PcStatusWidgetSet extends Widget {
             return <div className="col">
                 <div className="card text-center">
                     <div className="card-header">PC</div>
-                    <LoadingSpinner/>
+                    <LoadingSpinner />
                 </div>
             </div>
         }
 
-        const widgets = this.state.pcs.map((pc, index) => <PcStatusWidget key={index} pc={pc}/>);
+        const widgets = this.state.pcs.map((pc, index) => <PcStatusWidget key={index} pc={pc} />);
 
         return <React.Fragment>
             {widgets}
@@ -71,12 +71,12 @@ class PcStatusWidget extends Widget<PcStatusWidgetProps, PcStatusWidgetState> {
         super(props);
         this.handleWakeupButtonClick = this.handleWakeupButtonClick.bind(this);
         this.handleSleepButtonClick = this.handleSleepButtonClick.bind(this);
+        this.tick = this.tick.bind(this);
     }
 
     tick() {
-        let self = this;
-        axios.get("/api/pc_status/status/" + self.props.pc).then(response => {
-            self.setState({
+        axios.get("/api/pc_status/status/" + this.props.pc).then(response => {
+            this.setState({
                 data: response.data,
                 loading: false
             });
@@ -84,18 +84,14 @@ class PcStatusWidget extends Widget<PcStatusWidgetProps, PcStatusWidgetState> {
     }
 
     handleWakeupButtonClick(event: React.MouseEvent) {
-        let self = this;
-        axios.post("/api/pc_status/wakeup/" + self.state.data.name).then(response => {
-            console.log(self, this, event, response);
-            self.setState({loading: true});
+        axios.post("/api/pc_status/wakeup/" + this.state.data.name).then(response => {
+            this.setState({ loading: true });
         });
     }
 
     handleSleepButtonClick(event: React.MouseEvent) {
-        let self = this;
-        axios.post("/api/pc_status/sleep/" + self.state.data.name).then(response => {
-            console.log(self, this, event, response);
-            self.setState({loading: true});
+        axios.post("/api/pc_status/sleep/" + this.state.data.name).then(response => {
+            this.setState({ loading: true });
         });
     }
 
@@ -104,7 +100,7 @@ class PcStatusWidget extends Widget<PcStatusWidgetProps, PcStatusWidgetState> {
             return <div className="col-sm-6 col-md-4">
                 <div className="card text-center">
                     <div className="card-header">PC</div>
-                    <LoadingSpinner/>
+                    <LoadingSpinner />
                 </div>
             </div>
         }
@@ -115,7 +111,11 @@ class PcStatusWidget extends Widget<PcStatusWidgetProps, PcStatusWidgetState> {
         if (this.state.data.online) {
             if (this.state.loading) {
                 button = <button onClick={this.handleSleepButtonClick} className="btn btn-primary w-100">
-                    <i className="fa fa-refresh fa-spin"/> Uspi</button>;
+                    <div className="spinner-border spinner-border-sm me-1" role="status">
+                        <span className="sr-only">Loading...</span>
+                    </div>
+                    Uspávam...
+                    </button>;
             } else {
                 button = <button onClick={this.handleSleepButtonClick} className="btn btn-primary w-100">
                     Uspi</button>
@@ -123,7 +123,11 @@ class PcStatusWidget extends Widget<PcStatusWidgetProps, PcStatusWidgetState> {
         } else {
             if (this.state.loading) {
                 button = <button onClick={this.handleWakeupButtonClick} className="btn btn-primary w-100">
-                    <i className="fa fa-refresh fa-spin"/> Zapni</button>;
+                    <div className="spinner-border spinner-border-sm me-1" role="status">
+                        <span className="sr-only">Loading...</span>
+                    </div>
+                    Zapnínam...
+                    </button>;
             } else {
                 button = <button onClick={this.handleWakeupButtonClick} className="btn btn-primary w-100">
                     Zapni</button>
@@ -135,28 +139,28 @@ class PcStatusWidget extends Widget<PcStatusWidgetProps, PcStatusWidgetState> {
                 <div className="card-header">{this.state.data.name}</div>
                 <div className="card-body">
                     <p className="card-text">
-                    <span className={"pc_status-widget-primary " + (this.state.data.online
-                        ? "text-success"
-                        : "text-danger")}>
-                      {
-                          this.state.data.online
-                              ? "online"
-                              : "offline"
-                      }
-                    </span>
-                        <br/>
+                        <span className={"pc_status-widget-primary " + (this.state.data.online
+                            ? "text-success"
+                            : "text-danger")}>
+                            {
+                                this.state.data.online
+                                    ? "online"
+                                    : "offline"
+                            }
+                        </span>
+                        <br />
                         <span className="pc_status-widget-secondary">
                             <strong>SSH:</strong>&nbsp;
                             <span className={this.state.data.ssh
                                 ? "text-success"
                                 : "text-danger"}>
-                          {
-                              this.state.data.ssh
-                                  ? "online"
-                                  : "offline"
-                          }
+                                {
+                                    this.state.data.ssh
+                                        ? "online"
+                                        : "offline"
+                                }
+                            </span>
                         </span>
-                    </span>
                     </p>
                     {button}
                 </div>
