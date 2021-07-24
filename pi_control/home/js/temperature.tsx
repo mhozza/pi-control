@@ -448,7 +448,7 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
                 device={{ id: device_info.device, name: device_info.device_name }}
                 data={device_info.graphData} />);
 
-        return <div className="container">
+        return <div>
             <nav className="navbar navbar-expand-md navbar-light sticky-top bg-light d-flex p-2 align-items-md-center">
                 <Link to="/" className="btn btn-primary me-3">Späť</Link>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
@@ -505,7 +505,8 @@ class TemperatureDetailGraph extends React.Component<TemperatureDetailGraphProps
     componentDidMount() {
         let chart = am4core.create(this.divId, am4charts.XYChart);
 
-        chart.paddingRight = 20;
+        chart.paddingRight = 0;
+        chart.paddingLeft = 0;
 
         this.setChartData(chart, this.props.data);
 
@@ -514,12 +515,12 @@ class TemperatureDetailGraph extends React.Component<TemperatureDetailGraphProps
 
         let temperatureAxes = chart.yAxes.push(new am4charts.ValueAxis());
         temperatureAxes.tooltip.disabled = true;
-        temperatureAxes.renderer.minWidth = 35;
+        temperatureAxes.renderer.minWidth = 30;
         temperatureAxes.title.text = "Teplota (°C)";
 
         let humidityAxes = chart.yAxes.push(new am4charts.ValueAxis());
         humidityAxes.tooltip.disabled = true;
-        humidityAxes.renderer.minWidth = 35;
+        humidityAxes.renderer.minWidth = 30;
         humidityAxes.title.text = "Vlhkost (%)";
         humidityAxes.renderer.opposite = true;
 
@@ -563,7 +564,7 @@ class TemperatureDetailGraph extends React.Component<TemperatureDetailGraphProps
     }
 
     render() {
-        return <div id={this.divId} style={{ width: "100%", height: "500px" }}></div>
+        return <div id={this.divId} style={{ width: "100%", height: "500px", fontSize: "0.8rem" }}></div>
     }
 }
 
