@@ -11,7 +11,7 @@ def parse_request(raw_request, debug=0):
         path, qstring = path.split("?", 1)
         query = {
             q[0]: q[1] if len(q) > 1 else ""
-            for q in map(lambda s: s.split("&"), qstring)
+            for q in map(lambda s: s.split("="), qstring.split("&"))
             if q and len(q) >= 1
         }
 
