@@ -1,3 +1,4 @@
 {
-    "id": "bedroom"
+    "id": "bedroom",
+    "led_pins": [12,13,15]
 }
