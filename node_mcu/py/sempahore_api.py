@@ -1,27 +1,18 @@
 from requests import HTMLResponse
-from led_control import Semaphore
+import led_control
 
-s = None
+s = led_control.semaphore
 
 
 def semaphore(request):
     global s
-
-    def get_semaphore():
-        global s
-        if s is None:
-            s = Semaphore(500)
-        return s
-
     if request.query["c"] == "off":
-        if s is not None:
-            s.deinit()
-            s = None
+        s.deinit()
         return HTMLResponse()
 
     if request.query["c"] == "red":
-        get_semaphore().set_red()
+        s.set_red()
     if request.query["c"] == "green":
-        get_semaphore().set_green()
+        s.set_green()
 
     return HTMLResponse()

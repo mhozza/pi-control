@@ -68,3 +68,6 @@ class Semaphore:
             self.set_red()
         else:
             self.set_green()
+
+
+semaphore = Semaphore(500)
