@@ -47,7 +47,7 @@ FROM base
 
 RUN groupadd -r pi && useradd -m -r -g pi pi
 
-RUN apt-get install -y libpq5 libffi6 liblcms2-2 gettext iputils-ping calibre && \
+RUN apt-get install -y libpq5 libffi7 liblcms2-2 gettext iputils-ping calibre && \
     # Python deps
     pip install gunicorn
 
