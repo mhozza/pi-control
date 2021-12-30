@@ -3,19 +3,23 @@ name: Docker Image CI
 on: [push]
 
 jobs:
-  #build_prod:
-  #  runs-on: ubuntu-latest
-  #  steps:
-  #  - uses: actions/checkout@v1
-  #  - name: Build the Docker image
-  #    run: docker build . --file docker/prod/Dockerfile --tag mhozza/pi-control:$(date +%s)
   build_dev:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     # Cache docker layers
     - uses: satackey/action-docker-layer-caching@v0.0.11
       # Ignore the failure of a step and avoid terminating the job.
       continue-on-error: true
     - name: Build the dev Docker image
       run: docker build . --file docker/dev/Dockerfile
+  build_prod:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    # Cache docker layers
+    - uses: satackey/action-docker-layer-caching@v0.0.11
+      # Ignore the failure of a step and avoid terminating the job.
+      continue-on-error: true
+    - name: Build the prod Docker image
+      run: docker build . --file docker/prod/Dockerfile
