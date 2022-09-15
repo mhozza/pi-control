@@ -1,4 +1,4 @@
-FROM python:3.9-slim as base
+FROM python:3.10-slim as base
 
 ENV PYTHONUNBUFFERED=0
 
@@ -9,16 +9,17 @@ FROM base as builder
 
 RUN apt-get install -y curl
 
-RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python \
-    && ln -s /root/.poetry/bin/poetry /usr/local/bin/poetry
+ENV POETRY_HOME=/usr/local
 
+RUN curl -sSL https://install.python-poetry.org | python3 -
+q
 COPY ./pyproject.toml /build/
 COPY ./poetry.lock /build/
 
 WORKDIR /build
 
 RUN set -x \
-    && poetry export --without-hashes -f requirements.txt > requirements.txt
+    && poetry export --without-hashes -f requirements.txt -o requirements.txt
 
 
 FROM base as installer
