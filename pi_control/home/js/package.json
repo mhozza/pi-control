@@ -24,7 +24,7 @@
     "cookie": "^0.4.1",
     "date-fns": "^2.21.3",
     "install": "^0.13.0",
-    "npm": "^7.14.0",
+    "npm": "^8.19.2",
     "react": "^17.0.2",
     "react-chartjs-2": "^3.0.3",
     "react-datepicker": "^4.1.1",
