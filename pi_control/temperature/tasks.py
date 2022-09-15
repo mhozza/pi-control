@@ -42,6 +42,9 @@ async def log_temperature_for_device(device):
     except Entry.DoesNotExist:
         logger.info("First entry.")
 
+    temperature = None
+    humidity = None
+
     try:
         combined_measurements = await asyncio.gather(
             *[delay_measure(i, measurement_device=device) for i in range(3)]
@@ -54,9 +57,10 @@ async def log_temperature_for_device(device):
         if settings.DEBUG:
             temperature, humidity = randint(15, 30), randint(20, 70)
 
-    await database_sync_to_async(Entry.objects.create)(
-        temperature=temperature, humidity=humidity, device=device
-    )
+    if temperature is not None or humidity is not None:
+        await database_sync_to_async(Entry.objects.create)(
+            temperature=temperature, humidity=humidity, device=device
+        )
 
 
 @database_sync_to_async
