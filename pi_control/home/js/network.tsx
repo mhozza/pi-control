@@ -43,7 +43,7 @@ export class PingWidget extends Widget {
             let labels = this.state.data.map(x => x.time);
             let ping_dataset = this.state.data.map(x => x.ping);
 
-            let chartData: ChartData = {
+            let chartData: ChartData<'line'> = {
                 labels: labels,
                 datasets: [
                     {
@@ -56,7 +56,7 @@ export class PingWidget extends Widget {
                     }
                 ]
             };
-            let chartOptions: ChartOptions = {
+            let chartOptions: ChartOptions<'line'> = {
                 responsive: true,
                 plugins: {
                     legend: {

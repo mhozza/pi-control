@@ -240,7 +240,7 @@ class DeviceData extends React.Component<DeviceDataProps> {
                 ? "text-primary"
                 : "text-success";
 
-        let chartData: ChartData = {
+        let chartData: ChartData<'line'> = {
             labels: labels,
             datasets: [
                 {
@@ -262,7 +262,7 @@ class DeviceData extends React.Component<DeviceDataProps> {
                 }
             ]
         };
-        let chartOptions: ChartOptions = {
+        let chartOptions: ChartOptions<'line'> = {
             responsive: true,
             plugins: {
                 legend: {
