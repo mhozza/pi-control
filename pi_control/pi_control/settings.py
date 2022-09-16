@@ -163,8 +163,9 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = env("STATIC_ROOT", os.path.join(BASE_DIR, "../.static"))
-if not DEBUG:
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# TODO: Reenable whitenoise once restframework works with it again.
+# if not DEBUG:
+#     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Social Auth
 LOGIN_URL = "login"
