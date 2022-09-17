@@ -3,9 +3,16 @@ FROM python:3.10-slim as base
 ENV PYTHONUNBUFFERED=0
 
 RUN apt-get update -y
-RUN pip install -U pip
 
-FROM base as builder
+
+FROM base as basedeps
+
+RUN apt-get install -y gcc build-essential libssl-dev libffi-dev rustc cargo
+
+RUN pip install cryptography
+
+
+FROM basedeps as builder
 
 RUN apt-get install -y curl
 
@@ -22,13 +29,10 @@ RUN set -x \
     && poetry export --without-hashes -f requirements.txt -o requirements.txt
 
 
-FROM base as installer
-
-# Disable using Rust to build cryptography (v3.4.7 only).
-ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
+FROM basedeps as installer
 
 # Build deps
-RUN apt-get install -y gcc libffi-dev libpq-dev liblcms2-dev libssl-dev git
+RUN apt-get install -y liblcms2-dev git
 
 COPY --from=builder /build/requirements.txt /
 
