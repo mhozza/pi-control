@@ -19,7 +19,7 @@ RUN apt-get install -y curl
 
 ENV POETRY_HOME=/usr/local
 
-RUN curl -sSL https://install.python-poetry.org | python3 -
+RUN pip install poetry
 
 COPY ./pyproject.toml /build/
 COPY ./poetry.lock /build/
