@@ -4,7 +4,7 @@ ENV PYTHONUNBUFFERED=0
 
 RUN apt-get update -y
 
-
+# Deps for building cryptography
 FROM base as basedeps
 
 RUN apt-get install -y gcc build-essential libssl-dev libffi-dev rustc cargo
@@ -12,6 +12,7 @@ RUN apt-get install -y gcc build-essential libssl-dev libffi-dev rustc cargo
 RUN pip install cryptography
 
 
+# Generate requirements
 FROM basedeps as builder
 
 RUN apt-get install -y curl
@@ -29,10 +30,11 @@ RUN set -x \
     && poetry export --without-hashes -f requirements.txt -o requirements.txt
 
 
+# Install the packages from requirements
 FROM basedeps as installer
 
 # Build deps
-RUN apt-get install -y liblcms2-dev git
+RUN apt-get install -y libpq-dev liblcms2-dev git
 
 COPY --from=builder /build/requirements.txt /
 
