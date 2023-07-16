@@ -7,10 +7,9 @@ RUN apt-get update -y
 # Deps for building cryptography
 FROM base as basedeps
 
-RUN apt-get install -y gcc build-essential libssl-dev libffi-dev rustc cargo
+RUN apt-get install -y gcc build-essential libssl-dev libffi-dev rustc cargo python3-cryptography
 
 RUN pip install cryptography
-
 
 # Generate requirements
 FROM basedeps as builder
@@ -54,7 +53,7 @@ FROM base
 
 RUN groupadd -r pi && useradd -m -r -g pi pi
 
-RUN apt-get install -y libpq5 libffi7 liblcms2-2 gettext iputils-ping calibre && \
+RUN apt-get install -y libpq5 libffi8 liblcms2-2 gettext iputils-ping calibre && \
     # Python deps
     pip install gunicorn
 
