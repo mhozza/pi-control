@@ -9,8 +9,7 @@ RUN pip install -U pip
 # Deps for building cryptography
 FROM base as basedeps
 
-# librust-openssl-sys-dev may be replaceable by pkg-config
-RUN apt-get install -y gcc build-essential libssl-dev libffi-dev rustc cargo python3-cryptography librust-openssl-sys-dev
+RUN apt-get install -y gcc build-essential libssl-dev libffi-dev rustc cargo pkg-config python3-cryptography
 
 # RUN pip install cryptography
 RUN --security=insecure mkdir -p /root/.cargo && chmod 777 /root/.cargo && mount -t tmpfs none /root/.cargo && pip install --no-cache-dir cryptography
