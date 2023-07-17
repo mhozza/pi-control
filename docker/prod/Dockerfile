@@ -1,15 +1,19 @@
-FROM python:3.10-slim as base
+# syntax = docker/dockerfile:experimental
+FROM python:3.11-slim as base
 
 ENV PYTHONUNBUFFERED=0
 
 RUN apt-get update -y
+RUN pip install -U pip
 
 # Deps for building cryptography
 FROM base as basedeps
 
-RUN apt-get install -y gcc build-essential libssl-dev libffi-dev rustc cargo python3-cryptography
+# librust-openssl-sys-dev may be replaceable by pkg-config
+RUN apt-get install -y gcc build-essential libssl-dev libffi-dev rustc cargo python3-cryptography librust-openssl-sys-dev
 
-RUN pip install cryptography
+# RUN pip install cryptography
+RUN --security=insecure mkdir -p /root/.cargo && chmod 777 /root/.cargo && mount -t tmpfs none /root/.cargo && pip install --no-cache-dir cryptography
 
 # Generate requirements
 FROM basedeps as builder

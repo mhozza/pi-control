@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 ENV PYTHONUNBUFFERED=0
 
@@ -7,7 +7,7 @@ RUN groupadd -r pi-dev && useradd -m -r -g pi-dev pi-dev
 WORKDIR /build
 
 RUN apt-get update -y && \
-    apt-get install -y libpq5 libffi7 liblcms2-2 gettext iputils-ping calibre\
+    apt-get install -y libpq5 libffi8 liblcms2-2 gettext iputils-ping calibre\
     # Dev deps
     npm \
     # Build deps
