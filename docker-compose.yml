@@ -25,9 +25,9 @@ x-pi-control: &pi-control
 
 services:
   db:
-    image: postgres:11-alpine
+    image: postgres:16-alpine
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data_16:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=pi_control
       - POSTGRES_DB=pi_control
@@ -57,5 +57,5 @@ services:
     command: npm run --prefix=/web/home/js dev
 
 volumes:
-  db_data:
+  db_data_16:
   node_modules:
