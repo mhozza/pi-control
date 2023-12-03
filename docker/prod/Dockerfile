@@ -9,6 +9,8 @@ RUN pip install -U pip
 # Deps for building cryptography
 FROM base as basedeps
 
+ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
+
 RUN apt-get install -y gcc build-essential libssl-dev libffi-dev rustc cargo pkg-config python3-cryptography
 
 # RUN pip install cryptography
