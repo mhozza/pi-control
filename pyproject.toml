@@ -20,7 +20,7 @@ exclude = '''
 
 [tool.poetry]
 name = "pi-control"
-version = "1.1.10"
+version = "1.1.11"
 description = "Simple Django app to control my Raspberry Pi and some home devices."
 authors = ["Michal Hozza <mhozza@gmail.com>"]
 license = "MIT"
