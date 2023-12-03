@@ -11,7 +11,7 @@ FROM base as basedeps
 
 ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
 
-RUN apt-get install -y gcc build-essential libssl-dev libffi-dev rustc cargo pkg-config python3-cryptography
+RUN apt-get install -y gcc build-essential libssl-dev libffi-dev git rustc cargo pkg-config python3-cryptography
 
 # RUN pip install cryptography
 RUN --security=insecure mkdir -p /root/.cargo && chmod 777 /root/.cargo && mount -t tmpfs none /root/.cargo && pip install --no-cache-dir cryptography
