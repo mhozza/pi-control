@@ -11,12 +11,15 @@ FROM base as basedeps
 
 ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
 
-RUN apt-get install -y gcc build-essential libssl-dev libffi-dev git pkg-config python3-cryptography
+RUN apt-get install -y curl gcc build-essential libssl-dev libffi-dev git pkg-config python3-cryptography
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+RUN --security=insecure mkdir -p /root/.cargo && chmod 777 /root/.cargo && mount -t tmpfs none /root/.cargo
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain=1.74.0 -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+ENV RUSTUP_TOOLCHAIN=1.74.0
 
 # RUN pip install cryptography
-RUN --security=insecure mkdir -p /root/.cargo && chmod 777 /root/.cargo && mount -t tmpfs none /root/.cargo && pip install --no-cache-dir cryptography
+RUN pip install --no-cache-dir cryptography
 
 # Generate requirements
 FROM basedeps as builder
@@ -34,7 +37,6 @@ WORKDIR /build
 
 RUN set -x \
     && poetry export --without-hashes -f requirements.txt -o requirements.txt
-
 
 # Install the packages from requirements
 FROM basedeps as installer
