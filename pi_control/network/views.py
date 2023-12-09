@@ -19,4 +19,4 @@ class NetworkStatusListView(generics.ListAPIView):
             time_to = parse_datetime(self.kwargs["to"])
         except:
             time_to = timezone.now()
-        return Entry.objects.filter(time__range=(time_from, time_to))
+        return Entry.objects.filter(time__range=(time_from, time_to)).order_by("time")
