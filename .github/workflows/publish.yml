@@ -39,7 +39,7 @@ jobs:
         with:
           context: .
           file: ./docker/prod/Dockerfile
-          platforms: linux/amd64,linux/arm/v7,linux/arm64
+          platforms: linux/amd64,linux/arm64
           allow: security.insecure
           push: true
           tags: ${{ steps.docker_meta.outputs.tags }}
