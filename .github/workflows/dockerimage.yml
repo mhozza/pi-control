@@ -13,9 +13,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    # Cache docker layers
-    - uses: jpribyl/action-docker-layer-caching@v0.1.1
-      # Ignore the failure of a step and avoid terminating the job.
-      continue-on-error: true
     - name: Build the dev Docker image
       run: docker build . --file docker/dev/Dockerfile
