@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 ENV PYTHONUNBUFFERED=0
 
@@ -11,7 +11,7 @@ RUN apt-get update -y && \
     # Build deps
     gcc libffi-dev libpq-dev liblcms2-dev git
 
-RUN pip install -U pipq
+RUN pip install -U pip
 RUN pip install --no-cache-dir poetry && \
     poetry config virtualenvs.create false
 
