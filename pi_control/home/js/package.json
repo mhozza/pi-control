@@ -11,7 +11,7 @@
   "author": "Michal Hozza",
   "license": "MIT",
   "dependencies": {
-    "@amcharts/amcharts4": "^4.10.18",
+    "@amcharts/amcharts4": "^4.10.38",
     "@types/cookie": "^0.4.0",
     "@types/jest": "^26.0.23",
     "@types/node": "^15.3.0",
