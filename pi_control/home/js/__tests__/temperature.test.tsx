@@ -27,7 +27,7 @@ describe('Temperature Components', () => {
         device_name: 'Living Room Sensor',
         temperature: 22.5,
         humidity: 45.0,
-        graphData: [],
+        graphData: [] as any[],
       },
     ],
   };

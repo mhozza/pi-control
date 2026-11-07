@@ -36,7 +36,7 @@ x-pi-control: &pi-control
 services:
   db:
     <<: *logging
-    image: postgres:16.1-alpine
+    image: postgres:16-alpine
     volumes:
       - db_data_16:/var/lib/postgresql/data
     environment:
@@ -46,7 +46,7 @@ services:
     restart: always
   rabbitmq:
     <<: *logging
-    image: rabbitmq:3.12-alpine
+    image: rabbitmq:3.13-alpine
     restart: always
   web:
     <<: *pi-control
@@ -67,7 +67,7 @@ services:
       - rabbitmq
       - db
   pgbackups:
-    image: prodrigestivill/postgres-backup-local
+    image: prodrigestivill/postgres-backup-local:16-alpine
     restart: always
     user: postgres:postgres
     volumes:

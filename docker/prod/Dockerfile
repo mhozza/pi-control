@@ -46,7 +46,7 @@ RUN set -x \
     && pip install --root /install --no-warn-script-location -r requirements.txt
 
 
-FROM --platform=$BUILDPLATFORM node:15-slim as jsbuilder
+FROM --platform=$BUILDPLATFORM node:20-slim as jsbuilder
 
 COPY ./pi_control/home/js /web/home/js
 

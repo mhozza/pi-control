@@ -6,6 +6,13 @@
         "jsx": "react",
         "allowJs": true,
         "moduleResolution": "node",
-        "incremental": true,        
-    }
+        "incremental": true
+    },
+    "exclude": [
+        "node_modules",
+        "**/__tests__/**",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "setupTests.ts"
+    ]
 }
