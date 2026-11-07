@@ -24,6 +24,8 @@ export class PcStatusWidgetSet extends Widget {
 
         axios.get("/api/pc_status/list").then(response => {
             self.setState({ pcs: response.data });
+        }).catch(() => {
+            // Keep state or loading on error
         });
     }
 
@@ -61,7 +63,7 @@ interface PcStatusWidgetState {
     data: PcStatus;
 }
 
-class PcStatusWidget extends Widget<PcStatusWidgetProps, PcStatusWidgetState> {
+export class PcStatusWidget extends Widget<PcStatusWidgetProps, PcStatusWidgetState> {
     state: PcStatusWidgetState = {
         loading: false,
         data: null,
@@ -80,18 +82,24 @@ class PcStatusWidget extends Widget<PcStatusWidgetProps, PcStatusWidgetState> {
                 data: response.data,
                 loading: false
             });
+        }).catch(() => {
+            // Error handling
         });
     }
 
     handleWakeupButtonClick(event: React.MouseEvent) {
         axios.post("/api/pc_status/wakeup/" + this.state.data.name).then(response => {
             this.setState({ loading: true });
+        }).catch(() => {
+            // Error handling
         });
     }
 
     handleSleepButtonClick(event: React.MouseEvent) {
         axios.post("/api/pc_status/sleep/" + this.state.data.name).then(response => {
             this.setState({ loading: true });
+        }).catch(() => {
+            // Error handling
         });
     }
 
