@@ -5,20 +5,19 @@ ENV PYTHONUNBUFFERED=0
 WORKDIR /build
 
 RUN apt-get update -y && \
-    apt-get install -y libpq5 libffi8 liblcms2-2 gettext iputils-ping calibre\
+    apt-get install -y libpq5 libffi8 liblcms2-2 gettext iputils-ping calibre \
     # Dev deps
     npm \
     # Build deps
     gcc libffi-dev libpq-dev liblcms2-dev git
 
-RUN pip install -U pipq
-RUN pip install --no-cache-dir poetry && \
-    poetry config virtualenvs.create false
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 COPY ./pyproject.toml /build/
-COPY ./poetry.lock /build/
+COPY ./uv.lock /build/
 
-RUN poetry install --no-interaction --no-root
+ENV UV_PROJECT_ENVIRONMENT=/usr/local
+RUN uv sync --frozen
 
 COPY ./pi_control /web
 

@@ -22,21 +22,17 @@ ENV RUSTUP_TOOLCHAIN=1.74.0
 RUN pip install --no-cache-dir cryptography
 
 # Generate requirements
-FROM basedeps as builder
+FROM base as builder
 
-RUN apt-get install -y curl
-
-ENV POETRY_HOME=/usr/local
-
-RUN pip install poetry
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 COPY ./pyproject.toml /build/
-COPY ./poetry.lock /build/
+COPY ./uv.lock /build/
 
 WORKDIR /build
 
 RUN set -x \
-    && poetry export --without-hashes -f requirements.txt -o requirements.txt
+    && uv export --frozen --no-dev --no-hashes -o requirements.txt
 
 # Install the packages from requirements
 FROM basedeps as installer
