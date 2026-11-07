@@ -115,3 +115,5 @@ qemu-arm-static
 
 app.js
 *.app.js
+
+.agents

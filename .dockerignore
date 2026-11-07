@@ -3,3 +3,4 @@
 .gitignore
 .dockerignore
 db.sqlite3
+.agents
