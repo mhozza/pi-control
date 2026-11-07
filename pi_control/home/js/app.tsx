@@ -6,7 +6,7 @@ import {PingWidget} from './network'
 import {ServerStatsWidget} from './server_stats';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-class Widgets extends React.Component {
+export class Widgets extends React.Component {
     render() {
         return <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3">
             <TemperatureWidgetSet/>
@@ -17,7 +17,7 @@ class Widgets extends React.Component {
     }
 }
 
-class App extends React.Component {
+export class App extends React.Component {
     render() {
         return <main>
             <Switch>
@@ -28,4 +28,7 @@ class App extends React.Component {
     }
 }
 
-ReactDOM.render(<BrowserRouter><App/></BrowserRouter>, document.getElementById('root'));
+const rootElement = document.getElementById('root');
+if (rootElement && process.env.NODE_ENV !== 'test') {
+    ReactDOM.render(<BrowserRouter><App/></BrowserRouter>, rootElement);
+}
