@@ -32,6 +32,8 @@ export class PingWidget extends Widget {
 
         axios.get("/api/network/list").then(response => {
             self.setState({ data: response.data });
+        }).catch(() => {
+            // Keep existing state or loading spinner on error
         });
     }
 
