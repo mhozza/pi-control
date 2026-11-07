@@ -54,7 +54,7 @@ interface RoomData {
     devices: Measurement[];
 }
 
-async function getTemperatureData(roomId: number, start?: number, end?: number) {
+export async function getTemperatureData(roomId: number, start?: number, end?: number) {
     const roomData = (await axios.get(`/api/temperature/room/${roomId}/now/`)).data as RoomData;
 
     let temperatureListUrl = "/api/temperature/list/"
@@ -88,6 +88,8 @@ export class TemperatureWidgetSet extends Widget {
         let self = this;
         axios.get("/api/temperature/rooms/").then(response => {
             self.setState({ rooms: response.data });
+        }).catch(() => {
+            // Keep state or loading on error
         });
     }
 
@@ -117,7 +119,7 @@ interface TemperatureWidgetState {
     data: RoomData;
 }
 
-class TemperatureWidget extends Widget<TemperatureWidgetProps> {
+export class TemperatureWidget extends Widget<TemperatureWidgetProps> {
     state: TemperatureWidgetState = {
         data: null,
     };
@@ -125,6 +127,8 @@ class TemperatureWidget extends Widget<TemperatureWidgetProps> {
     tick() {
         getTemperatureData(this.props.room.id).then(response => {
             this.setState({ data: response });
+        }).catch(() => {
+            // Keep state or loading on error
         });
     }
 
@@ -222,7 +226,7 @@ interface DeviceDataProps {
     needs_details: boolean;
 }
 
-class DeviceData extends React.Component<DeviceDataProps> {
+export class DeviceData extends React.Component<DeviceDataProps> {
     render() {
         let labels = this.props.data.map(x => x.time);
         let temperature_dataset = this.props.data.map(x => x.temperature);
@@ -353,7 +357,7 @@ const WEEK = DAY * 7;
 const THIRTY_DAYS = DAY * 30;
 const NINETY_DAYS = DAY * 90;
 
-enum RangeType {
+export enum RangeType {
     Custom,
     LastWeek,
     Last30Days,
@@ -376,6 +380,8 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
     componentDidMount() {
         getTemperatureData(this.room, this.state.start, this.state.end).then(response => {
             this.setState({ data: response });
+        }).catch(() => {
+            // Keep state or loading on error
         });
     }
 
@@ -423,6 +429,8 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
         this.setState({ start: start, end: end, isCustom: isCustom })
         getTemperatureData(this.room, start, end).then(response => {
             this.setState({ data: response });
+        }).catch(() => {
+            // Keep state or loading on error
         });
     }
 
@@ -494,7 +502,7 @@ interface TemperatureDetailGraphProps {
     data: Entry[];
 }
 
-class TemperatureDetailGraph extends React.Component<TemperatureDetailGraphProps> {
+export class TemperatureDetailGraph extends React.Component<TemperatureDetailGraphProps> {
     chart: am4charts.XYChart;
     readonly divId = `chartdiv_${this.props.device.id}`;
 
