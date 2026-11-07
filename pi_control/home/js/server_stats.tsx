@@ -29,6 +29,8 @@ export class ServerStatsWidget extends Widget {
 
         axios.get("/api/server_stats").then(response => {
             self.setState({ data: response.data });
+        }).catch(() => {
+            // Keep existing state or loading spinner on error
         });
     }
 
