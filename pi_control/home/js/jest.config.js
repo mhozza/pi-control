@@ -13,9 +13,12 @@ module.exports = {
       tsconfig: {
         jsx: 'react',
         module: 'commonjs',
-        target: 'es5',
+        target: 'es2020',
         noImplicitAny: false,
         allowJs: true,
+        esModuleInterop: true,
+        skipLibCheck: true,
+        types: ['jest', '@testing-library/jest-dom', 'node'],
       }
     }]
   }

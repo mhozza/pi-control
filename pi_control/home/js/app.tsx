@@ -1,10 +1,10 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import {TemperatureWidgetSet, TemperatureDetail} from './temperature';
-import {PcStatusWidgetSet} from './pc_status';
-import {PingWidget} from './network'
-import {ServerStatsWidget} from './server_stats';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { createRoot } from 'react-dom/client';
+import { TemperatureWidgetSet, TemperatureDetail } from './temperature';
+import { PcStatusWidgetSet } from './pc_status';
+import { PingWidget } from './network';
+import { ServerStatsWidget } from './server_stats';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 export class Widgets extends React.Component {
     render() {
@@ -20,15 +20,15 @@ export class Widgets extends React.Component {
 export class App extends React.Component {
     render() {
         return <main>
-            <Switch>
-                <Route path="/" component={Widgets} exact />
-                <Route path="/temperature/:id" component={TemperatureDetail} />
-            </Switch>            
+            <Routes>
+                <Route path="/" element={<Widgets />} />
+                <Route path="/temperature/:id" element={<TemperatureDetail />} />
+            </Routes>            
         </main>         
     }
 }
 
 const rootElement = document.getElementById('root');
 if (rootElement && process.env.NODE_ENV !== 'test') {
-    ReactDOM.render(<BrowserRouter><App/></BrowserRouter>, rootElement);
+    createRoot(rootElement).render(<BrowserRouter><App/></BrowserRouter>);
 }

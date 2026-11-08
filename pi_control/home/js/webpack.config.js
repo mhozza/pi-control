@@ -13,19 +13,12 @@ module.exports = (env, args) => {
       filename: 'app.js'
     },
     resolve: {
-      extensions: [".js", ".jsx", ".json", ".ts", ".tsx"],
+      extensions: [".js", ".json", ".ts", ".tsx"],
     },
     module: {
       rules: [
         {
-          test: /\.jsx$/,
-          exclude: /(node_modules|bower_components)/,
-          use: {
-            loader: 'babel-loader'
-          }
-        },
-        {
-          test: /\.tsx$/,
+          test: /\.tsx?$/,
           exclude: /(node_modules|bower_components)/,
           use: {
             loader: 'ts-loader'
