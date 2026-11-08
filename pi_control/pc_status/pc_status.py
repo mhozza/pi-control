@@ -1,6 +1,6 @@
 import logging
-import os
 import socket
+import subprocess
 
 import requests
 
@@ -8,10 +8,16 @@ logger = logging.getLogger(__name__)
 
 
 def check_ping(host):
-    response = os.system("ping -c 1 -w 1 {} > /dev/null".format(host))
-    if response == 0:
-        return True
-    return False
+    try:
+        response = subprocess.run(
+            ["ping", "-c", "1", "-w", "1", str(host)],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
+        return response.returncode == 0
+    except (subprocess.SubprocessError, OSError):
+        return False
 
 
 def check_connection(host, port):
