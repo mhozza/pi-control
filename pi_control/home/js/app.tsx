@@ -2,7 +2,7 @@ import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import { TemperatureWidgetSet, TemperatureDetail } from './temperature';
 import { PcStatusWidgetSet } from './pc_status';
-import { PingWidget } from './network';
+import { PingWidget, NetworkDetail } from './network';
 import { ServerStatsWidget } from './server_stats';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
@@ -23,6 +23,7 @@ export class App extends React.Component {
             <Routes>
                 <Route path="/" element={<Widgets />} />
                 <Route path="/temperature/:id" element={<TemperatureDetail />} />
+                <Route path="/network" element={<NetworkDetail />} />
             </Routes>            
         </main>         
     }

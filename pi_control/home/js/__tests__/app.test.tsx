@@ -64,7 +64,7 @@ describe('App and Router Integration', () => {
           },
         });
       }
-      if (url === '/api/network/list') {
+      if (url === '/api/network/list' || url.startsWith('/api/network/list/')) {
         return Promise.resolve({
           data: [{ time: '2026-11-07T12:00:00Z', ping: 12.5 }],
         });
@@ -141,6 +141,22 @@ describe('App and Router Integration', () => {
 
       // Does not render dashboard ping chart
       expect(queryByText('Latencia siete')).toBeNull();
+    });
+
+    it('renders NetworkDetail view on route ("/network")', async () => {
+      const { getByText, queryByText } = render(
+        <MemoryRouter initialEntries={['/network']}>
+          <App />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(getByText('Späť')).toBeInTheDocument();
+        expect(getByText('Latencia siete (ms)')).toBeInTheDocument();
+      });
+
+      expect(getByText('1 týždeň')).toBeInTheDocument();
+      expect(queryByText('pi-controller')).toBeNull();
     });
   });
 
