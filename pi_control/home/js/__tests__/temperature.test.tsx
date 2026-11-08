@@ -165,6 +165,7 @@ describe('Temperature Components', () => {
 
       await waitFor(() => {
         expect(getByText('Kitchen')).toBeInTheDocument();
+        expect(container.querySelectorAll('.temperature-widget-body.text-success').length).toBe(2);
       });
 
       const successBodies = container.querySelectorAll('.temperature-widget-body.text-success');
@@ -203,6 +204,7 @@ describe('Temperature Components', () => {
 
       await waitFor(() => {
         expect(getByText('Attic')).toBeInTheDocument();
+        expect(container.querySelectorAll('.temperature-widget-body.text-danger').length).toBe(2);
       });
 
       const dangerBodies = container.querySelectorAll('.temperature-widget-body.text-danger');
@@ -230,6 +232,7 @@ describe('Temperature Components', () => {
 
       await waitFor(() => {
         expect(getByText('Basement')).toBeInTheDocument();
+        expect(container.querySelectorAll('.temperature-widget-body.text-primary').length).toBe(2);
       });
 
       const primaryBodies = container.querySelectorAll('.temperature-widget-body.text-primary');

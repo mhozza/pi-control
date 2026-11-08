@@ -4,7 +4,11 @@ import { LoadingSpinner } from './loading';
 import { Widget } from './widget'
 import axios from "axios";
 import 'chartjs-adapter-date-fns';
-import { ChartData, ChartOptions } from "chart.js";
+import { Chart, ChartData, ChartOptions, LineController, LineElement, PointElement, LinearScale, TimeScale, Tooltip, Legend, Filler } from "chart.js";
+
+if (typeof Chart?.register === 'function') {
+    Chart.register(LineController, LineElement, PointElement, LinearScale, TimeScale, Tooltip, Legend, Filler);
+}
 
 
 const DISPLAY_FORMATS = {

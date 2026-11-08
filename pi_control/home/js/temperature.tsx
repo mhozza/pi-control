@@ -4,14 +4,16 @@ import { LoadingSpinner } from './loading';
 import { Widget } from './widget'
 import axios from "axios";
 import 'chartjs-adapter-date-fns';
-import { ChartData, ChartOptions } from "chart.js";
-import { Link, useParams, RouteComponentProps } from 'react-router-dom';
+import { Chart, ChartData, ChartOptions, LineController, LineElement, PointElement, LinearScale, TimeScale, Tooltip, Legend, Filler } from "chart.js";
+import { Link, useParams } from 'react-router-dom';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 am4core.useTheme(am4themes_animated);
+
+if (typeof Chart?.register === 'function') {
+    Chart.register(LineController, LineElement, PointElement, LinearScale, TimeScale, Tooltip, Legend, Filler);
+}
 
 
 const DISPLAY_FORMATS = {
@@ -317,7 +319,7 @@ export class DeviceData extends React.Component<DeviceDataProps> {
             }
         };
 
-        let details: string | React.ReactFragment = '';
+        let details: React.ReactNode = '';
         if (this.props.needs_details) {
             details = <React.Fragment>
                 <h5 className="card-title text-center">{device.name}</h5>
@@ -364,8 +366,28 @@ export enum RangeType {
     Last90Days,
 }
 
-export class TemperatureDetail extends React.Component<RouteComponentProps<TemperatureDetailParams>> {
-    readonly room: number = +this.props.match.params.id;
+export interface TemperatureDetailProps {
+    roomId?: number;
+    match?: {
+        params: TemperatureDetailParams;
+        isExact?: boolean;
+        path?: string;
+        url?: string;
+    };
+    location?: any;
+    history?: any;
+}
+
+function formatDateInput(timestamp: number): string {
+    const d = new Date(timestamp);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+export class TemperatureDetailView extends React.Component<{ roomId: number }, TemperatureDetailState> {
+    readonly room: number = this.props.roomId;
 
     customStartDate: Date = new Date(Date.now() - WEEK);
     customEndDate: Date = new Date(Date.now());
@@ -487,14 +509,34 @@ export class TemperatureDetail extends React.Component<RouteComponentProps<Tempe
                             Vlastné
                         </label>
                     </div>
-                    <DatePicker className="form-control form-control-sm" wrapperClassName="w-100" dateFormat="yyyy-MM-dd" selected={new Date(this.state.start)} disabled={rangeType != RangeType.Custom} onChange={this.setStartDate} />
-                    <DatePicker className="form-control form-control-sm" wrapperClassName="w-100" dateFormat="yyyy-MM-dd" selected={new Date(this.state.end)} disabled={rangeType != RangeType.Custom} onChange={this.setEndDate} />
+                    <input
+                        type="date"
+                        className="form-control form-control-sm"
+                        aria-label="Od"
+                        value={formatDateInput(this.state.start)}
+                        disabled={rangeType != RangeType.Custom}
+                        onChange={(e) => e.target.value && this.setStartDate(new Date(e.target.value + 'T00:00:00'))}
+                    />
+                    <input
+                        type="date"
+                        className="form-control form-control-sm"
+                        aria-label="Do"
+                        value={formatDateInput(this.state.end)}
+                        disabled={rangeType != RangeType.Custom}
+                        onChange={(e) => e.target.value && this.setEndDate(new Date(e.target.value + 'T23:59:59'))}
+                    />
                 </div>
             </nav>
 
             {device_data}
         </div>
     }
+}
+
+export function TemperatureDetail(props: TemperatureDetailProps) {
+    const params = useParams<{ id: string }>();
+    const roomId = props.roomId ?? (props.match?.params?.id ? +props.match.params.id : +(params.id || 0));
+    return <TemperatureDetailView key={roomId} roomId={roomId} />;
 }
 
 interface TemperatureDetailGraphProps {

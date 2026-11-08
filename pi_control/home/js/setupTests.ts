@@ -71,17 +71,34 @@ jest.mock('@amcharts/amcharts4/themes/animated', () => ({
 
 // Global react-chartjs-2 stub
 jest.mock('react-chartjs-2', () => ({
-  Line: (props: any) =>
-    React.createElement('div', {
+  Line: React.forwardRef((props: any, ref: any) => {
+    const chartInstance = React.useMemo(
+      () => ({
+        resetZoom: jest.fn(),
+        isZoomedOrPanned: jest.fn(() => false),
+      }),
+      []
+    );
+    if (typeof ref === 'function') {
+      ref(chartInstance);
+    } else if (ref && typeof ref === 'object') {
+      ref.current = chartInstance;
+    }
+    return React.createElement('div', {
       'data-testid': 'chartjs-line',
       'data-chart-data': JSON.stringify(props.data),
       'data-chart-options': JSON.stringify(props.options),
       className: props.className,
-    }),
+    });
+  }),
 }));
 
-// Global chartjs-adapter-date-fns stub
+// Global chartjs-adapter-date-fns and chartjs-plugin-zoom stubs
 jest.mock('chartjs-adapter-date-fns', () => ({}));
+jest.mock('chartjs-plugin-zoom', () => ({
+  __esModule: true,
+  default: { id: 'zoom' },
+}));
 
 
 
