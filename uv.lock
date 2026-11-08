@@ -98,11 +98,11 @@ wheels = [
 
 [[package]]
 name = "cachetools"
-version = "4.2.4"
+version = "8.0.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d7/69/c457a860456cbf80ecc2e44ed4c201b49ec7ad124d769b71f6d0a7935dca/cachetools-4.2.4.tar.gz", hash = "sha256:89ea6f1b638d5a73a4f9226be57ac5e4f399d22770b92355f92dcb0f7f001693", size = 25487, upload-time = "2021-09-30T10:26:22.593Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e6/60/ac2d44dbfcca28a35151af27ad9c6236d913a67768b5bb88af90a8c02943/cachetools-8.0.0.tar.gz", hash = "sha256:5ed01bd676800d51f0025605e4fd8ad0891550513e7b0a4c3da478463764e5c3", size = 51146, upload-time = "2026-11-07T07:30:32.369Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ea/c1/4740af52db75e6dbdd57fc7e9478439815bbac549c1c05881be27d19a17d/cachetools-4.2.4-py3-none-any.whl", hash = "sha256:92971d3cb7d2a97efff7c7bb1657f21a8f5fb309a37530537c71b1774189f2d1", size = 10358, upload-time = "2021-09-30T10:26:20.649Z" },
+    { url = "https://files.pythonhosted.org/packages/a6/bc/2e35dcb4bfb37a5dd98b8b323158d3103cf263f87164ed03702f6fc5483f/cachetools-8.0.0-py3-none-any.whl", hash = "sha256:5af562e5078f0086771a1e3832a9c3dbf5d336b6e2794a2c12a64680a4c9087d", size = 18610, upload-time = "2026-11-07T07:30:30.831Z" },
 ]
 
 [[package]]
@@ -908,14 +908,14 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "amqp", specifier = ">=5.2.0" },
-    { name = "asgiref", specifier = ">=3.7.2" },
-    { name = "billiard", specifier = ">=4.2.0" },
-    { name = "cachetools", specifier = ">=4.2.4,<5" },
-    { name = "celery", specifier = ">=5.3,<6" },
-    { name = "certifi", specifier = ">=2023.11.17" },
-    { name = "channels", specifier = ">=4.0.0" },
-    { name = "chardet", specifier = ">=5.2.0" },
+    { name = "amqp", specifier = ">=5.4.2" },
+    { name = "asgiref", specifier = ">=3.13.0" },
+    { name = "billiard", specifier = ">=4.3.2" },
+    { name = "cachetools", specifier = ">=8.0.0" },
+    { name = "celery", specifier = ">=5.7.0,<6" },
+    { name = "certifi", specifier = ">=2026.10.23" },
+    { name = "channels", specifier = ">=4.3.2" },
+    { name = "chardet", specifier = ">=7.7.0" },
     { name = "defusedxml", specifier = ">=0.7.1" },
     { name = "django", specifier = ">=4.2.0,<5" },
     { name = "django-celery-beat", specifier = ">=2.5.0" },
@@ -927,36 +927,36 @@ requires-dist = [
     { name = "django-sekizai", specifier = ">=4.1.0" },
     { name = "djangorestframework", specifier = ">=3.14.0" },
     { name = "ff-ebook", specifier = ">=0.4.1" },
-    { name = "idna", specifier = ">=3.6" },
-    { name = "kombu", specifier = ">=5.3.4" },
-    { name = "oauthlib", specifier = ">=3.2.2" },
-    { name = "psutil", specifier = ">=5.9.6" },
-    { name = "psycopg2-binary", specifier = ">=2.9.9" },
-    { name = "pyjwt", specifier = ">=2.8.0" },
-    { name = "python-slugify", specifier = ">=8.0.1" },
+    { name = "idna", specifier = ">=3.20" },
+    { name = "kombu", specifier = ">=5.7.0" },
+    { name = "oauthlib", specifier = ">=4.0.1" },
+    { name = "psutil", specifier = ">=7.2.2" },
+    { name = "psycopg2-binary", specifier = ">=2.9.13" },
+    { name = "pyjwt", specifier = ">=2.15.1" },
+    { name = "python-slugify", specifier = ">=9.1.3" },
     { name = "python3-openid", specifier = ">=3.2.0" },
-    { name = "pytz", specifier = ">=2023.3" },
-    { name = "requests", specifier = ">=2.31.0" },
-    { name = "requests-oauthlib", specifier = ">=1.3.1" },
-    { name = "six", specifier = ">=1.16.0" },
+    { name = "pytz", specifier = ">=2026.6" },
+    { name = "requests", specifier = ">=2.34.2" },
+    { name = "requests-oauthlib", specifier = ">=2.0.0" },
+    { name = "six", specifier = ">=1.17.0" },
     { name = "social-auth-app-django", specifier = ">=5.4.0" },
     { name = "social-auth-core", specifier = ">=4.5.1" },
-    { name = "urllib3", specifier = ">=2.1.0" },
+    { name = "urllib3", specifier = ">=2.8.0" },
     { name = "vine", specifier = ">=5.1.0" },
-    { name = "wakeonlan", specifier = ">=3.1.0" },
-    { name = "whitenoise", specifier = ">=6.6.0" },
+    { name = "wakeonlan", specifier = ">=4.0.0" },
+    { name = "whitenoise", specifier = ">=6.12.0" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "black", specifier = ">=23.11" },
+    { name = "black", specifier = ">=26.10.1" },
     { name = "bump2version", specifier = ">=1.0.1,<2" },
-    { name = "pre-commit", specifier = ">=3.6.0" },
-    { name = "pytest", specifier = ">=8.0.0" },
-    { name = "pytest-asyncio", specifier = ">=0.23.0" },
+    { name = "pre-commit", specifier = ">=4.7.0" },
+    { name = "pytest", specifier = ">=9.2.0" },
+    { name = "pytest-asyncio", specifier = ">=1.4.1" },
     { name = "pytest-django", specifier = ">=4.8.0" },
-    { name = "pytest-mock", specifier = ">=3.14.0" },
-    { name = "watchdog", extras = ["watchmedo"], specifier = ">=3.0.0" },
+    { name = "pytest-mock", specifier = ">=3.17.0" },
+    { name = "watchdog", extras = ["watchmedo"], specifier = ">=7.1.0" },
 ]
 
 [[package]]
