@@ -94,3 +94,31 @@ class SettingsTestCase(TestCase):
             self.assertTrue(pi_control.settings.DEBUG)
             self.assertIn("debug_toolbar", pi_control.settings.INSTALLED_APPS)
             self.assertIn("debug_toolbar.middleware.DebugToolbarMiddleware", pi_control.settings.MIDDLEWARE)
+
+    def test_production_security_settings_when_debug_false(self):
+        with patch.dict(os.environ, {"DEBUG": "False", "SECRET": "test-secret"}, clear=True):
+            importlib.reload(pi_control.settings)
+            self.assertFalse(pi_control.settings.DEBUG)
+            self.assertTrue(pi_control.settings.SESSION_COOKIE_SECURE)
+            self.assertTrue(pi_control.settings.CSRF_COOKIE_SECURE)
+            self.assertEqual(
+                pi_control.settings.SECURE_PROXY_SSL_HEADER,
+                ("HTTP_X_FORWARDED_PROTO", "https"),
+            )
+            self.assertFalse(pi_control.settings.SECURE_SSL_REDIRECT)
+
+    def test_production_secure_ssl_redirect_can_be_enabled(self):
+        with patch.dict(
+            os.environ,
+            {"DEBUG": "False", "SECRET": "test-secret", "SECURE_SSL_REDIRECT": "true"},
+            clear=True,
+        ):
+            importlib.reload(pi_control.settings)
+            self.assertTrue(pi_control.settings.SECURE_SSL_REDIRECT)
+
+    def test_development_security_settings_when_debug_true(self):
+        with patch.dict(os.environ, {"DEBUG": "True", "SECRET": "test-secret"}, clear=True):
+            importlib.reload(pi_control.settings)
+            self.assertTrue(pi_control.settings.DEBUG)
+            self.assertFalse(getattr(pi_control.settings, "SESSION_COOKIE_SECURE", False))
+            self.assertFalse(getattr(pi_control.settings, "CSRF_COOKIE_SECURE", False))

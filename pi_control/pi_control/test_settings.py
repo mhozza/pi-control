@@ -25,6 +25,9 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "debug_toolbar"]
 MIDDLEWARE = [m for m in MIDDLEWARE if "debug_toolbar" not in m]
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+SECURE_SSL_REDIRECT = False
 
 # 4. Fast Password Hasher
 PASSWORD_HASHERS = [
