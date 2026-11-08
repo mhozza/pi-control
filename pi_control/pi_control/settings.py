@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "django_celery_results",
 ]
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
