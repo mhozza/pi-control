@@ -17,3 +17,8 @@ class UrlsTestCase(SimpleTestCase):
 
         match = resolve("/logout/")
         self.assertEqual(match.url_name, "logout")
+
+    def test_social_urls_resolve(self):
+        self.assertEqual(reverse("social:begin", args=["google-oauth2"]), "/oauth/login/google-oauth2/")
+        match = resolve("/oauth/login/google-oauth2/")
+        self.assertEqual(match.url_name, "begin")
