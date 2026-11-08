@@ -57,3 +57,51 @@ class NetworkViewsTestCase(TestCase):
         data = response.json()
         self.assertEqual(len(data), 1)
         self.assertEqual(data[0]["ping"], 11.1)
+
+    def test_list_invalid_from_date_kwarg_returns_400(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get("/api/network/list/invalid-date/")
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn("Invalid datetime format.", str(data))
+
+    def test_list_out_of_range_calendar_date_kwarg_returns_400(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get("/api/network/list/2023-02-31T00:00:00/")
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn("Invalid datetime format.", str(data))
+
+    def test_list_invalid_to_date_kwarg_returns_400(self):
+        self.client.force_authenticate(user=self.user)
+        from_str = self.now.isoformat()
+        response = self.client.get(f"/api/network/list/{from_str}/invalid-to-date/")
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn("Invalid datetime format.", str(data))
+
+    def test_list_invalid_from_query_param_returns_400(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get("/api/network/list/?from=not-a-date")
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn("Invalid datetime format.", str(data))
+
+    def test_list_out_of_range_calendar_date_query_param_returns_400(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get("/api/network/list/?to=2023-02-31T00:00:00")
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn("Invalid datetime format.", str(data))
+
+    def test_list_query_params_valid_and_empty(self):
+        self.client.force_authenticate(user=self.user)
+        # Empty parameters should fallback gracefully to default 200
+        response_empty = self.client.get("/api/network/list/?from=&to=")
+        self.assertEqual(response_empty.status_code, 200)
+
+        # Valid query parameters
+        from_str = (self.now - timezone.timedelta(days=1)).isoformat()
+        to_str = self.now.isoformat()
+        response_valid = self.client.get(f"/api/network/list/?from={from_str}&to={to_str}")
+        self.assertEqual(response_valid.status_code, 200)
