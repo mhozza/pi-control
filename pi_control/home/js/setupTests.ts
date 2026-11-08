@@ -38,37 +38,6 @@ if (typeof HTMLCanvasElement !== 'undefined') {
   })) as any;
 }
 
-// Global amCharts 4 stub
-jest.mock('@amcharts/amcharts4/core', () => ({
-  useTheme: jest.fn(),
-  color: jest.fn((val: any) => val),
-  create: jest.fn(() => ({
-    paddingRight: 0,
-    paddingLeft: 0,
-    data: [],
-    xAxes: { push: jest.fn(() => ({ renderer: { grid: { template: {} } } })) },
-    yAxes: { push: jest.fn(() => ({ renderer: { minWidth: 30, opposite: false }, title: {}, tooltip: {} })) },
-    series: { push: jest.fn(() => ({ dataFields: {}, renderer: {} })) },
-    cursor: null,
-    scrollbarX: null,
-    dispose: jest.fn(),
-  })),
-}));
-
-jest.mock('@amcharts/amcharts4/charts', () => ({
-  XYChart: jest.fn(),
-  DateAxis: jest.fn(),
-  ValueAxis: jest.fn(),
-  LineSeries: jest.fn(),
-  XYCursor: jest.fn(),
-  XYChartScrollbar: jest.fn(() => ({ series: { push: jest.fn() } })),
-}));
-
-jest.mock('@amcharts/amcharts4/themes/animated', () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-
 // Global react-chartjs-2 stub
 jest.mock('react-chartjs-2', () => ({
   Line: React.forwardRef((props: any, ref: any) => {
