@@ -17,9 +17,9 @@
 
 <body>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-        <div class=container>
+        <div class="container">
             <a class="navbar-brand" href="/">
-                <img src={% static 'icon/raspberry.svg' %} width="30" height="30" />
+                <img src="{% static 'icon/raspberry.svg' %}" width="30" height="30" />
                 Malina
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -45,7 +45,7 @@
         {% with message.level_tag|split:" " as tags %}
         <div class="alert {% for tag in tags %} alert-{{ tag }} {% endfor %}" role="alert">
             <a class="close" data-dismiss="alert" href="#">&times;</a>
-            {{ message|safe }}
+            {{ message }}
         </div>
         {% endwith %}
         {% endfor %}
