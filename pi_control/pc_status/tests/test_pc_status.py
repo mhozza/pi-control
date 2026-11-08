@@ -44,6 +44,7 @@ class PcStatusHelpersTestCase(SimpleTestCase):
         self.assertTrue(check_connection("192.168.1.10", 22))
         mock_sock.settimeout.assert_called_once_with(2)
         mock_sock.connect_ex.assert_called_once_with(("192.168.1.10", 22))
+        mock_sock.close.assert_called_once()
 
     @patch("socket.socket")
     def test_check_connection_failure(self, mock_socket_cls):
@@ -52,6 +53,19 @@ class PcStatusHelpersTestCase(SimpleTestCase):
         mock_socket_cls.return_value = mock_sock
 
         self.assertFalse(check_connection("192.168.1.10", 22))
+        mock_sock.settimeout.assert_called_once_with(2)
+        mock_sock.connect_ex.assert_called_once_with(("192.168.1.10", 22))
+        mock_sock.close.assert_called_once()
+
+    @patch("socket.socket")
+    def test_check_connection_custom_timeout(self, mock_socket_cls):
+        mock_sock = MagicMock()
+        mock_sock.connect_ex.return_value = 0
+        mock_socket_cls.return_value = mock_sock
+
+        self.assertTrue(check_connection("192.168.1.10", 22, timeout=7))
+        mock_sock.settimeout.assert_called_once_with(7)
+        mock_sock.close.assert_called_once()
 
     @patch("requests.post")
     def test_make_sleep_success_200(self, mock_post):
