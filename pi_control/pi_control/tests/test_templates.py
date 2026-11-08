@@ -36,3 +36,27 @@ class BaseTemplateSecurityTestCase(SimpleTestCase):
         self.assertNotIn("<div class=container>", rendered)
         self.assertIn('<img src="/static/icon/raspberry.svg" width="30" height="30" />', rendered)
         self.assertNotIn("src=/static/icon/raspberry.svg", rendered)
+
+    def test_fontawesome_script_crossorigin_anonymous(self):
+        rendered = render_to_string(
+            "pi_control/base.html",
+            {
+                "messages": [],
+                "user": type("User", (), {"is_staff": False})(),
+            },
+        )
+        self.assertIn('<script src="https://kit.fontawesome.com/6608129a15.js" crossorigin="anonymous"></script>', rendered)
+
+    def test_bootstrap_assets_have_sri_and_crossorigin(self):
+        rendered = render_to_string(
+            "pi_control/base.html",
+            {
+                "messages": [],
+                "user": type("User", (), {"is_staff": False})(),
+            },
+        )
+        # Bootstrap CSS
+        self.assertIn('integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"', rendered)
+        self.assertIn('crossorigin="anonymous"', rendered)
+        # Bootstrap JS
+        self.assertIn('integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"', rendered)

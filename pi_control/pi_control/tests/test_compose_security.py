@@ -45,3 +45,21 @@ class DockerComposeSecurityTestCase(TestCase):
         self.assertIn("DB_PASSWORD=", content)
         self.assertIn("RABBITMQ_USER=", content)
         self.assertIn("RABBITMQ_PASSWORD=", content)
+
+
+class DockerignoreSecurityTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.repo_root = Path(__file__).resolve().parent.parent.parent.parent
+        cls.dockerignore_path = cls.repo_root / ".dockerignore"
+
+    def test_dockerignore_file_exists(self):
+        self.assertTrue(self.dockerignore_path.exists())
+
+    def test_dockerignore_excludes_sqlite3_databases(self):
+        lines = [line.strip() for line in self.dockerignore_path.read_text().splitlines() if line.strip()]
+        self.assertIn("*.sqlite3", lines)
+        self.assertIn("**/*.sqlite3", lines)
+        self.assertIn("**/db.sqlite3", lines)
+        self.assertIn("db.sqlite3", lines)

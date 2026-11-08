@@ -27,6 +27,17 @@ class HomeViewTestCase(TestCase):
         self.assertTemplateUsed(response, "pi_control/home/home.html")
         self.assertContains(response, '<div id="root"></div>')
 
+    def test_home_renders_bootstrap_icons_sri_and_crossorigin(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            'integrity="sha384-tKLJeE1ALTUwtXlaGjJYM3sejfssWdAaWR2s97axw4xkiAdMzQjtOjgcyw0Y50KU"',
+        )
+        self.assertContains(response, 'crossorigin="anonymous"')
+        self.assertContains(response, 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css')
+
 
 class HomeConfigTestCase(TestCase):
     def test_home_config_name(self):
