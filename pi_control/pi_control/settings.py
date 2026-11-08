@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     "server_stats",
     "temperature",
     "pi_control",
-    "ff_ebook_frontend",
     # Third party apps.
     "django.contrib.admin",
     "django.contrib.auth",
@@ -61,7 +60,6 @@ INSTALLED_APPS = [
     "sekizai",
     "django_celery_beat",
     "django_celery_results",
-    "crispy_forms",
 ]
 if DEBUG:
     INSTALLED_APPS.append("debug_toolbar")
@@ -199,6 +197,3 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_RESULT_BACKEND = "django-db"
-
-# Crispy forms
-CRISPY_TEMPLATE_PACK = "bootstrap4"

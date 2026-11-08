@@ -11,7 +11,6 @@ RUN apt-get update -y && \
         liblcms2-2 \
         gettext \
         iputils-ping \
-        calibre \
         npm \
         git && \
     rm -rf /var/lib/apt/lists/*

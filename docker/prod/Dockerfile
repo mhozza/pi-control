@@ -36,8 +36,7 @@ RUN apt-get update -y && \
         libffi8 \
         liblcms2-2 \
         gettext \
-        iputils-ping \
-        calibre && \
+        iputils-ping && \
     rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -r pi && useradd -m -r -g pi pi
