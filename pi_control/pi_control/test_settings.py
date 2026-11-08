@@ -1,4 +1,6 @@
 import os
+
+os.environ.setdefault("SECRET", "test-secret-key-for-testing-only")
 from pi_control.settings import *
 
 # 1. In-memory SQLite

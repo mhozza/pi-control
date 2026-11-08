@@ -5,14 +5,21 @@ Django settings for pi_control project.
 import os
 from glob import glob
 from os import path
+from django.core.exceptions import ImproperlyConfigured
 
 
 def env(name, default=None, type=str):
-    return type(os.environ.get(name, default))
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return type(value)
 
 
 def bool_env(name, default):
-    return env(name, default) == "True"
+    val = os.environ.get(name)
+    if val is None:
+        return default
+    return val.lower() in ("true", "1", "t", "yes")
 
 
 def get_hostname():
@@ -24,9 +31,16 @@ def get_hostname():
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-SECRET_KEY = env("SECRET", "@jzqxp^%&b4=(u10%%i-hgz7$8!5ql+vairvmjyru%sj#m9k__")
-
+# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool_env("DEBUG", True)
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = env("SECRET")
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = "django-insecure-dev-only-secret-key-pi-control"
+    else:
+        raise ImproperlyConfigured("The SECRET environment variable must be set when DEBUG is False.")
 
 ALLOWED_HOSTS = ["*"] if DEBUG else ["malina.hozza.eu"]
 
@@ -173,10 +187,8 @@ SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.social_auth.associate_user",
 )
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env(
-    "AUTH_KEY", "252833193334-p1smqapcll45s386594smrqld0l2ielj.apps.googleusercontent.com"
-)
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env("AUTH_SECRET", "ocvhSjJyjKfMROBh4z8EUTA9")
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env("AUTH_KEY", "")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env("AUTH_SECRET", "")
 
 # Logging
 LOGGING = {
