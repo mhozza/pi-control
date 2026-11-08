@@ -49,6 +49,7 @@ dependencies = [
     "ff-ebook>=0.4.1",
     "channels>=4.3.2",
     "cachetools>=8.0.0",
+    "gunicorn>=26.2.0",
 ]
 
 [tool.black]

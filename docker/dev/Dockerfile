@@ -5,16 +5,20 @@ ENV PYTHONUNBUFFERED=0
 WORKDIR /build
 
 RUN apt-get update -y && \
-    apt-get install -y libpq5 libffi8 liblcms2-2 gettext iputils-ping calibre \
-    # Dev deps
-    npm \
-    # Build deps
-    gcc libffi-dev libpq-dev liblcms2-dev git
+    apt-get install -y --no-install-recommends \
+        libpq5 \
+        libffi8 \
+        liblcms2-2 \
+        gettext \
+        iputils-ping \
+        calibre \
+        npm \
+        git && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-COPY ./pyproject.toml /build/
-COPY ./uv.lock /build/
+COPY ./pyproject.toml ./uv.lock /build/
 
 ENV UV_PROJECT_ENVIRONMENT=/usr/local
 RUN uv sync --frozen

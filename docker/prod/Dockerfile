@@ -1,52 +1,18 @@
-# syntax = docker/dockerfile:experimental
-FROM python:3.14-slim as base
-
-ENV PYTHONUNBUFFERED=0
-
-RUN apt-get update -y
-RUN pip install -U pip
-
-# Deps for building cryptography
-FROM base as basedeps
-
-ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
-
-RUN apt-get install -y curl gcc build-essential libssl-dev libffi-dev git pkg-config python3-cryptography
-
-RUN --security=insecure mkdir -p /root/.cargo && chmod 777 /root/.cargo && mount -t tmpfs none /root/.cargo
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain=1.74.0 -y
-ENV PATH="/root/.cargo/bin:${PATH}"
-ENV RUSTUP_TOOLCHAIN=1.74.0
-
-# RUN pip install cryptography
-RUN pip install --no-cache-dir cryptography
-
-# Generate requirements
-FROM base as builder
+FROM python:3.14-slim AS installer
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-COPY ./pyproject.toml /build/
-COPY ./uv.lock /build/
-
 WORKDIR /build
 
-RUN set -x \
-    && uv export --frozen --no-dev --no-hashes -o requirements.txt
+COPY ./pyproject.toml ./uv.lock /build/
 
-# Install the packages from requirements
-FROM basedeps as installer
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv
 
-# Build deps
-RUN apt-get install -y libpq-dev liblcms2-dev git
-
-COPY --from=builder /build/requirements.txt /
-
-RUN set -x \
-    && pip install --root /install --no-warn-script-location -r requirements.txt
+RUN uv sync --frozen --no-dev --no-install-project
 
 
-FROM --platform=$BUILDPLATFORM node:20-slim as jsbuilder
+FROM --platform=$BUILDPLATFORM node:20-slim AS jsbuilder
 
 COPY ./pi_control/home/js /web/home/js
 
@@ -54,28 +20,36 @@ WORKDIR /web/home/js
 
 RUN npm install && npm run --prefix=/web/home/js build --verbose && npm prune --production
 
-FROM base
+
+FROM python:3.14-slim
+
+ENV PYTHONUNBUFFERED=0 \
+    PATH="/opt/venv/bin:${PATH}" \
+    DEBUG=False \
+    STATIC_ROOT=/static \
+    GUNICORN_WORKERS=3 \
+    HOST=0.0.0.0
+
+RUN apt-get update -y && \
+    apt-get install -y --no-install-recommends \
+        libpq5 \
+        libffi8 \
+        liblcms2-2 \
+        gettext \
+        iputils-ping \
+        calibre && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -r pi && useradd -m -r -g pi pi
 
-RUN apt-get install -y libpq5 libffi8 liblcms2-2 gettext iputils-ping calibre && \
-    # Python deps
-    pip install gunicorn
-
-COPY --from=installer /install /
+COPY --from=installer /opt/venv /opt/venv
 COPY ./pi_control /web
 COPY --from=jsbuilder /web/home/static/js/app.js /web/home/static/js/app.js
 
 WORKDIR /web
 
-ENV DEBUG False
-ENV STATIC_ROOT /static
-
-RUN python manage.py collectstatic
-
-ENV GUNICORN_WORKERS 3
-ENV HOST=0.0.0.0
+RUN python manage.py collectstatic --no-input
 
 USER pi
 
-CMD gunicorn --bind ${HOST}:80 --workers=${GUNICORN_WORKERS} pi_control.wsgi:application
+CMD ["sh", "-c", "exec gunicorn --bind ${HOST}:80 --workers=${GUNICORN_WORKERS} pi_control.wsgi:application"]
