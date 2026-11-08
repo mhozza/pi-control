@@ -391,18 +391,21 @@ describe('Temperature Components', () => {
   });
 
   describe('TemperatureDetailGraph Component', () => {
-    it('mounts amCharts 4 XYChart on container div and cleans up on unmount', () => {
-      const { container, unmount } = render(
+    it('renders unified detail TimeSeriesChart with summary stats and zoom reset button', () => {
+      const { container, getByTestId, getByText, unmount } = render(
         <TemperatureDetailGraph
-          device={{ id: 'dev-main', name: 'Main' }}
+          device={{ id: 'dev-main', name: 'Main Sensor' }}
           data={sampleGraphData}
         />
       );
 
       const chartDiv = container.querySelector('#chartdiv_dev-main');
       expect(chartDiv).toBeInTheDocument();
+      expect(getByText('Main Sensor')).toBeInTheDocument();
+      expect(getByTestId('chartjs-line')).toBeInTheDocument();
+      expect(getByTestId('chart-summary-stats')).toBeInTheDocument();
+      expect(getByTestId('reset-zoom-btn')).toBeInTheDocument();
 
-      // Verify unmount triggers dispose
       unmount();
     });
   });

@@ -1,26 +1,18 @@
 import * as React from "react";
-import { Line } from 'react-chartjs-2';
 import { LoadingSpinner } from './loading';
-import { Widget } from './widget'
+import { Widget } from './widget';
 import axios from "axios";
-import 'chartjs-adapter-date-fns';
-import { Chart, ChartData, ChartOptions, LineController, LineElement, PointElement, LinearScale, TimeScale, Tooltip, Legend, Filler } from "chart.js";
 import { Link, useParams } from 'react-router-dom';
-import * as am4core from "@amcharts/amcharts4/core";
-import * as am4charts from "@amcharts/amcharts4/charts";
-import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-am4core.useTheme(am4themes_animated);
+import {
+    TimeSeriesChart,
+    DetailRangeNav,
+    RangeType,
+    WEEK,
+    computeRangeBounds,
+    resolveRangeType,
+} from './chart';
 
-if (typeof Chart?.register === 'function') {
-    Chart.register(LineController, LineElement, PointElement, LinearScale, TimeScale, Tooltip, Legend, Filler);
-}
-
-
-const DISPLAY_FORMATS = {
-    hour: 'HH:mm',
-    minute: 'HH:mm',
-    second: 'HH:mm:ss',
-};
+export { RangeType };
 
 interface Room {
     id: number;
@@ -56,18 +48,26 @@ interface RoomData {
     devices: Measurement[];
 }
 
-export async function getTemperatureData(roomId: number, start?: number, end?: number) {
+export async function getTemperatureData(
+    roomId: number,
+    start?: number,
+    end?: number,
+    maxPoints?: number
+) {
     const roomData = (await axios.get(`/api/temperature/room/${roomId}/now/`)).data as RoomData;
 
-    let temperatureListUrl = "/api/temperature/list/"
+    let temperatureListUrl = "/api/temperature/list/";
     if (start) {
-        temperatureListUrl += new Date(start).toISOString() + "/"
+        temperatureListUrl += new Date(start).toISOString() + "/";
         if (end) {
-            temperatureListUrl += new Date(end).toISOString() + "/"
+            temperatureListUrl += new Date(end).toISOString() + "/";
         }
     }
 
-    const graphPromises = roomData.devices.map(device_info => axios.get(`${temperatureListUrl}?device=${device_info.device}`));
+    const extraQuery = maxPoints ? `&max_points=${maxPoints}` : "";
+    const graphPromises = roomData.devices.map(device_info =>
+        axios.get(`${temperatureListUrl}?device=${device_info.device}${extraQuery}`)
+    );
     const graphDatas = (await Promise.all(graphPromises)).map(response => response.data);
 
     for (let i in roomData.devices) {
@@ -78,7 +78,7 @@ export async function getTemperatureData(roomId: number, start?: number, end?: n
 }
 
 interface TemperatureWidgetSetState {
-    rooms: Room[]
+    rooms: Room[];
 }
 
 export class TemperatureWidgetSet extends Widget {
@@ -87,9 +87,8 @@ export class TemperatureWidgetSet extends Widget {
     };
 
     tick() {
-        let self = this;
         axios.get("/api/temperature/rooms/").then(response => {
-            self.setState({ rooms: response.data });
+            this.setState({ rooms: response.data });
         }).catch(() => {
             // Keep state or loading on error
         });
@@ -105,8 +104,9 @@ export class TemperatureWidgetSet extends Widget {
             </div>;
         }
 
-        const widgets = this.state.rooms.map((room, index) => <TemperatureWidget key={'temperature_data_' + index}
-            room={room} />);
+        const widgets = this.state.rooms.map((room, index) => (
+            <TemperatureWidget key={'temperature_data_' + index} room={room} />
+        ));
         return <React.Fragment>
             {widgets}
         </React.Fragment>;
@@ -119,6 +119,16 @@ interface TemperatureWidgetProps {
 
 interface TemperatureWidgetState {
     data: RoomData;
+}
+
+function getMetricColorClass(metric: BoundedValue): string {
+    if (metric.value > metric.high) {
+        return "text-danger";
+    }
+    if (metric.value < metric.low) {
+        return "text-primary";
+    }
+    return "text-success";
 }
 
 export class TemperatureWidget extends Widget<TemperatureWidgetProps> {
@@ -134,9 +144,8 @@ export class TemperatureWidget extends Widget<TemperatureWidgetProps> {
         });
     }
 
-
     render() {
-        let room = this.props.room;
+        const room = this.props.room;
 
         if (this.state.data === null) {
             return <div className="col">
@@ -147,21 +156,13 @@ export class TemperatureWidget extends Widget<TemperatureWidgetProps> {
             </div>;
         }
 
-        let time = new Date(this.state.data.time).toLocaleString();
+        const time = new Date(this.state.data.time).toLocaleString();
+        const temperatureColorClass = getMetricColorClass(this.state.data.temperature);
+        const humidityColorClass = getMetricColorClass(this.state.data.humidity);
 
-        let temperatureColorClass = this.state.data.temperature.value > this.state.data.temperature.high
-            ? "text-danger"
-            : this.state.data.temperature.value < this.state.data.temperature.low
-                ? "text-primary"
-                : "text-success";
-        let humidityColorClass = this.state.data.humidity.value > this.state.data.humidity.high
-            ? "text-danger"
-            : this.state.data.humidity.value < this.state.data.humidity.low
-                ? "text-primary"
-                : "text-success";
-
-        let device_data = this.state.data.devices.map(device_info =>
-            <DeviceData key={'temperature_room_data_' + device_info.device}
+        const device_data = this.state.data.devices.map(device_info => (
+            <DeviceData
+                key={'temperature_room_data_' + device_info.device}
                 device={{ id: device_info.device, name: device_info.device_name }}
                 temperature={{
                     value: device_info.temperature,
@@ -174,7 +175,9 @@ export class TemperatureWidget extends Widget<TemperatureWidgetProps> {
                     high: this.state.data.humidity.high,
                 }}
                 data={device_info.graphData}
-                needs_details={this.state.data.devices.length > 1} />);
+                needs_details={this.state.data.devices.length > 1}
+            />
+        ));
 
         return (
             <div className="col">
@@ -183,13 +186,26 @@ export class TemperatureWidget extends Widget<TemperatureWidgetProps> {
                         <div className="row align-items-center">
                             <div className="col-8 offset-2 d-inline-block">{room.name}</div>
                             <div className="col-2 text-end">
-                                <Link to={`/temperature/${room.id}`} className="btn btn-link"><i className="bi bi-arrows-fullscreen"></i></Link>
+                                <Link
+                                    to={`/temperature/${room.id}`}
+                                    className="btn btn-link btn-sm p-0"
+                                    title="Detailný graf"
+                                    aria-label={`Detailný graf ${room.name}`}
+                                >
+                                    <i className="bi bi-arrows-fullscreen"></i>
+                                </Link>
                             </div>
                         </div>
                     </div>
                     <div className="card-body">
-                        <a className="temperature-tappable-header" data-bs-toggle="collapse" role="button"
-                            href={`#collapse_${room.id}`} aria-expanded="false" aria-controls={`collapse_${room.id}`}>
+                        <a
+                            className="temperature-tappable-header"
+                            data-bs-toggle="collapse"
+                            role="button"
+                            href={`#collapse_${room.id}`}
+                            aria-expanded="false"
+                            aria-controls={`collapse_${room.id}`}
+                        >
                             <div className="card-text row">
                                 <div className={"col-6 text-center temperature-widget-body " + temperatureColorClass}>
                                     {this.state.data.temperature.value.toFixed(1)}
@@ -211,7 +227,8 @@ export class TemperatureWidget extends Widget<TemperatureWidgetProps> {
                     </div>
                     <div className="card-footer text-muted">{time}</div>
                 </div>
-            </div>);
+            </div>
+        );
     }
 }
 
@@ -228,96 +245,61 @@ interface DeviceDataProps {
     needs_details: boolean;
 }
 
+function buildTemperatureChartProps(data: Entry[]) {
+    const labels = data.map(x => x.time);
+    const temperatureDataset = data.map(x => x.temperature);
+    const humidityDataset = data.map(x => x.humidity);
+
+    return {
+        labels,
+        series: [
+            {
+                label: 'Teplota (°C)',
+                unit: '°C',
+                data: temperatureDataset,
+                borderColor: 'rgba(220, 53, 69, .8)',
+                backgroundColor: 'rgba(220, 53, 69, .1)',
+                pointRadius: 0,
+                fill: false,
+                yAxisID: 'y1',
+            },
+            {
+                label: 'Vlhkosť (%)',
+                unit: '%',
+                data: humidityDataset,
+                borderColor: 'rgba(0, 123, 255, .8)',
+                backgroundColor: 'rgba(0, 123, 255, .1)',
+                pointRadius: 0,
+                fill: false,
+                yAxisID: 'y2',
+            },
+        ],
+        axes: [
+            {
+                id: 'y1',
+                title: 'Teplota',
+                position: 'left' as const,
+                suggestedMin: 20,
+                suggestedMax: 30,
+            },
+            {
+                id: 'y2',
+                title: 'Vlhkosť',
+                position: 'right' as const,
+                suggestedMin: 30,
+                suggestedMax: 50,
+                drawOnChartArea: false,
+            },
+        ],
+    };
+}
+
 export class DeviceData extends React.Component<DeviceDataProps> {
     render() {
-        let labels = this.props.data.map(x => x.time);
-        let temperature_dataset = this.props.data.map(x => x.temperature);
-        let humidity_dataset = this.props.data.map(x => x.humidity);
-        let device = this.props.device;
-
-        let temperatureColorClass = this.props.temperature.value > this.props.temperature.high
-            ? "text-danger"
-            : this.props.temperature.value < this.props.temperature.low
-                ? "text-primary"
-                : "text-success";
-        let humidityColorClass = this.props.humidity.value > this.props.humidity.high
-            ? "text-danger"
-            : this.props.humidity.value < this.props.humidity.low
-                ? "text-primary"
-                : "text-success";
-
-        let chartData: ChartData<'line'> = {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Teplota (°C)',
-                    data: temperature_dataset,
-                    borderColor: 'rgba(220, 53, 69, .8)',
-                    pointRadius: 0,
-                    fill: false,
-                    yAxisID: 'y1',
-                    cubicInterpolationMode: 'monotone'
-                }, {
-                    label: 'Vlhkosť (%)',
-                    data: humidity_dataset,
-                    borderColor: 'rgba(0, 123, 255, .8)',
-                    pointRadius: 0,
-                    fill: false,
-                    yAxisID: 'y2',
-                    cubicInterpolationMode: 'monotone'
-                }
-            ]
-        };
-        let chartOptions: ChartOptions<'line'> = {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                x: {
-                    type: 'time',
-                    time: {
-                        tooltipFormat: 'HH:mm',
-                        displayFormats: DISPLAY_FORMATS,
-                    },
-                    ticks: {
-                        source: 'data',
-                        autoSkip: true
-                    },
-                    title: {
-                        display: false,
-                    }
-                },
-                y1: {
-                    type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-                    display: true,
-                    position: 'left',
-                    title: {
-                        display: true,
-                        text: 'Teplota'
-                    },
-                    suggestedMin: 20,
-                    suggestedMax: 30
-                },
-                y2: {
-                    type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
-                    display: true,
-                    position: 'right',
-                    title: {
-                        display: true,
-                        text: 'Vlhkosť'
-                    },
-                    suggestedMin: 30,
-                    suggestedMax: 50,
-                    // grid line settings
-                    grid: {
-                        drawOnChartArea: false, // only want the grid lines for one axis to show up
-                    }
-                }
-            }
-        };
+        const device = this.props.device;
+        const temperatureColorClass = getMetricColorClass(this.props.temperature);
+        const humidityColorClass = getMetricColorClass(this.props.humidity);
+        const chartProps = buildTemperatureChartProps(this.props.data);
 
         let details: React.ReactNode = '';
         if (this.props.needs_details) {
@@ -337,7 +319,12 @@ export class DeviceData extends React.Component<DeviceDataProps> {
         return (
             <React.Fragment>
                 {details}
-                <Line className="card-img-bottom" data={chartData} options={chartOptions} width={150} height={100} />
+                <TimeSeriesChart
+                    variant="preview"
+                    labels={chartProps.labels}
+                    series={chartProps.series}
+                    axes={chartProps.axes}
+                />
             </React.Fragment>
         );
     }
@@ -354,18 +341,6 @@ interface TemperatureDetailState {
     isCustom: boolean;
 }
 
-const DAY = 3600000 * 24;
-const WEEK = DAY * 7;
-const THIRTY_DAYS = DAY * 30;
-const NINETY_DAYS = DAY * 90;
-
-export enum RangeType {
-    Custom,
-    LastWeek,
-    Last30Days,
-    Last90Days,
-}
-
 export interface TemperatureDetailProps {
     roomId?: number;
     match?: {
@@ -376,14 +351,6 @@ export interface TemperatureDetailProps {
     };
     location?: any;
     history?: any;
-}
-
-function formatDateInput(timestamp: number): string {
-    const d = new Date(timestamp);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
 }
 
 export class TemperatureDetailView extends React.Component<{ roomId: number }, TemperatureDetailState> {
@@ -400,7 +367,7 @@ export class TemperatureDetailView extends React.Component<{ roomId: number }, T
     };
 
     componentDidMount() {
-        getTemperatureData(this.room, this.state.start, this.state.end).then(response => {
+        getTemperatureData(this.room, this.state.start, this.state.end, 600).then(response => {
             this.setState({ data: response });
         }).catch(() => {
             // Keep state or loading on error
@@ -410,126 +377,59 @@ export class TemperatureDetailView extends React.Component<{ roomId: number }, T
     setStartDate = (date: Date) => {
         this.customStartDate = date;
         this.setRange(RangeType.Custom);
-    }
+    };
 
     setEndDate = (date: Date) => {
         this.customEndDate = date;
         this.setRange(RangeType.Custom);
-    }
-
-    setRangeFromPreset = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const rangeType: RangeType = +e.currentTarget.value;
-        this.setRange(rangeType);
-    }
+    };
 
     setRange = (rangeType: RangeType) => {
-        let end: any = Date.now()
-        let start
-        let isCustom = false
-
-        switch (rangeType) {
-            case RangeType.LastWeek:
-                start = Date.now() - WEEK
-                break
-            case RangeType.Last30Days:
-                start = Date.now() - THIRTY_DAYS
-                break
-            case RangeType.Last90Days:
-                start = Date.now() - NINETY_DAYS
-                break
-            case RangeType.Custom:
-                start = this.customStartDate.valueOf()
-                end = this.customEndDate.valueOf()
-                isCustom = true
-        }
-
-        start = new Date(start).setHours(0, 0, 0, 0)
-        end = new Date(end).setHours(23, 59, 59, 999)
+        const { start, end, isCustom } = computeRangeBounds(
+            rangeType,
+            this.customStartDate,
+            this.customEndDate
+        );
         this.customStartDate = new Date(start);
         this.customEndDate = new Date(end);
 
-        this.setState({ start: start, end: end, isCustom: isCustom })
-        getTemperatureData(this.room, start, end).then(response => {
+        this.setState({ start, end, isCustom });
+        getTemperatureData(this.room, start, end, 600).then(response => {
             this.setState({ data: response });
         }).catch(() => {
             // Keep state or loading on error
         });
-    }
+    };
 
     render() {
         if (this.state.data === null) {
             return <LoadingSpinner />;
         }
 
-        let rangeType = RangeType.Custom;
+        const rangeType = resolveRangeType(this.state.start, this.state.end, this.state.isCustom);
 
-        if (!this.state.isCustom && equalInDays(this.state.end, Date.now())) {
-            if (equalInDays(this.state.end - this.state.start, WEEK)) {
-                rangeType = RangeType.LastWeek
-            } else if (equalInDays(this.state.end - this.state.start, THIRTY_DAYS)) {
-                rangeType = RangeType.Last30Days
-            } else if (equalInDays(this.state.end - this.state.start, NINETY_DAYS)) {
-                rangeType = RangeType.Last90Days
-            }
-        }
-
-        const device_data = this.state.data.devices.map(device_info =>
-            <TemperatureDetailGraph key={'temperature_room_data_' + device_info.device}
+        const device_data = this.state.data.devices.map(device_info => (
+            <TemperatureDetailGraph
+                key={'temperature_room_data_' + device_info.device}
                 device={{ id: device_info.device, name: device_info.device_name }}
-                data={device_info.graphData} />);
+                data={device_info.graphData}
+            />
+        ));
 
-        return <div>
-            <nav className="navbar navbar-expand-md navbar-light sticky-top bg-light d-flex p-2 align-items-md-center">
-                <Link to="/" className="btn btn-primary me-3">Späť</Link>
-                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-                <div className="collapse navbar-collapse mt-1 mt-md-0" id="navbarTogglerDemo01">
-                    <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="radio" name="duration" id="durationWeek" value={RangeType.LastWeek} checked={rangeType == RangeType.LastWeek} onChange={this.setRangeFromPreset} />
-                        <label className="form-check-label" htmlFor="durationWeek">
-                            1 týždeň
-                        </label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="radio" name="duration" id="durationMonth" value={RangeType.Last30Days} checked={rangeType == RangeType.Last30Days} onChange={this.setRangeFromPreset} />
-                        <label className="form-check-label" htmlFor="durationMonth">
-                            30 dni
-                        </label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="radio" name="duration" id="durationQuarter" value={RangeType.Last90Days} checked={rangeType == RangeType.Last90Days} onChange={this.setRangeFromPreset} />
-                        <label className="form-check-label" htmlFor="durationQuarter">
-                            90 dni
-                        </label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="radio" name="duration" id="durationCustom" value={RangeType.Custom} checked={rangeType == RangeType.Custom} onChange={this.setRangeFromPreset} />
-                        <label className="form-check-label" htmlFor="durationCustom">
-                            Vlastné
-                        </label>
-                    </div>
-                    <input
-                        type="date"
-                        className="form-control form-control-sm"
-                        aria-label="Od"
-                        value={formatDateInput(this.state.start)}
-                        disabled={rangeType != RangeType.Custom}
-                        onChange={(e) => e.target.value && this.setStartDate(new Date(e.target.value + 'T00:00:00'))}
-                    />
-                    <input
-                        type="date"
-                        className="form-control form-control-sm"
-                        aria-label="Do"
-                        value={formatDateInput(this.state.end)}
-                        disabled={rangeType != RangeType.Custom}
-                        onChange={(e) => e.target.value && this.setEndDate(new Date(e.target.value + 'T23:59:59'))}
-                    />
-                </div>
-            </nav>
-
-            {device_data}
-        </div>
+        return (
+            <div>
+                <DetailRangeNav
+                    title="Teplota a vlhkosť"
+                    start={this.state.start}
+                    end={this.state.end}
+                    rangeType={rangeType}
+                    onSelectPreset={this.setRange}
+                    onChangeStart={this.setStartDate}
+                    onChangeEnd={this.setEndDate}
+                />
+                {device_data}
+            </div>
+        );
     }
 }
 
@@ -545,79 +445,19 @@ interface TemperatureDetailGraphProps {
 }
 
 export class TemperatureDetailGraph extends React.Component<TemperatureDetailGraphProps> {
-    chart: am4charts.XYChart;
     readonly divId = `chartdiv_${this.props.device.id}`;
 
-    setChartData(chart: am4charts.XYChart, data: Entry[]) {
-        chart.data = data.map(x => { return { date: new Date(x.time), temperature: x.temperature, humidity: x.humidity } });
-    }
-
-    componentDidMount() {
-        let chart = am4core.create(this.divId, am4charts.XYChart);
-
-        chart.paddingRight = 0;
-        chart.paddingLeft = 0;
-
-        this.setChartData(chart, this.props.data);
-
-        let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
-        dateAxis.renderer.grid.template.location = 0;
-
-        let temperatureAxes = chart.yAxes.push(new am4charts.ValueAxis());
-        temperatureAxes.tooltip.disabled = true;
-        temperatureAxes.renderer.minWidth = 30;
-        temperatureAxes.title.text = "Teplota (°C)";
-
-        let humidityAxes = chart.yAxes.push(new am4charts.ValueAxis());
-        humidityAxes.tooltip.disabled = true;
-        humidityAxes.renderer.minWidth = 30;
-        humidityAxes.title.text = "Vlhkost (%)";
-        humidityAxes.renderer.opposite = true;
-
-        let temperatureSeries = chart.series.push(new am4charts.LineSeries());
-        temperatureSeries.dataFields.dateX = "date";
-        temperatureSeries.dataFields.valueY = "temperature";
-        temperatureSeries.tooltipText = "{valueY.value}";
-        temperatureSeries.stroke = am4core.color("rgba(220, 53, 69, .8)");
-        temperatureSeries.fill = am4core.color("rgba(220, 53, 69, .7)");
-        temperatureSeries.smoothing = "monotoneX";
-
-        let humiditySeries = chart.series.push(new am4charts.LineSeries());
-        humiditySeries.dataFields.dateX = "date";
-        humiditySeries.dataFields.valueY = "humidity";
-        humiditySeries.tooltipText = "{valueY.value}";
-        humiditySeries.stroke = am4core.color("rgba(0, 123, 255, .8)");
-        humiditySeries.fill = am4core.color("rgba(0, 123, 255, .7)");
-        humiditySeries.smoothing = "monotoneX";
-        humiditySeries.yAxis = humidityAxes;
-
-        chart.cursor = new am4charts.XYCursor();
-
-        let scrollbarX = new am4charts.XYChartScrollbar();
-        scrollbarX.series.push(temperatureSeries);
-        scrollbarX.series.push(humiditySeries);
-        chart.scrollbarX = scrollbarX;
-
-        this.chart = chart;
-    }
-
-    componentDidUpdate(oldProps: TemperatureDetailGraphProps) {
-        if (oldProps.data !== this.props.data) {
-            this.setChartData(this.chart, this.props.data);
-        }
-    }
-
-    componentWillUnmount() {
-        if (this.chart) {
-            this.chart.dispose();
-        }
-    }
-
     render() {
-        return <div id={this.divId} style={{ width: "100%", height: "500px", fontSize: "0.8rem" }}></div>
+        const chartProps = buildTemperatureChartProps(this.props.data);
+        return (
+            <TimeSeriesChart
+                variant="detail"
+                containerId={this.divId}
+                title={this.props.device.name}
+                labels={chartProps.labels}
+                series={chartProps.series}
+                axes={chartProps.axes}
+            />
+        );
     }
-}
-
-function equalInDays(timeStamp1: number, timestamp2: number) {
-    return Math.trunc(timeStamp1 / DAY) == Math.trunc(timestamp2 / DAY);
 }
