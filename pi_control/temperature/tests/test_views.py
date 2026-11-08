@@ -184,3 +184,52 @@ class TemperatureViewsTestCase(TestCase):
         data_range = response_range.json()
         self.assertEqual(len(data_range), 1)
         self.assertEqual(data_range[0]["temperature"], 19.0)
+
+    def test_temperature_list_invalid_from_date_kwarg_returns_400(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get("/api/temperature/list/invalid-date/")
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn("Invalid datetime format.", str(data))
+
+    def test_temperature_list_out_of_range_calendar_date_kwarg_returns_400(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get("/api/temperature/list/2023-02-31T00:00:00/")
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn("Invalid datetime format.", str(data))
+
+    def test_temperature_list_invalid_to_date_kwarg_returns_400(self):
+        self.client.force_authenticate(user=self.user)
+        from_str = timezone.now().isoformat()
+        response = self.client.get(f"/api/temperature/list/{from_str}/invalid-to-date/")
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn("Invalid datetime format.", str(data))
+
+    def test_temperature_list_invalid_from_query_param_returns_400(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get("/api/temperature/list/?from=not-a-valid-date")
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn("Invalid datetime format.", str(data))
+
+    def test_temperature_list_out_of_range_calendar_date_query_param_returns_400(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get("/api/temperature/list/?to=2023-02-31T00:00:00")
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn("Invalid datetime format.", str(data))
+
+    def test_temperature_list_query_params_valid_and_empty(self):
+        self.client.force_authenticate(user=self.user)
+        # Empty parameters should fallback gracefully to default 200
+        response_empty = self.client.get("/api/temperature/list/?from=&to=")
+        self.assertEqual(response_empty.status_code, 200)
+
+        # Valid query parameters
+        now = timezone.now()
+        from_str = (now - timezone.timedelta(days=1)).isoformat()
+        to_str = now.isoformat()
+        response_valid = self.client.get(f"/api/temperature/list/?from={from_str}&to={to_str}")
+        self.assertEqual(response_valid.status_code, 200)
