@@ -1,3 +1,4 @@
+import subprocess
 from unittest.mock import MagicMock, patch
 
 from django.test import SimpleTestCase
@@ -6,16 +7,33 @@ from pc_status.pc_status import check_connection, check_ping, make_sleep
 
 
 class PcStatusHelpersTestCase(SimpleTestCase):
-    @patch("os.system")
-    def test_check_ping_success(self, mock_system):
-        mock_system.return_value = 0
+    @patch("pc_status.pc_status.subprocess.run")
+    def test_check_ping_success(self, mock_run):
+        mock_run.return_value = MagicMock(returncode=0)
         self.assertTrue(check_ping("192.168.1.10"))
-        mock_system.assert_called_once_with("ping -c 1 -w 1 192.168.1.10 > /dev/null")
+        mock_run.assert_called_once_with(
+            ["ping", "-c", "1", "-w", "1", "192.168.1.10"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
 
-    @patch("os.system")
-    def test_check_ping_failure(self, mock_system):
-        mock_system.return_value = 1
+    @patch("pc_status.pc_status.subprocess.run")
+    def test_check_ping_failure(self, mock_run):
+        mock_run.return_value = MagicMock(returncode=1)
         self.assertFalse(check_ping("192.168.1.10"))
+
+    @patch("pc_status.pc_status.subprocess.run")
+    def test_check_ping_command_injection_safely_handled(self, mock_run):
+        mock_run.return_value = MagicMock(returncode=1)
+        injection_host = "127.0.0.1; rm -rf /"
+        self.assertFalse(check_ping(injection_host))
+        mock_run.assert_called_once_with(
+            ["ping", "-c", "1", "-w", "1", "127.0.0.1; rm -rf /"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
 
     @patch("socket.socket")
     def test_check_connection_success(self, mock_socket_cls):
