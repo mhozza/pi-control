@@ -100,6 +100,25 @@ class PcStatusViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         mock_delay.assert_called_once_with(mac="00:11:22:33:44:55", ip="192.168.1.50")
 
+    @patch("pc_status.views.wake_pc_task.delay")
+    def test_wakeup_success_with_bearer_token(self, mock_delay):
+        response = self.client.post(
+            "/api/pc_status/wakeup/workstation",
+            HTTP_AUTHORIZATION=f"Bearer {self.token.key}",
+        )
+        self.assertEqual(response.status_code, 200)
+        mock_delay.assert_called_once_with(mac="00:11:22:33:44:55", ip="192.168.1.50")
+
+    @patch("pc_status.views.wake_pc_task.delay")
+    def test_wakeup_success_with_body_token(self, mock_delay):
+        response = self.client.post(
+            "/api/pc_status/wakeup/workstation",
+            {"token": self.token.key},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        mock_delay.assert_called_once_with(mac="00:11:22:33:44:55", ip="192.168.1.50")
+
     def test_make_sleep_not_found(self):
         self.client.force_authenticate(user=self.user)
         response = self.client.post("/api/pc_status/sleep/nonexistent")
@@ -121,3 +140,39 @@ class PcStatusViewsTestCase(TestCase):
         response = self.client.post(f"/api/pc_status/sleep/workstation?token={self.token.key}")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, True)
+
+    @patch("pc_status.views.pc_status.make_sleep")
+    def test_make_sleep_with_bearer_token(self, mock_make_sleep):
+        mock_make_sleep.return_value = True
+        response = self.client.post(
+            "/api/pc_status/sleep/workstation",
+            HTTP_AUTHORIZATION=f"Bearer {self.token.key}",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, True)
+        mock_make_sleep.assert_called_once_with("http://192.168.1.50:8001", "pcsecret")
+
+    @patch("pc_status.views.pc_status.make_sleep")
+    def test_make_sleep_with_body_token(self, mock_make_sleep):
+        mock_make_sleep.return_value = True
+        response = self.client.post(
+            "/api/pc_status/sleep/workstation",
+            {"token": self.token.key},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, True)
+        mock_make_sleep.assert_called_once_with("http://192.168.1.50:8001", "pcsecret")
+
+    @patch("pc_status.views.pc_status.make_sleep")
+    def test_make_sleep_with_body_secret_override(self, mock_make_sleep):
+        self.client.force_authenticate(user=self.user)
+        mock_make_sleep.return_value = True
+        response = self.client.post(
+            "/api/pc_status/sleep/workstation",
+            {"secret": "override-secret"},
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, True)
+        mock_make_sleep.assert_called_once_with("http://192.168.1.50:8001", "override-secret")

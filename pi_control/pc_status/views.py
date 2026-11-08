@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
 
 from pc_status.models import Pc
-from pi_control.authentication import QueryStringBasedTokenAuthentication
+from pi_control.authentication import QueryStringBasedTokenAuthentication, SafeTokenAuthentication
 from . import pc_status
 from .tasks import wake_pc as wake_pc_task
 
@@ -28,7 +28,7 @@ def get_pc_status(request, name):
 
 @api_view(["POST"])
 @authentication_classes(
-    (SessionAuthentication, TokenAuthentication, QueryStringBasedTokenAuthentication)
+    (SessionAuthentication, SafeTokenAuthentication, QueryStringBasedTokenAuthentication)
 )
 def wakeup(request, name):
     pc_config = get_object_or_404(Pc, id=name)
@@ -38,11 +38,12 @@ def wakeup(request, name):
 
 @api_view(["POST"])
 @authentication_classes(
-    (SessionAuthentication, TokenAuthentication, QueryStringBasedTokenAuthentication)
+    (SessionAuthentication, SafeTokenAuthentication, QueryStringBasedTokenAuthentication)
 )
 def make_sleep(request, name):
     pc_config = get_object_or_404(Pc, id=name)
+    secret = (request.data.get("secret") if hasattr(request, "data") and isinstance(request.data, dict) else None) or pc_config.secret
     success = pc_status.make_sleep(
-        "http://{}:{}".format(pc_config.ip_address, pc_config.control_port), pc_config.secret
+        "http://{}:{}".format(pc_config.ip_address, pc_config.control_port), secret
     )
     return Response(success)
