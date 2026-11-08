@@ -1,13 +1,95 @@
+:root {
+    --surface-bg-light: #f4f6f9;
+    --surface-bg-dark: #111418;
+    --card-bg-light: #ffffff;
+    --card-bg-dark: #1b2028;
+    --card-border-light: rgba(0, 0, 0, 0.08);
+    --card-border-dark: rgba(255, 255, 255, 0.1);
+    --stat-bg-light: rgba(0, 0, 0, 0.025);
+    --stat-bg-dark: rgba(255, 255, 255, 0.04);
+    --brand-accent-light: #bc1142;
+    --brand-accent-dark: #ff4d79;
+
+    --surface-bg: var(--surface-bg-light);
+    --card-bg: var(--card-bg-light);
+    --card-border: var(--card-border-light);
+    --stat-bg: var(--stat-bg-light);
+    --accent-color: var(--brand-accent-light);
+
+    @media (prefers-color-scheme: dark) {
+        --surface-bg: var(--surface-bg-dark);
+        --card-bg: var(--card-bg-dark);
+        --card-border: var(--card-border-dark);
+        --stat-bg: var(--stat-bg-dark);
+        --accent-color: var(--brand-accent-dark);
+    }
+
+    @supports (color: light-dark(white, black)) {
+        --surface-bg: light-dark(var(--surface-bg-light), var(--surface-bg-dark));
+        --card-bg: light-dark(var(--card-bg-light), var(--card-bg-dark));
+        --card-border: light-dark(var(--card-border-light), var(--card-border-dark));
+        --stat-bg: light-dark(var(--stat-bg-light), var(--stat-bg-dark));
+        --accent-color: light-dark(var(--brand-accent-light), var(--brand-accent-dark));
+    }
+
+    color-scheme: light dark;
+    accent-color: var(--accent-color);
+
+    &:has(> head > meta[name="color-scheme"][content="dark"]) {
+        color-scheme: dark;
+        --surface-bg: var(--surface-bg-dark);
+        --card-bg: var(--card-bg-dark);
+        --card-border: var(--card-border-dark);
+        --stat-bg: var(--stat-bg-dark);
+        --accent-color: var(--brand-accent-dark);
+    }
+
+    &:has(> head > meta[name="color-scheme"][content="light"]) {
+        color-scheme: light;
+        --surface-bg: var(--surface-bg-light);
+        --card-bg: var(--card-bg-light);
+        --card-border: var(--card-border-light);
+        --stat-bg: var(--stat-bg-light);
+        --accent-color: var(--brand-accent-light);
+    }
+}
+
+body {
+    background-color: var(--surface-bg);
+}
+
 .card {
-    margin: 0.4em 0;
+    margin: 0.5em 0;
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.card-header {
+    font-weight: 600;
+}
+
+.detail-toolbar {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.detail-stat-box {
+    background-color: var(--stat-bg);
+    border-color: var(--card-border) !important;
 }
 
 .temperature-widget-body, .pc_status-widget-primary {
     font-size: 2.5em;
+    font-weight: 600;
 }
 
 a.temperature-tappable-header {
     text-decoration: none;
+    display: block;
 }
 
 .temperature-widget-body > sup > span {
@@ -16,6 +98,7 @@ a.temperature-tappable-header {
 
 .serverstats-controls {
     font-size: 2em;
+    font-weight: 600;
 }
 
 .serverstats-controls > sup > span {
@@ -29,11 +112,11 @@ a.temperature-tappable-header {
 }
 
 .loader {
-    border: 16px solid #f3f3f3; /* Light grey */
-    border-top: 16px solid #BC1142;
+    border: 12px solid rgba(128, 128, 128, 0.2);
+    border-top: 12px solid var(--accent-color);
     border-radius: 50%;
-    width: 120px;
-    height: 120px;
+    width: 96px;
+    height: 96px;
     animation: spin 1s linear infinite;
     margin: 0 auto;
 }
@@ -46,4 +129,3 @@ a.temperature-tappable-header {
         transform: rotate(360deg);
     }
 }
-
