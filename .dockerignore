@@ -2,5 +2,10 @@
 .env
 .gitignore
 .dockerignore
+*.sqlite3
+*.sqlite
+**/*.sqlite3
+**/*.sqlite
+**/db.sqlite3
 db.sqlite3
 .agents
