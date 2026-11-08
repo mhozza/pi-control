@@ -38,6 +38,13 @@ class HomeViewTestCase(TestCase):
         self.assertContains(response, 'crossorigin="anonymous"')
         self.assertContains(response, 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css')
 
+    def test_spa_detail_routes_render_home(self):
+        self.client.force_login(self.user)
+        for path in ("/temperature/1", "/temperature/1/", "/network", "/network/"):
+            response = self.client.get(path)
+            self.assertEqual(response.status_code, 200)
+            self.assertTemplateUsed(response, "pi_control/home/home.html")
+
 
 class HomeConfigTestCase(TestCase):
     def test_home_config_name(self):

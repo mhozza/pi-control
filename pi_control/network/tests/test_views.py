@@ -105,3 +105,18 @@ class NetworkViewsTestCase(TestCase):
         to_str = self.now.isoformat()
         response_valid = self.client.get(f"/api/network/list/?from={from_str}&to={to_str}")
         self.assertEqual(response_valid.status_code, 200)
+
+    def test_list_max_points_downsampling(self):
+        self.client.force_authenticate(user=self.user)
+        for idx in range(10):
+            entry = Entry.objects.create(ping=10.0 + idx)
+            Entry.objects.filter(id=entry.id).update(
+                time=self.now - timezone.timedelta(minutes=10 - idx)
+            )
+
+        response = self.client.get("/api/network/list/?max_points=4")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(len(data), 4)
+        self.assertEqual(data[0]["ping"], 10.0)
+        self.assertEqual(data[-1]["ping"], 19.0)

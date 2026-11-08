@@ -13,6 +13,10 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     path("", home_views.home, name="home"),
+    path("temperature/<int:room_id>", home_views.home, name="temperature_detail"),
+    path("temperature/<int:room_id>/", home_views.home),
+    path("network", home_views.home, name="network_detail"),
+    path("network/", home_views.home),
     path("login/", auth_views.LoginView.as_view(), name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("oauth/", include("social_django.urls", namespace="social")),

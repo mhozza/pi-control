@@ -233,3 +233,23 @@ class TemperatureViewsTestCase(TestCase):
         to_str = now.isoformat()
         response_valid = self.client.get(f"/api/temperature/list/?from={from_str}&to={to_str}")
         self.assertEqual(response_valid.status_code, 200)
+
+    def test_temperature_list_view_max_points_downsampling(self):
+        self.client.force_authenticate(user=self.user)
+        now = timezone.now()
+        for idx in range(10):
+            entry = Entry.objects.create(
+                device=self.device,
+                temperature=20.0 + idx,
+                humidity=40.0 + idx,
+            )
+            Entry.objects.filter(id=entry.id).update(
+                time=now - timezone.timedelta(minutes=10 - idx)
+            )
+
+        response = self.client.get("/api/temperature/list/?max_points=4")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(len(data), 4)
+        self.assertEqual(data[0]["temperature"], 20.0)
+        self.assertEqual(data[-1]["temperature"], 29.0)
