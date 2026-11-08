@@ -12,8 +12,9 @@ x-pi-control: &pi-control
     - DB_BACKEND=django.db.backends.postgresql
     - DB_NAME=pi_control
     - DB_USER=pi_control
+    - DB_PASSWORD
     - DB_HOST=db
-    - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672
+    - CELERY_BROKER_URL=amqp://${RABBITMQ_USER:-pi_control}:${RABBITMQ_PASSWORD}@rabbitmq:5672
     - CPU_TEMPERATURE_FILE=/host_sys/temp
     - SERVER_NAME=malina
     - SECRET
@@ -34,9 +35,12 @@ services:
     environment:
       - POSTGRES_USER=pi_control
       - POSTGRES_DB=pi_control
-      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
   rabbitmq:
     image: rabbitmq:3.13-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:-pi_control}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
   web:
     <<: *pi-control
     ports:
