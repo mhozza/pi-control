@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { render, waitFor, act } from '@testing-library/react';
+import { render, waitFor, act, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import axios from 'axios';
-import { PingWidget } from '../network';
+import { PingWidget, NetworkDetail, NetworkDetailGraph, getNetworkData } from '../network';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -123,5 +124,75 @@ describe('PingWidget Component', () => {
     // Should gracefully remain in loading state
     expect(getByText('Latencia siete')).toBeInTheDocument();
     expect(container.querySelector('.loader')).toBeInTheDocument();
+  });
+
+  it('renders fullscreen link to /network detail page', () => {
+    mockedAxios.get.mockReturnValue(new Promise(() => {}));
+
+    const { container } = render(
+      <MemoryRouter>
+        <PingWidget />
+      </MemoryRouter>
+    );
+
+    const link = container.querySelector('a[href="/network"]');
+    expect(link).toBeInTheDocument();
+  });
+
+  describe('getNetworkData and NetworkDetail', () => {
+    it('fetches network data with date range and maxPoints', async () => {
+      mockedAxios.get.mockResolvedValueOnce({ data: samplePingData });
+      const start = new Date('2026-11-01T00:00:00Z').getTime();
+      const end = new Date('2026-11-07T00:00:00Z').getTime();
+
+      const res = await getNetworkData(start, end, 500);
+      expect(res).toEqual(samplePingData);
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect.stringContaining('/api/network/list/2026-11-01')
+      );
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect.stringContaining('?max_points=500')
+      );
+    });
+
+    it('renders NetworkDetail with preset controls and updates on preset change', async () => {
+      mockedAxios.get.mockResolvedValue({ data: samplePingData });
+
+      const { getByText, getByLabelText, getByTestId } = render(
+        <MemoryRouter>
+          <NetworkDetail />
+        </MemoryRouter>
+      );
+
+      await waitFor(() => {
+        expect(getByText('Späť')).toBeInTheDocument();
+        expect(getByTestId('chartjs-line')).toBeInTheDocument();
+      });
+
+      expect(getByLabelText('1 týždeň')).toBeInTheDocument();
+      expect(getByLabelText('30 dni')).toBeInTheDocument();
+      expect(getByLabelText('90 dni')).toBeInTheDocument();
+      expect(getByLabelText('Vlastné')).toBeInTheDocument();
+
+      const callsBefore = mockedAxios.get.mock.calls.length;
+      fireEvent.click(getByLabelText('30 dni'));
+
+      await act(async () => {
+        await Promise.resolve();
+      });
+
+      expect(mockedAxios.get.mock.calls.length).toBeGreaterThan(callsBefore);
+    });
+
+    it('renders NetworkDetailGraph with summary statistics and zoom reset button', () => {
+      const { container, getByTestId, getByText } = render(
+        <NetworkDetailGraph data={samplePingData} />
+      );
+
+      expect(container.querySelector('#chartdiv_network_ping')).toBeInTheDocument();
+      expect(getByText('Latencia siete (ms)')).toBeInTheDocument();
+      expect(getByTestId('chart-summary-stats')).toBeInTheDocument();
+      expect(getByTestId('reset-zoom-btn')).toBeInTheDocument();
+    });
   });
 });
