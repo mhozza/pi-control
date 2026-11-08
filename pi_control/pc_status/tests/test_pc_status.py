@@ -53,31 +53,64 @@ class PcStatusHelpersTestCase(SimpleTestCase):
 
         self.assertFalse(check_connection("192.168.1.10", 22))
 
-    @patch("requests.get")
-    def test_make_sleep_success_200(self, mock_get):
+    @patch("requests.post")
+    def test_make_sleep_success_200(self, mock_post):
         mock_resp = MagicMock()
         mock_resp.status_code = 200
-        mock_get.return_value = mock_resp
+        mock_post.return_value = mock_resp
 
         result = make_sleep("http://192.168.1.10:8001", "mysecret")
         self.assertTrue(result)
-        mock_get.assert_called_once_with(
+        mock_post.assert_called_once_with(
             "http://192.168.1.10:8001",
-            params={"key": "mysecret", "command": "SUSPEND"},
+            json={"key": "mysecret", "command": "SUSPEND"},
+            headers={"Authorization": "Bearer mysecret"},
+            timeout=5,
         )
 
-    @patch("requests.get")
-    def test_make_sleep_success_204(self, mock_get):
+    @patch("requests.post")
+    def test_make_sleep_success_204(self, mock_post):
         mock_resp = MagicMock()
         mock_resp.status_code = 204
-        mock_get.return_value = mock_resp
+        mock_post.return_value = mock_resp
 
         self.assertTrue(make_sleep("http://192.168.1.10:8001", "mysecret"))
 
-    @patch("requests.get")
-    def test_make_sleep_failure(self, mock_get):
+    @patch("requests.post")
+    def test_make_sleep_failure(self, mock_post):
         mock_resp = MagicMock()
         mock_resp.status_code = 500
-        mock_get.return_value = mock_resp
+        mock_post.return_value = mock_resp
 
+        self.assertFalse(make_sleep("http://192.168.1.10:8001", "mysecret"))
+
+    @patch("requests.get")
+    @patch("requests.post")
+    def test_make_sleep_fallback_on_405(self, mock_post, mock_get):
+        post_resp = MagicMock()
+        post_resp.status_code = 405
+        mock_post.return_value = post_resp
+
+        get_resp = MagicMock()
+        get_resp.status_code = 200
+        mock_get.return_value = get_resp
+
+        result = make_sleep("http://192.168.1.10:8001", "mysecret")
+        self.assertTrue(result)
+        mock_post.assert_called_once_with(
+            "http://192.168.1.10:8001",
+            json={"key": "mysecret", "command": "SUSPEND"},
+            headers={"Authorization": "Bearer mysecret"},
+            timeout=5,
+        )
+        mock_get.assert_called_once_with(
+            "http://192.168.1.10:8001",
+            params={"key": "mysecret", "command": "SUSPEND"},
+            timeout=5,
+        )
+
+    @patch("requests.post")
+    def test_make_sleep_request_exception(self, mock_post):
+        import requests
+        mock_post.side_effect = requests.RequestException("Connection error")
         self.assertFalse(make_sleep("http://192.168.1.10:8001", "mysecret"))
