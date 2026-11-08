@@ -16,6 +16,9 @@ x-pi-control: &pi-control
     - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672
     - CPU_TEMPERATURE_FILE=/host_sys/temp
     - SERVER_NAME=malina
+    - SECRET
+    - AUTH_KEY
+    - AUTH_SECRET
     - DEFAULT_FROM_EMAIL
     - EMAIL_HOST
     - EMAIL_PORT
