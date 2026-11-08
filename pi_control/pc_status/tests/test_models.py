@@ -1,7 +1,8 @@
+from django import forms
 from django.contrib import admin
 from django.test import TestCase
 
-from pc_status.admin import PcAdmin
+from pc_status.admin import PcAdmin, PcAdminForm
 from pc_status.models import Pc
 
 
@@ -27,3 +28,13 @@ class PcModelsTestCase(TestCase):
             admin.site._registry[Pc].list_display,
             ("id", "ip_address", "mac_address", "ssh_port", "control_port"),
         )
+
+    def test_admin_secret_field_uses_password_input(self):
+        pc_admin = admin.site._registry[Pc]
+        self.assertIs(pc_admin.form, PcAdminForm)
+        form_class = pc_admin.get_form(None)
+        form = form_class()
+        widget = form.fields["secret"].widget
+        self.assertIsInstance(widget, forms.PasswordInput)
+        self.assertTrue(widget.render_value)
+
