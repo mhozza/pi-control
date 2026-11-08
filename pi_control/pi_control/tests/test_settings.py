@@ -72,3 +72,25 @@ class SettingsTestCase(TestCase):
         if "social_core.pipeline.social_auth.associate_user" in pipeline:
             assoc_user_idx = pipeline.index("social_core.pipeline.social_auth.associate_user")
             self.assertLess(auth_allowed_idx, assoc_user_idx)
+
+    def test_debug_toolbar_middleware_loaded_when_debug_is_true(self):
+        with patch.dict(os.environ, {"DEBUG": "True", "SECRET": "test-secret"}, clear=True):
+            importlib.reload(pi_control.settings)
+            self.assertTrue(pi_control.settings.DEBUG)
+            self.assertIn("debug_toolbar", pi_control.settings.INSTALLED_APPS)
+            self.assertIn("debug_toolbar.middleware.DebugToolbarMiddleware", pi_control.settings.MIDDLEWARE)
+            self.assertEqual(pi_control.settings.MIDDLEWARE[0], "debug_toolbar.middleware.DebugToolbarMiddleware")
+
+    def test_debug_toolbar_middleware_not_loaded_when_debug_is_false(self):
+        with patch.dict(os.environ, {"DEBUG": "False", "SECRET": "test-secret"}, clear=True):
+            importlib.reload(pi_control.settings)
+            self.assertFalse(pi_control.settings.DEBUG)
+            self.assertNotIn("debug_toolbar", pi_control.settings.INSTALLED_APPS)
+            self.assertNotIn("debug_toolbar.middleware.DebugToolbarMiddleware", pi_control.settings.MIDDLEWARE)
+
+    def test_debug_defaults_to_true_when_unset(self):
+        with patch.dict(os.environ, {"SECRET": "test-secret"}, clear=True):
+            importlib.reload(pi_control.settings)
+            self.assertTrue(pi_control.settings.DEBUG)
+            self.assertIn("debug_toolbar", pi_control.settings.INSTALLED_APPS)
+            self.assertIn("debug_toolbar.middleware.DebugToolbarMiddleware", pi_control.settings.MIDDLEWARE)
