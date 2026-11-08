@@ -116,6 +116,8 @@ DATABASES = {
     }
 }
 
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
 # Email
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", "admin@localhost")
 EMAIL_HOST = env("EMAIL_HOST", "localhost")
@@ -142,8 +144,6 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Europe/London"
 
 USE_I18N = True
-
-USE_L10N = True
 
 USE_TZ = True
 

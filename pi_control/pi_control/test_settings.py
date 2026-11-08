@@ -47,10 +47,10 @@ class PiControlTestRunner(DiscoverRunner):
             kwargs["top_level"] = BASE_DIR
         super().__init__(*args, **kwargs)
 
-    def build_suite(self, test_labels=None, extra_tests=None, **kwargs):
+    def build_suite(self, test_labels=None, **kwargs):
         if not test_labels or test_labels == ["."] or test_labels == (".",):
             test_labels = ["pi_control", "home", "network", "pc_status", "server_stats", "temperature"]
-        return super().build_suite(test_labels=test_labels, extra_tests=extra_tests, **kwargs)
+        return super().build_suite(test_labels=test_labels, **kwargs)
 
 
 TEST_RUNNER = "pi_control.test_settings.PiControlTestRunner"
