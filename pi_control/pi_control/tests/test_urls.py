@@ -12,6 +12,12 @@ class UrlsTestCase(SimpleTestCase):
         match = resolve("/")
         self.assertEqual(match.view_name, "home")
 
+        match = resolve("/temperature/1")
+        self.assertEqual(match.view_name, "temperature_detail")
+
+        match = resolve("/network")
+        self.assertEqual(match.view_name, "network_detail")
+
         match = resolve("/login/")
         self.assertEqual(match.url_name, "login")
 

@@ -141,9 +141,27 @@ class TemperatureListView(generics.ListAPIView):
             timezone.now,
         )
         device = self.request.query_params.get("device") or self.request.GET.get("device", DEFAULT_DEVICE)
-        return Entry.objects.filter(
+        queryset = Entry.objects.filter(
             time__range=(time_from, time_to), device=device
         ).order_by("time")
+
+        max_points_param = self.request.GET.get("max_points")
+        if max_points_param is not None:
+            try:
+                max_points = int(max_points_param)
+            except (TypeError, ValueError):
+                max_points = 0
+            if max_points >= 2:
+                entries = list(queryset)
+                total = len(entries)
+                if total > max_points:
+                    return [
+                        entries[round(i * (total - 1) / (max_points - 1))]
+                        for i in range(max_points)
+                    ]
+                return entries
+
+        return queryset
 
 
 class MeasurementDeviceListView(generics.ListAPIView):

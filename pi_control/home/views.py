@@ -3,5 +3,5 @@ from django.shortcuts import render
 
 
 @login_required()
-def home(request):
+def home(request, *args, **kwargs):
     return render(request, "pi_control/home/home.html")
