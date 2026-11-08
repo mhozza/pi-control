@@ -94,14 +94,15 @@ class AM2320:
 class NetworkTemperatureSensorV0:
     BUFFER_SIZE = 256
 
-    def __init__(self, ip, port):
+    def __init__(self, ip, port, timeout=10):
         self.ip = ip
         self.port = port
+        self.timeout = timeout
 
     def read_sensor(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sck:
+            sck.settimeout(self.timeout)
             sck.connect((self.ip, self.port))
-            sck.settimeout(10)
             sck.send(b"{}")  # TODO: Define protocol.
             payload = sck.recv(self.BUFFER_SIZE)
 
@@ -110,11 +111,12 @@ class NetworkTemperatureSensorV0:
 
 
 class NetworkTemperatureSensorV1:
-    def __init__(self, ip, port):
+    def __init__(self, ip, port, timeout=10):
         self.url = f"http://{ip}:{port}/temperature"
+        self.timeout = timeout
 
     def read_sensor(self):
-        response = requests.get(self.url)
+        response = requests.get(self.url, timeout=self.timeout)
         data = response.json()
         return data["temperature"], data["humidity"]
 

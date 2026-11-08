@@ -20,13 +20,14 @@ def check_ping(host):
         return False
 
 
-def check_connection(host, port):
+def check_connection(host, port, timeout=2):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.settimeout(2)
-    result = sock.connect_ex((host, port))
-    if result == 0:
-        return True
-    return False
+    try:
+        sock.settimeout(timeout)
+        result = sock.connect_ex((host, port))
+        return result == 0
+    finally:
+        sock.close()
 
 
 def make_sleep(pc_control_url, pc_control_key, timeout=5):

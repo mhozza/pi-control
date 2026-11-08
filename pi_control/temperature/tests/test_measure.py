@@ -114,9 +114,23 @@ class TemperatureMeasureTestCase(SimpleTestCase):
 
         self.assertEqual(temp, 21.5)
         self.assertEqual(humi, 48.0)
-        mock_sock.connect.assert_called_once_with(("192.168.1.150", 8080))
         mock_sock.settimeout.assert_called_once_with(10)
+        mock_sock.connect.assert_called_once_with(("192.168.1.150", 8080))
         mock_sock.send.assert_called_once_with(b"{}")
+        # Verify settimeout was called before connect
+        settimeout_idx = [c[0] for c in mock_sock.method_calls].index("settimeout")
+        connect_idx = [c[0] for c in mock_sock.method_calls].index("connect")
+        self.assertLess(settimeout_idx, connect_idx)
+
+    @patch("socket.socket")
+    def test_network_sensor_v0_custom_timeout(self, mock_socket_cls):
+        mock_sock = MagicMock()
+        mock_sock.recv.return_value = json.dumps({"temperature": 200, "humidity": 500}).encode("utf-8")
+        mock_socket_cls.return_value.__enter__.return_value = mock_sock
+
+        sensor = NetworkTemperatureSensorV0("192.168.1.150", 8080, timeout=15)
+        sensor.read_sensor()
+        mock_sock.settimeout.assert_called_once_with(15)
 
     @patch("requests.get")
     def test_network_sensor_v1_read_sensor(self, mock_get):
@@ -129,7 +143,17 @@ class TemperatureMeasureTestCase(SimpleTestCase):
 
         self.assertEqual(temp, 23.4)
         self.assertEqual(humi, 55.6)
-        mock_get.assert_called_once_with("http://192.168.1.160:8000/temperature")
+        mock_get.assert_called_once_with("http://192.168.1.160:8000/temperature", timeout=10)
+
+    @patch("requests.get")
+    def test_network_sensor_v1_custom_timeout(self, mock_get):
+        mock_resp = MagicMock()
+        mock_resp.json.return_value = {"temperature": 23.4, "humidity": 55.6}
+        mock_get.return_value = mock_resp
+
+        sensor = NetworkTemperatureSensorV1("192.168.1.160", 8000, timeout=25)
+        sensor.read_sensor()
+        mock_get.assert_called_once_with("http://192.168.1.160:8000/temperature", timeout=25)
 
     @patch.object(NetworkTemperatureSensorV0, "read_sensor", return_value=(20.0, 40.0))
     def test_measure_dispatcher_api_0(self, mock_read):
