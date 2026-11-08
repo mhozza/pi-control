@@ -1,11 +1,26 @@
-import ujson
+try:
+    import ujson
+except ImportError:
+    import json as ujson
 
 
 def parse_request(raw_request, debug=0):
+    if not raw_request:
+        raise ValueError("Empty request")
+
     if debug >= 2:
         print(raw_request)
 
-    method, path, protocol = raw_request[0].decode().split()
+    request_line = raw_request[0].decode().strip()
+    parts = request_line.split()
+    if len(parts) == 3:
+        method, path, protocol = parts
+    elif len(parts) == 2:
+        method, path = parts
+        protocol = "HTTP/1.0"
+    else:
+        raise ValueError("Malformed request line")
+
     query = dict()
     if "?" in path:
         path, qstring = path.split("?", 1)
@@ -17,7 +32,7 @@ def parse_request(raw_request, debug=0):
 
     headers = {
         h[0]: h[1].strip()
-        for h in map(lambda line: line.decode().split(":", 1), raw_request)
+        for h in map(lambda line: line.decode().split(":", 1), raw_request[1:])
         if h and len(h) == 2
     }
 
@@ -38,7 +53,7 @@ class Request:
 
     def __str__(self):
         return "Request({method}, {path}, {query})".format(
-            method=self.mehtod, path=self.path, query=self.query
+            method=self.method, path=self.path, query=self.query
         )
 
 
@@ -86,7 +101,7 @@ class HTMLErrorResponse(HTMLResponse):
         body = self.body.format(message=message, description=description)
         if traceback:
             body = "{main}<br/><pre>{traceback}</pre>".format(main=body, traceback=traceback)
-        super().__init__(body=body, head=self.head.format(message=message), **kwargs)
+        super().__init__(body=body, head=self.head.format(message=message), code=code, **kwargs)
 
 
 class JsonResponse(Response):

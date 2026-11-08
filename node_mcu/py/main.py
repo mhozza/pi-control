@@ -18,5 +18,5 @@ def toggle_semaphore(_):
 button.add_button_listener(4, toggle_semaphore)
 
 
-server = Server(urlconfig=URL_CONFIG, debug=2)
+server = Server(urlconfig=URL_CONFIG, debug=0)
 server.start()
