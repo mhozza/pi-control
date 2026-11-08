@@ -61,3 +61,14 @@ class SettingsTestCase(TestCase):
             )
             self.assertEqual(pi_control.settings.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY, "")
             self.assertEqual(pi_control.settings.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET, "")
+
+    def test_oauth_pipeline_includes_auth_allowed_before_association(self):
+        pipeline = pi_control.settings.SOCIAL_AUTH_PIPELINE
+        self.assertIn("social_core.pipeline.social_auth.auth_allowed", pipeline)
+        auth_allowed_idx = pipeline.index("social_core.pipeline.social_auth.auth_allowed")
+        if "social_core.pipeline.social_auth.associate_by_email" in pipeline:
+            assoc_email_idx = pipeline.index("social_core.pipeline.social_auth.associate_by_email")
+            self.assertLess(auth_allowed_idx, assoc_email_idx)
+        if "social_core.pipeline.social_auth.associate_user" in pipeline:
+            assoc_user_idx = pipeline.index("social_core.pipeline.social_auth.associate_user")
+            self.assertLess(auth_allowed_idx, assoc_user_idx)
