@@ -125,6 +125,75 @@ export interface TimeSeriesChartProps {
     className?: string;
 }
 
+export function useDarkMode(): boolean {
+    const [isDark, setIsDark] = React.useState<boolean>(() => {
+        if (typeof document === 'undefined') return false;
+        const attr =
+            document.documentElement.getAttribute('data-bs-theme') ||
+            document.documentElement.getAttribute('data-theme');
+        if (attr === 'dark') return true;
+        if (attr === 'light') return false;
+        return (
+            typeof window !== 'undefined' &&
+            typeof window.matchMedia === 'function' &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches
+        );
+    });
+
+    React.useEffect(() => {
+        const handler = () => {
+            const attr =
+                document.documentElement.getAttribute('data-bs-theme') ||
+                document.documentElement.getAttribute('data-theme');
+            if (attr === 'dark') {
+                setIsDark(true);
+            } else if (attr === 'light') {
+                setIsDark(false);
+            } else {
+                const sysDark =
+                    typeof window !== 'undefined' &&
+                    typeof window.matchMedia === 'function' &&
+                    window.matchMedia('(prefers-color-scheme: dark)').matches;
+                setIsDark(sysDark);
+            }
+        };
+
+        window.addEventListener('themechange', handler);
+        let mql: MediaQueryList | null = null;
+        if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+            try {
+                mql = window.matchMedia('(prefers-color-scheme: dark)');
+                if (mql && mql.addEventListener) {
+                    mql.addEventListener('change', handler);
+                }
+            } catch {}
+        }
+
+        let observer: MutationObserver | null = null;
+        if (typeof MutationObserver !== 'undefined' && typeof document !== 'undefined') {
+            try {
+                observer = new MutationObserver(handler);
+                observer.observe(document.documentElement, {
+                    attributes: true,
+                    attributeFilter: ['data-bs-theme', 'data-theme', 'class'],
+                });
+            } catch {}
+        }
+
+        return () => {
+            window.removeEventListener('themechange', handler);
+            if (mql && mql.removeEventListener) {
+                mql.removeEventListener('change', handler);
+            }
+            if (observer) {
+                observer.disconnect();
+            }
+        };
+    }, []);
+
+    return isDark;
+}
+
 export function TimeSeriesChart(props: TimeSeriesChartProps) {
     const {
         labels,
@@ -139,6 +208,11 @@ export function TimeSeriesChart(props: TimeSeriesChartProps) {
 
     const chartRef = React.useRef<any>(null);
     const [isZoomed, setIsZoomed] = React.useState(false);
+    const isDark = useDarkMode();
+
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)';
+    const textColor = isDark ? '#9aa5b1' : '#6c757d';
+    const titleColor = isDark ? '#e6edf3' : '#212529';
 
     const handleResetZoom = () => {
         if (chartRef.current && typeof chartRef.current.resetZoom === 'function') {
@@ -174,7 +248,11 @@ export function TimeSeriesChart(props: TimeSeriesChartProps) {
             ticks: {
                 source: 'data',
                 autoSkip: true,
+                color: textColor,
                 ...(isDetail ? { maxTicksLimit: 12 } : {}),
+            },
+            grid: {
+                color: gridColor,
             },
             title: {
                 display: false,
@@ -190,13 +268,20 @@ export function TimeSeriesChart(props: TimeSeriesChartProps) {
             title: {
                 display: true,
                 text: axis.title,
+                color: titleColor,
+            },
+            ticks: {
+                color: textColor,
+            },
+            grid: {
+                color: gridColor,
+                ...(axis.drawOnChartArea !== undefined
+                    ? { grid: { drawOnChartArea: axis.drawOnChartArea } }
+                    : {}),
             },
             ...(axis.beginAtZero !== undefined ? { beginAtZero: axis.beginAtZero } : {}),
             ...(axis.suggestedMin !== undefined ? { suggestedMin: axis.suggestedMin } : {}),
             ...(axis.suggestedMax !== undefined ? { suggestedMax: axis.suggestedMax } : {}),
-            ...(axis.drawOnChartArea !== undefined
-                ? { grid: { drawOnChartArea: axis.drawOnChartArea } }
-                : {}),
         };
     }
 
@@ -214,6 +299,16 @@ export function TimeSeriesChart(props: TimeSeriesChartProps) {
         plugins: {
             legend: {
                 display: isDetail,
+                labels: {
+                    color: titleColor,
+                },
+            },
+            tooltip: {
+                backgroundColor: isDark ? '#1d2531' : '#ffffff',
+                titleColor: isDark ? '#f0f6fc' : '#212529',
+                bodyColor: isDark ? '#e6edf3' : '#212529',
+                borderColor: isDark ? '#3b4758' : '#dee2e6',
+                borderWidth: 1,
             },
             ...(isDetail
                 ? {

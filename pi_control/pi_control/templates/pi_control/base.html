@@ -8,12 +8,18 @@
     <!-- Declare support for both light and dark themes -->
     <meta name="color-scheme" content="light dark">
     <script>
-        try {
-            const stored = localStorage.getItem("color-scheme");
-            document.querySelector('meta[name="color-scheme"]').content = stored ?? "light dark";
-            const sysDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-            document.documentElement.dataset.bsTheme = stored === "dark" || stored === "light" ? stored : (sysDark ? "dark" : "light");
-        } catch (e) {}
+        (function() {
+            try {
+                const stored = localStorage.getItem("color-scheme");
+                const sysDark = typeof window.matchMedia === "function" && window.matchMedia("(prefers-color-scheme: dark)").matches;
+                const theme = (stored === "dark" || stored === "light") ? stored : (sysDark ? "dark" : "light");
+                document.documentElement.setAttribute("data-bs-theme", theme);
+                document.documentElement.setAttribute("data-theme", theme);
+                document.documentElement.classList.toggle("dark", theme === "dark");
+                const meta = document.querySelector('meta[name="color-scheme"]');
+                if (meta) meta.content = theme;
+            } catch (e) {}
+        })();
     </script>
 
     <title>Raspberry Pi - Malina - Control Centre</title>
@@ -73,19 +79,30 @@
         (function () {
             const toggleBtn = document.getElementById("theme-toggle-btn");
             if (!toggleBtn) return;
-            function updateIcon(theme) {
-                toggleBtn.innerHTML = theme === "dark" ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
+            function getTheme() {
+                const attr = document.documentElement.getAttribute("data-bs-theme") || document.documentElement.getAttribute("data-theme");
+                if (attr === "dark" || attr === "light") return attr;
+                return (typeof window.matchMedia === "function" && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
             }
-            const currentTheme = document.documentElement.dataset.bsTheme || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-            updateIcon(currentTheme);
+            function applyTheme(theme) {
+                document.documentElement.setAttribute("data-bs-theme", theme);
+                document.documentElement.setAttribute("data-theme", theme);
+                document.documentElement.classList.toggle("dark", theme === "dark");
+                const meta = document.querySelector('meta[name="color-scheme"]');
+                if (meta) meta.content = theme;
+                toggleBtn.innerHTML = theme === "dark" ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
+                toggleBtn.setAttribute("aria-label", theme === "dark" ? "Prepnúť na svetlú tému" : "Prepnúť na tmavú tému");
+                toggleBtn.setAttribute("title", theme === "dark" ? "Prepnúť na svetlú tému" : "Prepnúť na tmavú tému");
+            }
+            applyTheme(getTheme());
             toggleBtn.addEventListener("click", function () {
-                const nowDark = (document.documentElement.dataset.bsTheme || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === "dark";
-                const nextTheme = nowDark ? "light" : "dark";
-                document.documentElement.dataset.bsTheme = nextTheme;
+                const current = getTheme();
+                const nextTheme = current === "dark" ? "light" : "dark";
                 try {
                     localStorage.setItem("color-scheme", nextTheme);
                 } catch (e) {}
-                updateIcon(nextTheme);
+                applyTheme(nextTheme);
+                window.dispatchEvent(new CustomEvent("themechange", { detail: { theme: nextTheme } }));
             });
         })();
     </script>
