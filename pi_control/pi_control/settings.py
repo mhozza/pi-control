@@ -3,6 +3,7 @@ Django settings for pi_control project.
 """
 
 import os
+import sys
 from glob import glob
 from os import path
 from django.core.exceptions import ImproperlyConfigured
@@ -39,6 +40,8 @@ SECRET_KEY = env("SECRET")
 if not SECRET_KEY:
     if DEBUG:
         SECRET_KEY = "django-insecure-dev-only-secret-key-pi-control"
+    elif "collectstatic" in sys.argv:
+        SECRET_KEY = "django-insecure-collectstatic-dummy-key"
     else:
         raise ImproperlyConfigured("The SECRET environment variable must be set when DEBUG is False.")
 

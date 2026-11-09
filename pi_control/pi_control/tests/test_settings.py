@@ -42,6 +42,16 @@ class SettingsTestCase(TestCase):
             with self.assertRaises(ImproperlyConfigured):
                 importlib.reload(pi_control.settings)
 
+    def test_production_mode_allows_collectstatic_without_secret(self):
+        import sys
+        with patch.dict(os.environ, {"DEBUG": "False"}, clear=True), patch.object(
+            sys, "argv", ["manage.py", "collectstatic", "--no-input"]
+        ):
+            importlib.reload(pi_control.settings)
+            self.assertEqual(
+                pi_control.settings.SECRET_KEY, "django-insecure-collectstatic-dummy-key"
+            )
+
     def test_production_mode_succeeds_with_secret(self):
         with patch.dict(os.environ, {"DEBUG": "False", "SECRET": "custom-prod-secret"}, clear=True):
             importlib.reload(pi_control.settings)

@@ -47,7 +47,7 @@ COPY --from=jsbuilder /web/home/static/js/app.js /web/home/static/js/app.js
 
 WORKDIR /web
 
-RUN python manage.py collectstatic --no-input
+RUN SECRET=dummy-secret-for-collectstatic python manage.py collectstatic --no-input
 
 USER pi
 
