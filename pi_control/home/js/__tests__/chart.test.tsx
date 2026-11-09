@@ -152,5 +152,37 @@ describe('Unified Chart Components', () => {
             fireEvent.change(getByLabelText('Do'), { target: { value: '2026-10-20' } });
             expect(onChangeEnd).toHaveBeenCalled();
         });
+
+        it('renders mobile time span toggler button and collapsible controls with appropriate navbar theme', () => {
+            const { container, getByLabelText } = render(
+                <MemoryRouter>
+                    <DetailRangeNav
+                        title="História"
+                        start={new Date('2026-11-01T00:00:00').getTime()}
+                        end={new Date('2026-11-07T23:59:59').getTime()}
+                        rangeType={RangeType.LastWeek}
+                        onSelectPreset={jest.fn()}
+                        onChangeStart={jest.fn()}
+                        onChangeEnd={jest.fn()}
+                    />
+                </MemoryRouter>
+            );
+
+            const toggler = getByLabelText('Toggle navigation');
+            expect(toggler).toBeInTheDocument();
+            expect(toggler).toHaveClass('navbar-toggler');
+            expect(toggler).toHaveAttribute('data-bs-toggle', 'collapse');
+            expect(toggler).toHaveAttribute('data-bs-target', '#detailNavbarControls');
+            expect(toggler.querySelector('.navbar-toggler-icon')).toBeInTheDocument();
+
+            const collapse = container.querySelector('#detailNavbarControls');
+            expect(collapse).toBeInTheDocument();
+            expect(collapse).toHaveClass('collapse', 'navbar-collapse');
+
+            const nav = container.querySelector('nav.detail-toolbar');
+            expect(nav).toBeInTheDocument();
+            expect(nav).toHaveClass('navbar');
+            expect(nav?.classList.contains('navbar-light') || nav?.classList.contains('navbar-dark')).toBe(true);
+        });
     });
 });

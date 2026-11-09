@@ -481,21 +481,26 @@ export function computeRangeBounds(
 
 export function DetailRangeNav(props: DetailRangeNavProps) {
     const { title, start, end, rangeType, onSelectPreset, onChangeStart, onChangeEnd } = props;
+    const isDark = useDarkMode();
 
     const handlePresetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onSelectPreset(+e.currentTarget.value as RangeType);
     };
 
     return (
-        <nav className="navbar navbar-expand-md sticky-top detail-toolbar rounded mb-3 p-2 align-items-md-center">
-            <div className="d-flex align-items-center me-3">
-                <Link to="/" className="btn btn-primary me-3">
+        <nav
+            className={`navbar navbar-expand-md ${
+                isDark ? 'navbar-dark' : 'navbar-light'
+            } sticky-top detail-toolbar rounded mb-3 p-2 align-items-md-center`}
+        >
+            <div className="d-flex align-items-center me-auto text-truncate">
+                <Link to="/" className="btn btn-primary me-3 flex-shrink-0">
                     Späť
                 </Link>
-                {title && <span className="navbar-brand mb-0 h6">{title}</span>}
+                {title && <span className="navbar-brand mb-0 h6 text-truncate">{title}</span>}
             </div>
             <button
-                className="navbar-toggler"
+                className="navbar-toggler ms-2"
                 type="button"
                 data-bs-toggle="collapse"
                 data-bs-target="#detailNavbarControls"
