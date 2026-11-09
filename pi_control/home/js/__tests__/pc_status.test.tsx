@@ -27,16 +27,9 @@ describe('PcStatus Widgets', () => {
   });
 
   describe('CSRF Token Initialization', () => {
-    it('parses csrftoken from cookie and sets axios defaults', () => {
-      // Test parsing helper logic matching top of pc_status.tsx
-      document.cookie = 'csrftoken=secure-csrf-token-xyz; path=/';
-      const parsed = cookie.parse(document.cookie)['csrftoken'];
-      expect(parsed).toBe('secure-csrf-token-xyz');
-
-      if (parsed) {
-        axios.defaults.headers.post['X-CSRFToken'] = parsed;
-      }
-      expect(axios.defaults.headers.post['X-CSRFToken']).toBe('secure-csrf-token-xyz');
+    it('sets xsrf defaults for dynamic cookie parsing', () => {
+      expect(axios.defaults.xsrfCookieName).toBe('csrftoken');
+      expect(axios.defaults.xsrfHeaderName).toBe('X-CSRFToken');
     });
   });
 

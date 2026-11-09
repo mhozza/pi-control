@@ -1,14 +1,10 @@
 import * as React from "react";
 import axios from 'axios';
-import * as cookie from "cookie";
 import { LoadingSpinner } from './loading';
 import { Widget } from './widget';
 
-const csrf_cookie = cookie.parse(document.cookie)['csrftoken'];
-
-if (csrf_cookie) {
-    axios.defaults.headers.post['X-CSRFToken'] = csrf_cookie;
-}
+axios.defaults.xsrfCookieName = 'csrftoken';
+axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 
 interface PcStatusWidgetSetState {
     pcs: string[];

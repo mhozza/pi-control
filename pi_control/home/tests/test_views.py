@@ -26,6 +26,7 @@ class HomeViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "pi_control/home/home.html")
         self.assertContains(response, '<div id="root"></div>')
+        self.assertIn("csrftoken", self.client.cookies)
 
     def test_home_renders_bootstrap_icons_sri_and_crossorigin(self):
         self.client.force_login(self.user)

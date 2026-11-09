@@ -33,16 +33,9 @@ def check_connection(host, port, timeout=2):
 def make_sleep(pc_control_url, pc_control_key, timeout=5):
     sleep_command = "SUSPEND"
     payload = {"key": pc_control_key, "command": sleep_command}
-    headers = {"Authorization": f"Bearer {pc_control_key}"}
     try:
-        response = requests.post(pc_control_url, json=payload, headers=headers, timeout=timeout)
-        if response.status_code in (200, 204):
-            return True
-        if response.status_code == 405:
-            logger.warning("Target %s rejected POST (405 Method Not Allowed); falling back to GET.", pc_control_url)
-            response = requests.get(pc_control_url, params=payload, timeout=timeout)
-            return response.status_code in (200, 204)
-        return False
+        response = requests.get(pc_control_url, params=payload, timeout=timeout)
+        return response.status_code in (200, 204)
     except requests.RequestException as e:
         logger.error("Failed to send sleep command to %s: %s", pc_control_url, e)
         return False
