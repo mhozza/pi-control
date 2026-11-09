@@ -1,88 +1,195 @@
 :root {
-    --surface-bg-light: #f4f6f9;
-    --surface-bg-dark: #111418;
-    --card-bg-light: #ffffff;
-    --card-bg-dark: #1b2028;
-    --card-border-light: rgba(0, 0, 0, 0.08);
-    --card-border-dark: rgba(255, 255, 255, 0.1);
-    --stat-bg-light: rgba(0, 0, 0, 0.025);
-    --stat-bg-dark: rgba(255, 255, 255, 0.04);
-    --brand-accent-light: #bc1142;
-    --brand-accent-dark: #ff4d79;
+    --surface-bg: #f4f6f9;
+    --text-color: #212529;
+    --text-muted: #6c757d;
+    --card-bg: #ffffff;
+    --card-header-bg: rgba(0, 0, 0, 0.03);
+    --card-footer-bg: rgba(0, 0, 0, 0.02);
+    --card-border: rgba(0, 0, 0, 0.12);
+    --stat-bg: rgba(0, 0, 0, 0.025);
+    --input-bg: #ffffff;
+    --input-border: #ced4da;
+    --input-disabled-bg: #e9ecef;
+    --brand-accent: #bc1142;
+    --link-color: #0d6efd;
+    --btn-outline-border: #6c757d;
+    --chart-grid: rgba(0, 0, 0, 0.06);
+    --chart-tick: #6c757d;
+    --chart-title: #212529;
+    color-scheme: light;
+}
 
-    --surface-bg: var(--surface-bg-light);
-    --card-bg: var(--card-bg-light);
-    --card-border: var(--card-border-light);
-    --stat-bg: var(--stat-bg-light);
-    --accent-color: var(--brand-accent-light);
+[data-bs-theme="dark"],
+[data-theme="dark"],
+html.dark {
+    --surface-bg: #0f141c;
+    --text-color: #e6edf3;
+    --text-muted: #9aa5b1;
+    --card-bg: #171d26;
+    --card-header-bg: #1d2531;
+    --card-footer-bg: #131821;
+    --card-border: #2d3848;
+    --stat-bg: #1d2531;
+    --input-bg: #1d2531;
+    --input-border: #3b4758;
+    --input-disabled-bg: #131821;
+    --brand-accent: #ff4d79;
+    --link-color: #58a6ff;
+    --btn-outline-border: #445163;
+    --chart-grid: rgba(255, 255, 255, 0.08);
+    --chart-tick: #9aa5b1;
+    --chart-title: #e6edf3;
+    color-scheme: dark;
+}
 
-    @media (prefers-color-scheme: dark) {
-        --surface-bg: var(--surface-bg-dark);
-        --card-bg: var(--card-bg-dark);
-        --card-border: var(--card-border-dark);
-        --stat-bg: var(--stat-bg-dark);
-        --accent-color: var(--brand-accent-dark);
-    }
-
-    @supports (color: light-dark(white, black)) {
-        --surface-bg: light-dark(var(--surface-bg-light), var(--surface-bg-dark));
-        --card-bg: light-dark(var(--card-bg-light), var(--card-bg-dark));
-        --card-border: light-dark(var(--card-border-light), var(--card-border-dark));
-        --stat-bg: light-dark(var(--stat-bg-light), var(--stat-bg-dark));
-        --accent-color: light-dark(var(--brand-accent-light), var(--brand-accent-dark));
-    }
-
-    color-scheme: light dark;
-    accent-color: var(--accent-color);
-
-    &:has(> head > meta[name="color-scheme"][content="dark"]) {
+@media (prefers-color-scheme: dark) {
+    :root:not([data-bs-theme="light"]):not([data-theme="light"]):not(.light) {
+        --surface-bg: #0f141c;
+        --text-color: #e6edf3;
+        --text-muted: #9aa5b1;
+        --card-bg: #171d26;
+        --card-header-bg: #1d2531;
+        --card-footer-bg: #131821;
+        --card-border: #2d3848;
+        --stat-bg: #1d2531;
+        --input-bg: #1d2531;
+        --input-border: #3b4758;
+        --input-disabled-bg: #131821;
+        --brand-accent: #ff4d79;
+        --link-color: #58a6ff;
+        --btn-outline-border: #445163;
+        --chart-grid: rgba(255, 255, 255, 0.08);
+        --chart-tick: #9aa5b1;
+        --chart-title: #e6edf3;
         color-scheme: dark;
-        --surface-bg: var(--surface-bg-dark);
-        --card-bg: var(--card-bg-dark);
-        --card-border: var(--card-border-dark);
-        --stat-bg: var(--stat-bg-dark);
-        --accent-color: var(--brand-accent-dark);
-    }
-
-    &:has(> head > meta[name="color-scheme"][content="light"]) {
-        color-scheme: light;
-        --surface-bg: var(--surface-bg-light);
-        --card-bg: var(--card-bg-light);
-        --card-border: var(--card-border-light);
-        --stat-bg: var(--stat-bg-light);
-        --accent-color: var(--brand-accent-light);
     }
 }
 
 body {
     background-color: var(--surface-bg);
+    color: var(--text-color);
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .card {
     margin: 0.5em 0;
     background-color: var(--card-bg);
+    color: var(--text-color);
     border-color: var(--card-border);
     border-radius: 0.75rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     overflow: hidden;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .card-header {
+    background-color: var(--card-header-bg);
+    color: var(--text-color);
+    border-bottom: 1px solid var(--card-border);
     font-weight: 600;
+}
+
+.card-body {
+    color: var(--text-color);
+}
+
+.card-footer {
+    background-color: var(--card-footer-bg);
+    color: var(--text-muted) !important;
+    border-top: 1px solid var(--card-border);
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+a {
+    color: var(--link-color);
+}
+
+a:hover {
+    color: var(--brand-accent);
+}
+
+.btn-link {
+    color: var(--link-color);
+}
+
+.btn-outline-secondary {
+    color: var(--text-color);
+    border-color: var(--btn-outline-border);
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--card-header-bg);
+    color: var(--text-color);
+    border-color: var(--brand-accent);
 }
 
 .detail-toolbar {
     background-color: var(--card-bg);
+    color: var(--text-color);
     border: 1px solid var(--card-border);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.detail-toolbar .navbar-brand {
+    color: var(--text-color);
+}
+
+.detail-toolbar .form-check-label {
+    color: var(--text-color);
 }
 
 .detail-stat-box {
     background-color: var(--stat-bg);
-    border-color: var(--card-border) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 0.5rem;
+    color: var(--text-color);
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.temperature-widget-body, .pc_status-widget-primary {
+.detail-stat-box .text-muted {
+    color: var(--text-muted) !important;
+}
+
+.form-control,
+.form-select {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border-color: var(--input-border);
+    color-scheme: light dark;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border-color: var(--brand-accent);
+    box-shadow: 0 0 0 0.2rem rgba(188, 17, 66, 0.25);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+    background-color: var(--input-disabled-bg);
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+.form-check-input {
+    background-color: var(--input-bg);
+    border-color: var(--input-border);
+}
+
+.form-check-input:checked {
+    background-color: var(--brand-accent);
+    border-color: var(--brand-accent);
+}
+
+.temperature-widget-body,
+.pc_status-widget-primary {
     font-size: 2.5em;
     font-weight: 600;
 }
@@ -90,6 +197,7 @@ body {
 a.temperature-tappable-header {
     text-decoration: none;
     display: block;
+    color: inherit;
 }
 
 .temperature-widget-body > sup > span {
@@ -98,34 +206,13 @@ a.temperature-tappable-header {
 
 .serverstats-controls {
     font-size: 2em;
-    font-weight: 600;
 }
 
 .serverstats-controls > sup > span {
-    font-size: 0.6em;
+    font-size: 0.5em;
 }
 
-.centered-block {
-    display: inline-block;
-    margin: 0 auto;
-    text-align: left;
-}
-
-.loader {
-    border: 12px solid rgba(128, 128, 128, 0.2);
-    border-top: 12px solid var(--accent-color);
-    border-radius: 50%;
-    width: 96px;
-    height: 96px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+.chart-wrapper {
+    position: relative;
+    width: 100%;
 }
