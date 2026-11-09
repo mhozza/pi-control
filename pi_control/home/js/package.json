@@ -4,8 +4,8 @@
   "description": "Widget for displaying temperature and humidity.",
   "main": "app.jsx",
   "scripts": {
-    "dev": "webpack --watch --mode=development",
-    "build": "webpack --mode=production",
+    "dev": "vite build --watch --mode development",
+    "build": "vite build",
     "test": "jest"
   },
   "author": "Michal Hozza",
@@ -31,14 +31,11 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.0.0",
     "@types/jest": "^30.0.0",
-    "css-loader": "^7.1.2",
+    "@vitejs/plugin-react": "^4.3.4",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
-    "style-loader": "^4.0.0",
     "ts-jest": "^29.4.15",
-    "ts-loader": "^9.5.2",
-    "webpack": "^5.98.0",
-    "webpack-cli": "^5.1.4"
+    "vite": "^5.4.14"
   }
 }

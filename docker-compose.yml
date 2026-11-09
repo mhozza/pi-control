@@ -59,10 +59,9 @@ services:
     depends_on:
       - rabbitmq
       - db
-  webpack:
+  vite:
     <<: *pi-control
-    command: npm run --prefix=/web/home/js dev
+    command: sh -c "npm install --prefix=/web/home/js && npm run --prefix=/web/home/js dev"
 
 volumes:
   db_data_16:
-  node_modules:
