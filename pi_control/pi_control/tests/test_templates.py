@@ -60,3 +60,20 @@ class BaseTemplateSecurityTestCase(SimpleTestCase):
         self.assertIn('crossorigin="anonymous"', rendered)
         # Bootstrap JS
         self.assertIn('integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"', rendered)
+
+
+class LoginTemplateTestCase(SimpleTestCase):
+    def test_login_uses_post_form_with_csrf_token(self):
+        from django.test import RequestFactory
+        factory = RequestFactory()
+        request = factory.get("/login/?next=/home/")
+        rendered = render_to_string(
+            "registration/login.html",
+            {"request": request},
+            request=request,
+        )
+        self.assertIn('method="post"', rendered)
+        self.assertIn('action="/oauth/login/google-oauth2/?next=', rendered)
+        self.assertIn('name="csrfmiddlewaretoken"', rendered)
+        self.assertIn('<button type="submit"', rendered)
+        self.assertNotIn('<a href="/oauth/login/google-oauth2/"', rendered)
