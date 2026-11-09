@@ -43,7 +43,9 @@ if not SECRET_KEY:
     elif "collectstatic" in sys.argv:
         SECRET_KEY = "django-insecure-collectstatic-dummy-key"
     else:
-        raise ImproperlyConfigured("The SECRET environment variable must be set when DEBUG is False.")
+        raise ImproperlyConfigured(
+            "The SECRET environment variable must be set when DEBUG is False."
+        )
 
 ALLOWED_HOSTS = ["*"] if DEBUG else ["malina.hozza.eu"]
 
@@ -200,8 +202,14 @@ SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.social_auth.associate_user",
 )
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env("AUTH_KEY", "")
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env("AUTH_SECRET", "")
+if DEBUG:
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env(
+        "AUTH_KEY", "252833193334-p1smqapcll45s386594smrqld0l2ielj.apps.googleusercontent.com"
+    )
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env("AUTH_SECRET", "ocvhSjJyjKfMROBh4z8EUTA9")
+else:
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env("AUTH_KEY", "")
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env("AUTH_SECRET", "")
 
 # Logging
 LOGGING = {
