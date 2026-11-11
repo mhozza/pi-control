@@ -748,7 +748,7 @@ wheels = [
 
 [[package]]
 name = "pi-control"
-version = "2.0.0"
+version = "2.0.1"
 source = { virtual = "." }
 dependencies = [
     { name = "amqp" },
